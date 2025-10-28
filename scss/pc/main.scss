@@ -484,7 +484,7 @@ body {
   left: 0;
   height: 100vh;
   box-sizing: border-box;
-  background: rgba(255, 255, 255, 0.95);
+  background: rgba(90, 1, 1, 0.95);
   backdrop-filter: blur(10px);
   box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
   transition: width 0.3s ease;
@@ -1068,10 +1068,32 @@ body {
 // MODALS & OVERLAYS
 // ============================================
 
-// Material-UI Menu
+// Material-UI Menu - Updated with Language Dropdown Fix
 .MuiPaper-root.MuiMenu-paper {
-  padding: 8px;
+  padding: 4px !important;
   box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
+  max-width: 180px !important;
+
+  .MuiMenuItem-root {
+    padding: 8px 12px !important;
+    min-height: 36px !important;
+    font-size: 14px !important;
+
+    .img-flag {
+      width: 24px !important;
+      height: 16px !important;
+      margin-right: 8px !important;
+      object-fit: cover !important;
+      flex-shrink: 0 !important;
+    }
+
+    img.img-flag {
+      width: 24px !important;
+      height: 16px !important;
+      margin-right: 8px !important;
+      object-fit: cover !important;
+    }
+  }
 }
 
 // Advanced Filter Modal

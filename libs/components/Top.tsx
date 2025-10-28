@@ -146,10 +146,9 @@ const Top = ({ trendingProperty }: TopProps) => {
     />
   ))(({ theme }) => ({
     "& .MuiPaper-root": {
-      top: "109px",
       borderRadius: 6,
-      marginTop: theme.spacing(1),
-      minWidth: 160,
+      marginTop: theme.spacing(0.5), // Reduced from theme.spacing(1)
+      minWidth: 140, // Reduced from 160
       color:
         theme.palette.mode === "light"
           ? "rgb(55, 65, 81)"
@@ -157,19 +156,25 @@ const Top = ({ trendingProperty }: TopProps) => {
       boxShadow:
         "rgb(255, 255, 255) 0px 0px 0px 0px, rgba(0, 0, 0, 0.05) 0px 0px 0px 1px, rgba(0, 0, 0, 0.1) 0px 10px 15px -3px, rgba(0, 0, 0, 0.05) 0px 4px 6px -2px",
       "& .MuiMenu-list": {
-        padding: "4px 0",
+        padding: "4px 0", // Reduced padding
       },
       "& .MuiMenuItem-root": {
+        padding: "6px 12px", // More compact
+        fontSize: "14px",
+        minHeight: "unset",
         "& .MuiSvgIcon-root": {
           fontSize: 18,
           color: theme.palette.text.secondary,
-          marginRight: theme.spacing(1.5),
+          marginRight: theme.spacing(1),
         },
         "&:active": {
           backgroundColor: alpha(
             theme.palette.primary.main,
             theme.palette.action.selectedOpacity
           ),
+        },
+        "&:hover": {
+          backgroundColor: "rgba(226, 12, 12, 0.08)",
         },
       },
     },
@@ -330,7 +335,6 @@ const Top = ({ trendingProperty }: TopProps) => {
                   anchorEl={anchorEl2}
                   open={drop}
                   onClose={langClose}
-                  sx={{ position: "absolute" }}
                 >
                   <MenuItem disableRipple onClick={langChoice} id="en">
                     <img
