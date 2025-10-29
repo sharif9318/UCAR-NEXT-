@@ -163,7 +163,8 @@ body {
 
           .logo-box {
             img {
-              width: 150px;
+              height: 100px;
+              width: 400px;
               cursor: pointer;
             }
           }
@@ -468,39 +469,37 @@ body {
   right: 0;
   height: 100vh;
   box-sizing: border-box;
-  background: transparent;
+  background: none;
   backdrop-filter: blur(10px);
   box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
-  transition: all 0.3s ease; // Changed from just width
+  transition: all 0.3s ease;
   z-index: 1000;
   display: flex;
   flex-direction: column;
 
   &.collapsed {
     width: 70px;
-    height: auto; // Change from 100vh to auto
-    padding: 1rem 0.5rem; // Reduce horizontal padding
-    background: transparent;
+    height: auto;
+    padding: 1rem 0.5rem;
+    background: none;
     backdrop-filter: none;
     box-shadow: none;
     border-bottom-color: transparent;
 
-    // Hide menu items when collapsed
     .menu-items {
       opacity: 0;
       visibility: hidden;
     }
 
     .menu-toggle {
-      margin-bottom: 0; // Remove bottom margin when collapsed
+      margin-bottom: 0;
     }
   }
 
   &.expanded {
     width: 250px;
-    height: 100vh; // Full height when expanded
+    height: 100vh;
 
-    // Show menu items when expanded
     .menu-items {
       opacity: 1;
       visibility: visible;
@@ -522,6 +521,10 @@ body {
     }
 
     .menu-items {
+      img {
+        width: 100px;
+        height: 100px;
+      }
       a {
         div {
           .label {
@@ -1074,7 +1077,6 @@ body {
 // MODALS & OVERLAYS
 // ============================================
 
-// Material-UI Menu - Updated with Language Dropdown Fix
 .MuiPaper-root.MuiMenu-paper {
   padding: 4px !important;
   box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;

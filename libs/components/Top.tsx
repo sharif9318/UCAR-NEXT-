@@ -178,7 +178,7 @@ const Top = ({ trendingProperty }: TopProps) => {
       boxShadow:
         "rgb(255, 255, 255) 0px 0px 0px 0px, rgba(0, 0, 0, 0.05) 0px 0px 0px 1px, rgba(0, 0, 0, 0.1) 0px 10px 15px -3px, rgba(0, 0, 0, 0.05) 0px 4px 6px -2px",
       "& .MuiMenu-list": {
-        padding: "4px 0", // Reduced padding
+        padding: "4px 0",
       },
       "& .MuiMenuItem-root": {
         padding: "8px 12px",
@@ -252,7 +252,6 @@ const Top = ({ trendingProperty }: TopProps) => {
           </video>
           <div className="video-overlay" />
 
-          {/* Property Info - Shows on Hover */}
           {trendingProperty && (
             <Box
               className={`property-info-overlay ${
@@ -295,7 +294,7 @@ const Top = ({ trendingProperty }: TopProps) => {
           <Stack className={"container"} sx={{ pointerEvents: "auto" }}>
             <Box component={"div"} className={"logo-box"}>
               <Link href={"/"}>
-                <img src="/img/logo/logoWhite.svg" alt="" />
+                <img src="/img/logo/ucar_logo (1).svg" alt="" />
               </Link>
             </Box>
 

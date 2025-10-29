@@ -37,7 +37,9 @@ const InteractiveNavbar = () => {
       <div className="menu-items">
         <Link href={"/"}>
           <div>
-            <span className="icon">🏠</span>
+            <span className="icon">
+              <img src="/img/logo/ucar_logo (1).svg" alt="🏠" />
+            </span>
             <span className="label">{t("Home")}</span>
           </div>
         </Link>

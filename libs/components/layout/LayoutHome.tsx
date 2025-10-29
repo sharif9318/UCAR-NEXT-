@@ -40,7 +40,7 @@ const withLayoutMain = (Component: any) => {
           </Head>
           <Stack id="mobile-wrap">
             <Stack id={"top"}>
-              <Top trendingProperty={trendingProperty} />
+              <Top {...props} trendingProperty={trendingProperty} />
             </Stack>
 
             <Stack id={"main"}>
@@ -62,7 +62,7 @@ const withLayoutMain = (Component: any) => {
           </Head>
           <Stack id="pc-wrap">
             <Stack id={"top"}>
-              <Top trendingProperty={trendingProperty} />
+              <Top {...props} trendingProperty={trendingProperty} />
             </Stack>
             <Stack className={"InteractiveNavbar"}>
               <InteractiveNavbar />
