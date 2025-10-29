@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import useDeviceDetect from "../../hooks/useDeviceDetect";
 import Head from "next/head";
 import Top from "../Top";
@@ -13,11 +13,15 @@ import "swiper/css";
 import "swiper/css/pagination";
 import "swiper/css/navigation";
 import InteractiveNavbar from "../InteractiveNavbar";
+import { Property } from "../../types/property/property";
 
 const withLayoutMain = (Component: any) => {
   return (props: any) => {
     const device = useDeviceDetect();
     const user = useReactiveVar(userVar);
+    const [trendingProperty, setTrendingProperty] = useState<
+      Property | undefined
+    >();
 
     /** LIFECYCLES **/
     useEffect(() => {
@@ -36,11 +40,11 @@ const withLayoutMain = (Component: any) => {
           </Head>
           <Stack id="mobile-wrap">
             <Stack id={"top"}>
-              <Top />
+              <Top trendingProperty={trendingProperty} />
             </Stack>
 
             <Stack id={"main"}>
-              <Component {...props} />
+              <Component {...props} setTrendingProperty={setTrendingProperty} />
             </Stack>
 
             <Stack id={"footer"}>
@@ -58,14 +62,14 @@ const withLayoutMain = (Component: any) => {
           </Head>
           <Stack id="pc-wrap">
             <Stack id={"top"}>
-              <Top />
+              <Top trendingProperty={trendingProperty} />
             </Stack>
             <Stack className={"InteractiveNavbar"}>
               <InteractiveNavbar />
             </Stack>
 
             <Stack id={"main"}>
-              <Component {...props} />
+              <Component {...props} setTrendingProperty={setTrendingProperty} />
             </Stack>
 
             {user?._id && <Chat />}

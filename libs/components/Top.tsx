@@ -8,7 +8,7 @@ import Button from "@mui/material/Button";
 import { alpha, styled } from "@mui/material/styles";
 import Menu, { MenuProps } from "@mui/material/Menu";
 import AccountCircleOutlinedIcon from "@mui/icons-material/AccountCircleOutlined";
-import { CaretDown } from "phosphor-react";
+import { CaretDown, Columns } from "phosphor-react";
 import useDeviceDetect from "../hooks/useDeviceDetect";
 import Link from "next/link";
 import NotificationsOutlinedIcon from "@mui/icons-material/NotificationsOutlined";
@@ -18,6 +18,7 @@ import { Logout } from "@mui/icons-material";
 import { REACT_APP_API_URL } from "../config";
 import { Property } from "../types/property/property";
 import HeaderFilter from "./homepage/HeaderFilter";
+import { Typography } from "@mui/material";
 
 interface TopProps {
   trendingProperty?: Property;
@@ -44,18 +45,15 @@ const Top = ({ trendingProperty }: TopProps) => {
 
   // Determine video source - use property video if exists, otherwise default
   const getVideoSource = () => {
-    // Check if property has video (you might need to check a specific field like propertyVideo)
     if (
       trendingProperty?.propertyImages &&
       trendingProperty.propertyImages.length > 0
     ) {
-      // Check if it's a video file
       const firstMedia = trendingProperty.propertyImages[0];
       if (firstMedia.includes(".mp4") || firstMedia.includes(".webm")) {
         return `${REACT_APP_API_URL}/${firstMedia}`;
       }
     }
-    // Return default video path
     return "/img/video/default-property.mp4";
   };
 
@@ -89,6 +87,29 @@ const Top = ({ trendingProperty }: TopProps) => {
       videoRef.current
         .play()
         .catch((err) => console.log("Video autoplay failed:", err));
+    }
+  }, [trendingProperty]);
+
+  useEffect(() => {
+    console.log("Top component - trendingProperty changed:", trendingProperty);
+    if (videoRef.current) {
+      const videoSrc = getVideoSource();
+      console.log("Attempting to load video:", videoSrc);
+
+      const videoElement = videoRef.current;
+
+      const handleCanPlay = () => {
+        videoElement.play().catch((err) => {
+          console.log("Video autoplay failed:", err);
+        });
+      };
+
+      videoElement.addEventListener("canplay", handleCanPlay);
+      videoElement.load();
+
+      return () => {
+        videoElement.removeEventListener("canplay", handleCanPlay);
+      };
     }
   }, [trendingProperty]);
 
@@ -147,8 +168,9 @@ const Top = ({ trendingProperty }: TopProps) => {
   ))(({ theme }) => ({
     "& .MuiPaper-root": {
       borderRadius: 6,
-      marginTop: theme.spacing(0.5), // Reduced from theme.spacing(1)
-      minWidth: 140, // Reduced from 160
+      marginTop: theme.spacing(0.5),
+      minWidth: 140,
+      maxWidth: 180,
       color:
         theme.palette.mode === "light"
           ? "rgb(55, 65, 81)"
@@ -159,7 +181,7 @@ const Top = ({ trendingProperty }: TopProps) => {
         padding: "4px 0", // Reduced padding
       },
       "& .MuiMenuItem-root": {
-        padding: "6px 12px", // More compact
+        padding: "8px 12px",
         fontSize: "14px",
         minHeight: "unset",
         "& .MuiSvgIcon-root": {
@@ -207,11 +229,16 @@ const Top = ({ trendingProperty }: TopProps) => {
   } else {
     return (
       <Stack className={"navbar"}>
-        {/* Background Video - Always Playing */}
         <Box
           className="video-background"
-          onMouseEnter={() => setShowPropertyInfo(true)}
-          onMouseLeave={() => setShowPropertyInfo(false)}
+          onMouseEnter={() => {
+            console.log("Mouse entered video background");
+            setShowPropertyInfo(true);
+          }}
+          onMouseLeave={() => {
+            console.log("Mouse left video background");
+            setShowPropertyInfo(false);
+          }}
         >
           <video
             ref={videoRef}
@@ -225,12 +252,21 @@ const Top = ({ trendingProperty }: TopProps) => {
           </video>
           <div className="video-overlay" />
 
-          {/* Property Info - Only Shows on Hover */}
+          {/* Property Info - Shows on Hover */}
           {trendingProperty && (
             <Box
               className={`property-info-overlay ${
                 showPropertyInfo ? "visible" : ""
               }`}
+              sx={{
+                position: "absolute",
+                bottom: "30px",
+                left: "30px",
+                maxWidth: "450px",
+                color: "white",
+                zIndex: 15,
+                pointerEvents: "none",
+              }}
             >
               <h2 className="property-title">
                 {trendingProperty.propertyTitle}
@@ -241,7 +277,7 @@ const Top = ({ trendingProperty }: TopProps) => {
               <div className="property-details">
                 <span>🛏️ {trendingProperty.propertyBeds} beds</span>
                 <span>🚪 {trendingProperty.propertyRooms} rooms</span>
-                <span>📐 {trendingProperty.propertySquare} m²</span>
+                <span>📏 {trendingProperty.propertySquare} m²</span>
               </div>
               <div className="property-price">
                 ${trendingProperty.propertyPrice}
@@ -254,8 +290,9 @@ const Top = ({ trendingProperty }: TopProps) => {
           className={`navbar-main ${colorChange ? "transparent" : ""} ${
             bgColor ? "transparent" : ""
           }`}
+          sx={{ pointerEvents: "none" }}
         >
-          <Stack className={"container"}>
+          <Stack className={"container"} sx={{ pointerEvents: "auto" }}>
             <Box component={"div"} className={"logo-box"}>
               <Link href={"/"}>
                 <img src="/img/logo/logoWhite.svg" alt="" />
@@ -370,11 +407,39 @@ const Top = ({ trendingProperty }: TopProps) => {
               </div>
             </Box>
           </Stack>
-        </Stack>
-        <Stack className={"header-main"}>
-          <Stack className={"container"}>
-            <HeaderFilter />
-          </Stack>
+          <Box className={"motto-box"} sx={{ pointerEvents: "auto" }}>
+            <Typography
+              variant="h1"
+              sx={{
+                fontWeight: "bold",
+                color: "white",
+                textAlign: "center",
+                fontSize: { xs: "4rem", md: "6rem" },
+                mb: 2,
+                whiteSpace: "pre-line",
+              }}
+            >
+              Drive Your Dream {"\n"} Within Reach
+            </Typography>
+            <Typography
+              variant="h3"
+              sx={{
+                color: "white",
+                textAlign: "center",
+                fontWeight: 400,
+                fontSize: { xs: "1.1rem", md: "1.5rem" },
+                opacity: 0.9,
+                maxWidth: "800px",
+                mx: "auto",
+                mb: 3,
+                whiteSpace: "pre-line",
+              }}
+            >
+              Buy and sell pre-loved cars with confidence.{"\n"} Find your
+              perfect match from thousands of verified used cars, {"\n"}or sell
+              your car fast to qualified buyers.
+            </Typography>
+          </Box>
         </Stack>
       </Stack>
     );
