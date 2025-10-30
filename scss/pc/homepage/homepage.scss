@@ -164,129 +164,153 @@
           }
           .trend-card-box {
             position: relative;
-            width: 300px;
-            height: 375px;
-            display: flex;
-            flex-direction: column;
-            transition: transform 0.3s;
+            width: 100%;
+            cursor: pointer;
+            transition: transform 0.3s ease;
+
             &:hover {
-              opacity: 1;
               transform: scale(1.05);
+              z-index: 10;
             }
-            .card-img {
+
+            .card-wrapper {
               position: relative;
-              width: 100%;
-              height: 203px;
-              background-size: cover;
-              border-radius: 12px 12px 0px 0px;
-              cursor: pointer;
-              div {
-                position: absolute;
-                padding: 8px 12px;
-                left: 12px;
-                bottom: 12px;
-                border-radius: 6px;
-                background: #fff;
-                color: #181a20;
-                font-family: $font;
-                font-size: 15px;
-                font-style: normal;
-                font-weight: 600;
-                line-height: normal;
+              display: flex;
+              align-items: flex-end;
+
+              .rank-number {
+                font-size: 120px;
+                font-weight: 900;
+                color: #000;
+                line-height: 1;
+                margin-right: -35px;
+                z-index: 2;
+                font-family: "Arial Black", sans-serif;
+                -webkit-text-stroke: 2px #fff;
+                user-select: none;
+              }
+
+              .card-img {
+                position: relative;
+                width: 250px;
+                height: 350px;
+                border-radius: 12px;
+                overflow: hidden;
+                z-index: 1;
+                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+
+                .card-video {
+                  width: 100%;
+                  height: 100%;
+                  object-fit: cover;
+                  display: block;
+                }
+
+                .card-image {
+                  width: 100%;
+                  height: 100%;
+                  background-size: cover;
+                  background-position: center;
+                }
+
+                .logo {
+                  position: absolute;
+                  top: 10px;
+                  width: 100px;
+                  height: 50px;
+                  display: flex;
+                  align-items: center;
+                  justify-content: center;
+                  border-radius: 4px;
+                  z-index: 10;
+                }
+
+                .price-badge {
+                  position: absolute;
+                  top: 15px;
+                  right: 15px;
+                  color: #e50914;
+                  padding: 6px 12px;
+                  border-radius: 6px;
+                  font-weight: 700;
+                  font-size: 20px;
+                  // backdrop-filter: blur(10px);
+                  z-index: 10;
+                }
+
+                .info {
+                  position: absolute;
+                  bottom: 0;
+                  left: 0;
+                  right: 0;
+                  padding: 40px 15px 15px;
+                  background: linear-gradient(
+                    to top,
+                    rgba(0, 0, 0, 0.9),
+                    transparent
+                  );
+                  z-index: 10;
+
+                  .title {
+                    margin-left: 30px;
+                    color: white;
+                    font-size: 18px;
+                    font-weight: 700;
+                    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
+                    display: block;
+                  }
+                }
               }
             }
-            .info {
-              padding: 20px 22px 17px;
+
+            .bott {
+              margin-top: 10px;
               display: flex;
-              flex-direction: column;
-              box-sizing: border-box;
-              border-radius: 0px 0px 12px 12px;
-              border: 1px solid rgba(196, 196, 196, 0.71);
-              border-top: none;
-              background: #fff;
-              box-shadow: 0px 1px 4px 0px rgba(24, 26, 32, 0.07);
-              .title {
-                overflow: hidden;
-                color: #181a20;
-                text-overflow: ellipsis;
-                white-space: nowrap;
-                font-family: $font;
-                font-size: 15px;
-                font-style: normal;
-                font-weight: 600;
-                line-height: normal;
-                text-transform: capitalize;
-                cursor: pointer;
-              }
-              .desc {
-                margin-top: 5px;
-                overflow: hidden;
-                color: #717171;
-                font-family: $font;
-                font-size: 13px;
-                font-style: normal;
-                font-weight: 400;
-                line-height: normal;
-                text-overflow: ellipsis;
-                white-space: nowrap;
-              }
-              .options {
-                margin-top: 15px;
+              justify-content: center;
+
+              .view-like-box {
                 display: flex;
-                flex-direction: row;
-                justify-content: space-between;
-                div {
-                  display: flex;
-                  flex-direction: row;
-                  img {
-                    margin-right: 5px;
-                    width: 17px;
-                    height: 17px;
-                  }
-                  span {
-                    color: #f2f3f5;
-                    font-family: $font;
-                    font-size: 13px;
-                    font-style: normal;
-                    font-weight: 400;
-                    line-height: normal;
-                  }
-                }
-              }
-              .bott {
-                display: flex;
-                flex-direction: row;
-                justify-content: space-between;
                 align-items: center;
-                p {
-                  color: #181a20;
-                  font-family: $font;
-                  font-size: 13px;
-                  font-style: normal;
-                  font-weight: 400;
-                  line-height: normal;
-                  text-transform: capitalize;
+                gap: 5px;
+                color: #fff;
+
+                .view-cnt {
+                  font-size: 14px;
+                  margin-right: 10px;
                 }
-                button {
-                  margin-left: 7px;
-                  width: 16px;
-                  height: 16px;
-                  box-sizing: border-box;
+              }
+            }
+          }
+
+          // Mobile styles
+          @media (max-width: 768px) {
+            .trend-card-box {
+              .card-wrapper {
+                .rank-number {
+                  font-size: 120px;
+                  margin-right: -20px;
                 }
-                .view-like-box {
-                  display: flex;
-                  flex-direction: row;
-                  gap: 7px;
-                  align-items: center;
-                  .view-cnt {
-                    color: #717171;
-                    font-family: $font;
-                    font-size: 13px;
-                    font-style: normal;
-                    font-weight: 400;
-                    line-height: normal;
-                    text-overflow: ellipsis;
-                  }
+
+                .card-img {
+                  width: 180px;
+                  height: 250px;
+                }
+              }
+            }
+          }
+
+          // Mobile styles
+          @media (max-width: 768px) {
+            .trend-card-box {
+              .card-wrapper {
+                .rank-number {
+                  font-size: 120px;
+                  margin-right: -20px;
+                }
+
+                .card-img {
+                  width: 180px;
+                  height: 250px;
                 }
               }
             }

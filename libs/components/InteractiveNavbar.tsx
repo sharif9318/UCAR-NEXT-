@@ -1,20 +1,25 @@
 import { useReactiveVar } from "@apollo/client";
-import { Box, Link } from "@mui/material";
+import { Box, Link, Button, Stack } from "@mui/material";
 import { userVar } from "../../apollo/store";
 import { useEffect, useState } from "react";
 import { getJwtToken, updateUserInfo } from "../auth";
-import { useTranslation } from "react-i18next";
+import { useTranslation } from "next-i18next";
 import HomeIcon from "@mui/icons-material/Home";
 import DirectionsCarIcon from "@mui/icons-material/DirectionsCar";
 import PeopleIcon from "@mui/icons-material/People";
 import ForumIcon from "@mui/icons-material/Forum";
 import PersonIcon from "@mui/icons-material/Person";
 import HelpIcon from "@mui/icons-material/Help";
+import LoginIcon from "@mui/icons-material/Login";
+import LogoutIcon from "@mui/icons-material/Logout";
+import { useRouter } from "next/router";
+import { sweetConfirmAlert, sweetTopSmallSuccessAlert } from "./../sweetAlert";
 
 const InteractiveNavbar = () => {
   const user = useReactiveVar(userVar);
   const { t, i18n } = useTranslation("common");
   const [isExpanded, setIsExpanded] = useState(false);
+  const router = useRouter();
 
   useEffect(() => {
     const jwt = getJwtToken();
@@ -23,6 +28,29 @@ const InteractiveNavbar = () => {
 
   const toggleNavbar = () => {
     setIsExpanded(!isExpanded);
+  };
+
+  const handleLogout = async () => {
+    try {
+      const result = await sweetConfirmAlert(
+        t("Are you sure you want to logout?")
+      );
+      if (result.isConfirmed) {
+        localStorage.removeItem("accessToken");
+
+        userVar(null);
+
+        await sweetTopSmallSuccessAlert(t("Logged out successfully!"), 1000);
+
+        router.push("/");
+      }
+    } catch (err) {
+      console.log("Logout error:", err);
+    }
+  };
+
+  const handleLogin = () => {
+    router.push("/account/join");
   };
 
   return (
@@ -99,6 +127,25 @@ const InteractiveNavbar = () => {
             <span className="label">{t("CS")}</span>
           </div>
         </Link>
+
+        {/* Authentication  */}
+        <Stack className="auth-section" sx={{ mt: "auto", pt: 2 }}>
+          {user?._id ? (
+            <div className="menu-item auth-item" onClick={handleLogout}>
+              <span className="icon">
+                <LogoutIcon sx={{ fontSize: 32 }} />
+              </span>
+              <span className="label">{t("Logout")}</span>
+            </div>
+          ) : (
+            <div className="menu-item auth-item" onClick={handleLogin}>
+              <span className="icon">
+                <LoginIcon sx={{ fontSize: 32 }} />
+              </span>
+              <span className="label">{t("Login")}</span>
+            </div>
+          )}
+        </Stack>
       </div>
     </Box>
   );

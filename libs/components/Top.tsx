@@ -17,7 +17,6 @@ import { userVar } from "../../apollo/store";
 import { Logout } from "@mui/icons-material";
 import { REACT_APP_API_URL } from "../config";
 import { Property } from "../types/property/property";
-import HeaderFilter from "./homepage/HeaderFilter";
 import { Typography } from "@mui/material";
 
 interface TopProps {
@@ -232,11 +231,9 @@ const Top = ({ trendingProperty }: TopProps) => {
         <Box
           className="video-background"
           onMouseEnter={() => {
-            console.log("Mouse entered video background");
             setShowPropertyInfo(true);
           }}
           onMouseLeave={() => {
-            console.log("Mouse left video background");
             setShowPropertyInfo(false);
           }}
         >

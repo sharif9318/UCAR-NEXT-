@@ -1,6 +1,5 @@
-import React from "react";
-import { Stack, Box, Divider, Typography } from "@mui/material";
-import IconButton from "@mui/material/IconButton";
+import React, { useRef, useState } from "react";
+import { Stack, Box, Typography, IconButton } from "@mui/material";
 import useDeviceDetect from "../../hooks/useDeviceDetect";
 import FavoriteIcon from "@mui/icons-material/Favorite";
 import { Property } from "../../types/property/property";
@@ -13,73 +12,92 @@ import { userVar } from "../../../apollo/store";
 interface TrendPropertyCardProps {
   property: Property;
   likePropertyHandler: any;
+  index: number;
 }
 
 const TrendPropertyCard = (props: TrendPropertyCardProps) => {
-  const { property, likePropertyHandler } = props;
+  const { property, likePropertyHandler, index } = props;
   const device = useDeviceDetect();
   const router = useRouter();
   const user = useReactiveVar(userVar);
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const [isVideoLoaded, setIsVideoLoaded] = useState(false);
+
+  // Find video file in propertyImages
+  const videoFile = property.propertyImages?.find(
+    (img) =>
+      img.includes(".mp4") || img.includes(".webm") || img.includes(".mov")
+  );
+
+  // Fallback to first image if no video
+  const mediaFile = videoFile || property.propertyImages?.[0];
+  const isVideo = videoFile ? true : false;
 
   /** HANDLERS **/
 
   if (device === "mobile") {
     return (
       <Stack className="trend-card-box" key={property._id}>
-        <Box
-          component={"div"}
-          className={"card-img"}
-          style={{
-            backgroundImage: `url(${REACT_APP_API_URL}/${property?.propertyImages[0]})`,
-          }}
-        >
-          <div>${property.propertyPrice}</div>
-        </Box>
-        <Box component={"div"} className={"info"}>
-          <strong className={"title"}>{property.propertyTitle}</strong>
-          <p className={"desc"}>{property.propertyDesc ?? "no description"}</p>
-          <div className={"options"}>
-            <div>
-              <img src="/img/icons/bed.svg" alt="" />
-              <span>{property.propertyBeds} bed</span>
-            </div>
-            <div>
-              <img src="/img/icons/room.svg" alt="" />
-              <span>{property.propertyRooms} rooms</span>
-            </div>
-            <div>
-              <img src="/img/icons/expand.svg" alt="" />
-              <span>{property.propertySquare} m2</span>
-            </div>
-          </div>
-          <Divider sx={{ mt: "15px", mb: "17px" }} />
-          <div className={"bott"}>
-            <p>
-              {property.propertyRent ? "Rent" : ""}{" "}
-              {property.propertyRent && property.propertyBarter && "/"}{" "}
-              {property.propertyBarter ? "Barter" : ""}
-            </p>
-            <div className="view-like-box">
-              <IconButton color={"default"}>
-                <RemoveRedEyeIcon />
-              </IconButton>
-              <Typography className="view-cnt">
-                {property?.propertyViews}
-              </Typography>
-              <IconButton
-                color={"default"}
-                onClick={() => likePropertyHandler(user, property?._id)}
+        <Box className="card-wrapper">
+          <Typography className="rank-number">{index + 1}</Typography>
+
+          <Box component={"div"} className={"card-img"}>
+            {isVideo ? (
+              <video
+                ref={videoRef}
+                className="card-video"
+                autoPlay
+                loop
+                muted
+                playsInline
+                onLoadedData={() => setIsVideoLoaded(true)}
               >
-                {property?.meLiked && property?.meLiked[0]?.myFavorite ? (
-                  <FavoriteIcon style={{ color: "red" }} />
-                ) : (
-                  <FavoriteIcon />
-                )}
-              </IconButton>
-              <Typography className="view-cnt">
-                {property?.propertyLikes}
-              </Typography>
-            </div>
+                <source
+                  src={`${REACT_APP_API_URL}/${mediaFile}`}
+                  type="video/mp4"
+                />
+                Your browser does not support the video tag.
+              </video>
+            ) : (
+              <div
+                className="card-image"
+                style={{
+                  backgroundImage: `url(${REACT_APP_API_URL}/${mediaFile})`,
+                }}
+              />
+            )}
+
+            <Box className="netflix-badge">N</Box>
+            <div className="price-badge">${property.propertyPrice}</div>
+
+            <Box className="info">
+              <strong className={"title"}>{property.propertyTitle}</strong>
+            </Box>
+          </Box>
+        </Box>
+
+        <Box className="bott">
+          <div className="view-like-box">
+            <IconButton size="small" color={"default"}>
+              <RemoveRedEyeIcon fontSize="small" />
+            </IconButton>
+            <Typography className="view-cnt">
+              {property?.propertyViews}
+            </Typography>
+            <IconButton
+              size="small"
+              color={"default"}
+              onClick={() => likePropertyHandler(user, property?._id)}
+            >
+              {property?.meLiked && property?.meLiked[0]?.myFavorite ? (
+                <FavoriteIcon style={{ color: "red" }} fontSize="small" />
+              ) : (
+                <FavoriteIcon fontSize="small" />
+              )}
+            </IconButton>
+            <Typography className="view-cnt">
+              {property?.propertyLikes}
+            </Typography>
           </div>
         </Box>
       </Stack>
@@ -87,60 +105,68 @@ const TrendPropertyCard = (props: TrendPropertyCardProps) => {
   } else {
     return (
       <Stack className="trend-card-box" key={property._id}>
-        <Box
-          component={"div"}
-          className={"card-img"}
-          style={{
-            backgroundImage: `url(${REACT_APP_API_URL}/${property?.propertyImages[0]})`,
-          }}
-        >
-          <div>${property.propertyPrice}</div>
-        </Box>
-        <Box component={"div"} className={"info"}>
-          <strong className={"title"}>{property.propertyTitle}</strong>
-          <p className={"desc"}>{property.propertyDesc ?? "no description"}</p>
-          <div className={"options"}>
-            <div>
-              <img src="/img/icons/bed.svg" alt="" />
-              <span>{property.propertyBeds} bed</span>
-            </div>
-            <div>
-              <img src="/img/icons/room.svg" alt="" />
-              <span>{property.propertyRooms} rooms</span>
-            </div>
-            <div>
-              <img src="/img/icons/expand.svg" alt="" />
-              <span>{property.propertySquare} m2</span>
-            </div>
-          </div>
-          <Divider sx={{ mt: "15px", mb: "17px" }} />
-          <div className={"bott"}>
-            <p>
-              {property.propertyRent ? "Rent" : ""}{" "}
-              {property.propertyRent && property.propertyBarter && "/"}{" "}
-              {property.propertyBarter ? "Barter" : ""}
-            </p>
-            <div className="view-like-box">
-              <IconButton color={"default"}>
-                <RemoveRedEyeIcon />
-              </IconButton>
-              <Typography className="view-cnt">
-                {property?.propertyViews}
-              </Typography>
-              <IconButton
-                color={"default"}
-                onClick={() => likePropertyHandler(user, property?._id)}
+        <Box className="card-wrapper">
+          <Typography className="rank-number">{index + 1}</Typography>
+
+          <Box component={"div"} className={"card-img"}>
+            {isVideo ? (
+              <video
+                ref={videoRef}
+                className="card-video"
+                autoPlay
+                loop
+                muted
+                playsInline
+                onLoadedData={() => setIsVideoLoaded(true)}
               >
-                {property?.meLiked && property?.meLiked[0]?.myFavorite ? (
-                  <FavoriteIcon style={{ color: "red" }} />
-                ) : (
-                  <FavoriteIcon />
-                )}
-              </IconButton>
-              <Typography className="view-cnt">
-                {property?.propertyLikes}
-              </Typography>
-            </div>
+                <source
+                  src={`${REACT_APP_API_URL}/${mediaFile}`}
+                  type="video/mp4"
+                />
+                Your browser does not support the video tag.
+              </video>
+            ) : (
+              <div
+                className="card-image"
+                style={{
+                  backgroundImage: `url(${REACT_APP_API_URL}/${mediaFile})`,
+                }}
+              />
+            )}
+
+            <Box className="logo">
+              <img src="/img/logo/ucar_logo (1)2.svg" />
+            </Box>
+            <div className="price-badge">{property.propertyPrice}₩</div>
+
+            <Box className="info">
+              <strong className={"title"}>{property.propertyTitle}</strong>
+            </Box>
+          </Box>
+        </Box>
+
+        <Box className="bott">
+          <div className="view-like-box">
+            <IconButton size="small" sx={{ color: "white" }}>
+              <RemoveRedEyeIcon fontSize="small" />
+            </IconButton>
+            <Typography className="view-cnt">
+              {property?.propertyViews}
+            </Typography>
+            <IconButton
+              size="small"
+              sx={{ color: "white" }}
+              onClick={() => likePropertyHandler(user, property?._id)}
+            >
+              {property?.meLiked && property?.meLiked[0]?.myFavorite ? (
+                <FavoriteIcon style={{ color: "red" }} fontSize="small" />
+              ) : (
+                <FavoriteIcon fontSize="small" />
+              )}
+            </IconButton>
+            <Typography className="view-cnt">
+              {property?.propertyLikes}
+            </Typography>
           </div>
         </Box>
       </Stack>

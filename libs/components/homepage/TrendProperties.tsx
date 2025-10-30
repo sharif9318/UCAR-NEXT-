@@ -131,7 +131,7 @@ const TrendProperties = (props: TrendPropertiesProps) => {
                 spaceBetween={15}
                 modules={[Autoplay]}
               >
-                {trendProperties.map((property: Property) => {
+                {trendProperties.map((property: Property, index: number) => {
                   return (
                     <SwiperSlide
                       key={property._id}
@@ -140,6 +140,7 @@ const TrendProperties = (props: TrendPropertiesProps) => {
                       <TrendPropertyCard
                         property={property}
                         likePropertyHandler={likePropertyHandler}
+                        index={index}
                       />
                     </SwiperSlide>
                   );
@@ -160,7 +161,7 @@ const TrendProperties = (props: TrendPropertiesProps) => {
               <p>
                 These aren't just cars, they're the community's favorites. Every
                 'like' is a vote, and this is the hall of fame. <br />
-                SScroll through the rides that are capturing hearts and turning
+                Scroll through the rides that are capturing hearts and turning
                 heads right now.
               </p>
             </Box>
@@ -191,7 +192,7 @@ const TrendProperties = (props: TrendPropertiesProps) => {
                   el: ".swiper-trend-pagination",
                 }}
               >
-                {trendProperties.map((property: Property) => {
+                {trendProperties.map((property: Property, index: number) => {
                   return (
                     <SwiperSlide
                       key={property._id}
@@ -200,6 +201,7 @@ const TrendProperties = (props: TrendPropertiesProps) => {
                       <TrendPropertyCard
                         property={property}
                         likePropertyHandler={likePropertyHandler}
+                        index={index}
                       />
                     </SwiperSlide>
                   );
