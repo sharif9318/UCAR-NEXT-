@@ -532,8 +532,8 @@ body {
 
     .menu-items {
       img {
-        width: 100px;
-        height: 100px;
+        width: 200px;
+        height: 200px;
       }
       a {
         div {
@@ -554,7 +554,7 @@ body {
     margin-bottom: 2rem;
 
     &:hover {
-      background: rgba(226, 12, 12, 0.1);
+      background: rgba(243, 239, 239, 0.1);
     }
 
     .hamburger {
@@ -568,7 +568,7 @@ body {
       span {
         display: block;
         height: 3px;
-        background: #e20c0ced;
+        background: #f7f5f5ed;
         border-radius: 3px;
         transition: all 0.3s ease;
       }

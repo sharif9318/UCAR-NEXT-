@@ -102,8 +102,11 @@ const TopProperties = (props: TopPropertiesProps) => {
         <Stack className={"container"}>
           <Stack className={"info-box"}>
             <Box component={"div"} className={"left"}>
-              <span>Top properties</span>
-              <p>Check out our Top Properties</p>
+              <span>Leaderboard</span>
+              <p>
+                Where popularity meets quality. Cars are ranked by engagement,
+                valuing likes twice as much as views.
+              </p>
             </Box>
             <Box component={"div"} className={"right"}>
               <div className={"pagination-box"}>

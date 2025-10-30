@@ -159,9 +159,9 @@ const TrendProperties = (props: TrendPropertiesProps) => {
               <span>The Like-Driven Garage</span>
               <p>
                 These aren't just cars, they're the community's favorites. Every
-                'like' is a vote, and this is the hall of fame. <br /> Scroll
-                through the rides that are capturing hearts and turning heads
-                right now.
+                'like' is a vote, and this is the hall of fame. <br />
+                SScroll through the rides that are capturing hearts and turning
+                heads right now.
               </p>
             </Box>
             <Box component={"div"} className={"right"}>

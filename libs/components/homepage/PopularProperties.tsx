@@ -86,23 +86,25 @@ const PopularProperties = (props: PopularPropertiesProps) => {
             <Box component={"div"} className={"right"}>
               <div className={"more-box"}>
                 <Link href={"/property"}>
-                  <span>See All Categories</span>
+                  <p>
+                    See All Categories
+                    <svg
+                      width="24"
+                      height="24"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <path
+                        d="M7 17L17 7M17 7L7 7M17 7L17 17"
+                        stroke="white"
+                        strokeWidth="2"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      />
+                    </svg>
+                  </p>
                 </Link>
-                <svg
-                  width="24"
-                  height="24"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <path
-                    d="M7 17L17 7M17 7L7 7M17 7L17 17"
-                    stroke="white"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  />
-                </svg>
               </div>
             </Box>
           </Stack>

@@ -4,6 +4,12 @@ import { userVar } from "../../apollo/store";
 import { useEffect, useState } from "react";
 import { getJwtToken, updateUserInfo } from "../auth";
 import { useTranslation } from "react-i18next";
+import HomeIcon from "@mui/icons-material/Home";
+import DirectionsCarIcon from "@mui/icons-material/DirectionsCar";
+import PeopleIcon from "@mui/icons-material/People";
+import ForumIcon from "@mui/icons-material/Forum";
+import PersonIcon from "@mui/icons-material/Person";
+import HelpIcon from "@mui/icons-material/Help";
 
 const InteractiveNavbar = () => {
   const user = useReactiveVar(userVar);
@@ -36,42 +42,60 @@ const InteractiveNavbar = () => {
 
       <div className="menu-items">
         <Link href={"/"}>
-          <div>
+          <div className="menu-item">
             <span className="icon">
-              <img src="/img/logo/ucar_logo (1).svg" alt="🏠" />
+              <img
+                src="/img/logo/ucar_logo (1).svg"
+                alt="Home"
+                className="custom-logo"
+              />
             </span>
-            <span className="label">{t("Home")}</span>
           </div>
         </Link>
+
         <Link href={"/property"}>
-          <div>
-            <span className="icon">🏢</span>
-            <span className="label">{t("Properties")}</span>
+          <div className="menu-item">
+            <span className="icon">
+              <DirectionsCarIcon sx={{ fontSize: 32 }} />
+            </span>
+            <span className="label">{t("Cars")}</span>
           </div>
         </Link>
+
         <Link href={"/agent"}>
-          <div>
-            <span className="icon">👤</span>
+          <div className="menu-item">
+            <span className="icon">
+              <PeopleIcon sx={{ fontSize: 32 }} />
+            </span>
             <span className="label">{t("Agents")}</span>
           </div>
         </Link>
+
         <Link href={"/community?articleCategory=FREE"}>
-          <div>
-            <span className="icon">💬</span>
+          <div className="menu-item">
+            <span className="icon">
+              <ForumIcon sx={{ fontSize: 32 }} />
+            </span>
             <span className="label">{t("Community")}</span>
           </div>
         </Link>
+
         {user?._id && (
           <Link href={"/mypage"}>
-            <div>
-              <span className="icon">👤</span>
+            <div className="menu-item">
+              <span className="icon">
+                <PersonIcon sx={{ fontSize: 32 }} />
+              </span>
               <span className="label">{t("My Page")}</span>
             </div>
           </Link>
         )}
+
         <Link href={"/cs"}>
-          <div>
-            <span className="icon">❓</span>
+          <div className="menu-item">
+            <span className="icon">
+              <HelpIcon sx={{ fontSize: 32 }} />
+            </span>
             <span className="label">{t("CS")}</span>
           </div>
         </Link>
