@@ -35,6 +35,14 @@ const TrendPropertyCard = (props: TrendPropertyCardProps) => {
 
   /** HANDLERS **/
 
+  const pushDetailHandler = async (propertyId: string) => {
+    console.log("propertyId:", propertyId);
+    await router.push({
+      pathname: "/property/detail",
+      query: { id: propertyId },
+    });
+  };
+
   if (device === "mobile") {
     return (
       <Stack className="trend-card-box" key={property._id}>
@@ -51,6 +59,7 @@ const TrendPropertyCard = (props: TrendPropertyCardProps) => {
                 muted
                 playsInline
                 onLoadedData={() => setIsVideoLoaded(true)}
+                onClick={() => pushDetailHandler(property._id)}
               >
                 <source
                   src={`${REACT_APP_API_URL}/${mediaFile}`}
@@ -64,6 +73,7 @@ const TrendPropertyCard = (props: TrendPropertyCardProps) => {
                 style={{
                   backgroundImage: `url(${REACT_APP_API_URL}/${mediaFile})`,
                 }}
+                onClick={() => pushDetailHandler(property._id)}
               />
             )}
 
@@ -118,6 +128,7 @@ const TrendPropertyCard = (props: TrendPropertyCardProps) => {
                 muted
                 playsInline
                 onLoadedData={() => setIsVideoLoaded(true)}
+                onClick={() => pushDetailHandler(property._id)}
               >
                 <source
                   src={`${REACT_APP_API_URL}/${mediaFile}`}
@@ -131,6 +142,7 @@ const TrendPropertyCard = (props: TrendPropertyCardProps) => {
                 style={{
                   backgroundImage: `url(${REACT_APP_API_URL}/${mediaFile})`,
                 }}
+                onClick={() => pushDetailHandler(property._id)}
               />
             )}
 
