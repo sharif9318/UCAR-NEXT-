@@ -77,15 +77,32 @@ const PopularProperties = (props: PopularPropertiesProps) => {
         <Stack className={"container"}>
           <Stack className={"info-box"}>
             <Box component={"div"} className={"left"}>
-              <span>Popular properties</span>
-              <p>Popularity is based on views</p>
+              <span>The Main Attraction</span>
+              <p>
+                See what's capturing attention. This list updates based on
+                real-time view counts.
+              </p>
             </Box>
             <Box component={"div"} className={"right"}>
               <div className={"more-box"}>
                 <Link href={"/property"}>
                   <span>See All Categories</span>
                 </Link>
-                <img src="/img/icons/rightup.svg" alt="" />
+                <svg
+                  width="24"
+                  height="24"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M7 17L17 7M17 7L7 7M17 7L17 17"
+                    stroke="white"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                </svg>
               </div>
             </Box>
           </Stack>
