@@ -156,8 +156,13 @@ const TrendProperties = (props: TrendPropertiesProps) => {
         <Stack className={"container"}>
           <Stack className={"info-box"}>
             <Box component={"div"} className={"left"}>
-              <span>Trend Properties</span>
-              <p>Trend is based on likes</p>
+              <span>The Like-Driven Garage</span>
+              <p>
+                These aren't just cars, they're the community's favorites. Every
+                'like' is a vote, and this is the hall of fame. <br /> Scroll
+                through the rides that are capturing hearts and turning heads
+                right now.
+              </p>
             </Box>
             <Box component={"div"} className={"right"}>
               <div className={"pagination-box"}>

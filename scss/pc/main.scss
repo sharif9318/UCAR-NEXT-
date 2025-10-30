@@ -31,7 +31,17 @@
 // ============================================
 // GLOBAL STYLES
 // ============================================
+* {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
 body {
+  background-color: #181a20;
   -ms-overflow-style: none;
   scrollbar-width: none;
   overflow-y: scroll;
