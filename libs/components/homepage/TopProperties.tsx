@@ -20,10 +20,11 @@ import {
 
 interface TopPropertiesProps {
   initialInput: PropertiesInquiry;
+  onPropertiesLoaded?: (property: Property | undefined) => void;
 }
 
 const TopProperties = (props: TopPropertiesProps) => {
-  const { initialInput } = props;
+  const { initialInput, onPropertiesLoaded } = props;
   const device = useDeviceDetect();
   const [topProperties, setTopProperties] = useState<Property[]>([]);
 
@@ -42,6 +43,40 @@ const TopProperties = (props: TopPropertiesProps) => {
     notifyOnNetworkStatusChange: true,
     onCompleted: (data: T) => {
       setTopProperties(data?.getProperties?.list);
+
+      if (onPropertiesLoaded && topProperties?.length > 0) {
+        const propertiesWithVideo = topProperties.filter((prop: Property) =>
+          prop.propertyImages?.some(
+            (img) =>
+              img.includes(".mp4") ||
+              img.includes(".webm") ||
+              img.includes(".mov")
+          )
+        );
+
+        if (propertiesWithVideo.length > 0) {
+          const sortedVideoProperties = propertiesWithVideo.sort(
+            (a: Property, b: Property) =>
+              (b.propertyLikes || 0) - (a.propertyLikes || 0)
+          );
+
+          const currentIndex = parseInt(
+            localStorage.getItem("videoRotationIndex") || "0"
+          );
+
+          const selectedProperty =
+            sortedVideoProperties[currentIndex % sortedVideoProperties.length];
+
+          localStorage.setItem(
+            "videoRotationIndex",
+            ((currentIndex + 1) % sortedVideoProperties.length).toString()
+          );
+
+          onPropertiesLoaded(selectedProperty);
+        } else {
+          onPropertiesLoaded(topProperties[0]);
+        }
+      }
     },
   });
 

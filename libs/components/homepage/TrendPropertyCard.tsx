@@ -77,7 +77,7 @@ const TrendPropertyCard = (props: TrendPropertyCardProps) => {
               />
             )}
 
-            <Box className="netflix-badge">N</Box>
+            <Box className="netflix-badge">UCAR</Box>
             <div className="price-badge">${property.propertyPrice}</div>
 
             <Box className="info">

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useRef, useState } from "react";
 import { Stack, Box, Divider, Typography } from "@mui/material";
 import IconButton from "@mui/material/IconButton";
 import useDeviceDetect from "../../hooks/useDeviceDetect";
@@ -20,6 +20,18 @@ const TopPropertyCard = (props: TopPropertyCardProps) => {
   const device = useDeviceDetect();
   const router = useRouter();
   const user = useReactiveVar(userVar);
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const [isVideoLoaded, setIsVideoLoaded] = useState(false);
+
+  // Find video file in propertyImages
+  const videoFile = property.propertyImages?.find(
+    (img) =>
+      img.includes(".mp4") || img.includes(".webm") || img.includes(".mov")
+  );
+
+  // Fallback to first image if no video
+  const mediaFile = videoFile || property.propertyImages?.[0];
+  const isVideo = videoFile ? true : false;
 
   /** HANDLERS **/
 
@@ -34,14 +46,34 @@ const TopPropertyCard = (props: TopPropertyCardProps) => {
   if (device === "mobile") {
     return (
       <Stack className="top-card-box">
-        <Box
-          component={"div"}
-          className={"card-img"}
-          style={{
-            backgroundImage: `url(${REACT_APP_API_URL}/${property?.propertyImages[0]})`,
-          }}
-          onClick={() => pushDetailHandler(property._id)}
-        >
+        <Box component={"div"} className={"card-img"}>
+          {isVideo ? (
+            <video
+              ref={videoRef}
+              className="card-video"
+              autoPlay
+              loop
+              muted
+              playsInline
+              onLoadedData={() => setIsVideoLoaded(true)}
+              onClick={() => pushDetailHandler(property._id)}
+            >
+              <source
+                src={`${REACT_APP_API_URL}/${mediaFile}`}
+                type="video/mp4"
+              />
+              Your browser does not support the video tag.
+            </video>
+          ) : (
+            <div
+              className="card-image"
+              style={{
+                backgroundImage: `url(${REACT_APP_API_URL}/${mediaFile})`,
+              }}
+              onClick={() => pushDetailHandler(property._id)}
+            />
+          )}
+
           <div>${property?.propertyPrice}</div>
         </Box>
         <Box component={"div"} className={"info"}>
@@ -102,14 +134,33 @@ const TopPropertyCard = (props: TopPropertyCardProps) => {
   } else {
     return (
       <Stack className="top-card-box">
-        <Box
-          component={"div"}
-          className={"card-img"}
-          style={{
-            backgroundImage: `url(${REACT_APP_API_URL}/${property?.propertyImages[0]})`,
-          }}
-          onClick={() => pushDetailHandler(property._id)}
-        >
+        <Box component={"div"} className={"card-img"}>
+          {isVideo ? (
+            <video
+              ref={videoRef}
+              className="card-video"
+              autoPlay
+              loop
+              muted
+              playsInline
+              onLoadedData={() => setIsVideoLoaded(true)}
+              onClick={() => pushDetailHandler(property._id)}
+            >
+              <source
+                src={`${REACT_APP_API_URL}/${mediaFile}`}
+                type="video/mp4"
+              />
+              Your browser does not support the video tag.
+            </video>
+          ) : (
+            <div
+              className="card-image"
+              style={{
+                backgroundImage: `url(${REACT_APP_API_URL}/${mediaFile})`,
+              }}
+              onClick={() => pushDetailHandler(property._id)}
+            />
+          )}
           <div>${property?.propertyPrice}</div>
         </Box>
         <Box component={"div"} className={"info"}>

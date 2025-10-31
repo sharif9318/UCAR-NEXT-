@@ -3,6 +3,7 @@
     position: relative;
     width: 100%;
     height: auto;
+    background: #1c1c23;
     .info-box {
       width: 100%;
       display: flex;
@@ -555,8 +556,10 @@
       height: 697px;
       display: flex;
       flex-direction: row;
+
       .container {
         flex-direction: column;
+
         span {
           font-family: "Netflix Sans", "Helvetica Neue", Arial, sans-serif;
           font-size: 36px;
@@ -566,25 +569,31 @@
           margin-bottom: 24px;
           letter-spacing: -0.5px;
         }
+
         p {
           color: #f3f0f0;
         }
+
         div {
           color: #f7f4f4;
         }
+
         .pagination-box {
           color: white;
         }
+
         .card-box {
           position: relative;
           margin-top: 64px;
           display: flex;
           flex-direction: row;
+
           .top-property-swiper {
             width: 100%;
             height: 400px;
             display: flex;
             flex-direction: row;
+
             .top-property-slide {
               width: auto;
               height: auto;
@@ -592,6 +601,7 @@
               margin: 10px 0 0 10px;
             }
           }
+
           .top-card-box {
             position: relative;
             width: 300px;
@@ -599,18 +609,39 @@
             display: flex;
             flex-direction: column;
             transition: transform 0.3s;
+
             &:hover {
               opacity: 1;
               transform: scale(1.05);
             }
+
             .card-img {
               position: relative;
               width: 100%;
-              height: 203px;
-              background-size: cover;
+              height: 100%;
               border-radius: 12px 12px 0px 0px;
               cursor: pointer;
-              div {
+              overflow: hidden;
+
+              .card-video {
+                width: 100%;
+                height: 100%;
+                object-fit: cover;
+                display: block;
+              }
+
+              /* Image styles */
+              .card-image {
+                width: 100%;
+                height: 100%;
+                background-size: cover;
+                background-position: center;
+                background-repeat: no-repeat;
+                display: block;
+              }
+
+              /* Price tag - moved outside media elements */
+              .price-tag {
                 position: absolute;
                 padding: 8px 12px;
                 left: 12px;
@@ -623,8 +654,10 @@
                 font-style: normal;
                 font-weight: 600;
                 line-height: normal;
+                z-index: 2; /* Ensure it's above the media */
               }
             }
+
             .info {
               padding: 20px 22px 17px;
               display: flex;
@@ -633,8 +666,10 @@
               border-radius: 0px 0px 12px 12px;
               border: 1px solid rgba(196, 196, 196, 0.71);
               border-top: none;
+              flex: 1;
               background: #fff;
               box-shadow: 0px 1px 4px 0px rgba(24, 26, 32, 0.07);
+
               .title {
                 overflow: hidden;
                 color: #181a20;
@@ -648,6 +683,7 @@
                 text-transform: capitalize;
                 cursor: pointer;
               }
+
               .desc {
                 margin-top: 5px;
                 overflow: hidden;
@@ -660,19 +696,23 @@
                 text-overflow: ellipsis;
                 white-space: nowrap;
               }
+
               .options {
                 margin-top: 15px;
                 display: flex;
                 flex-direction: row;
                 justify-content: space-between;
+
                 div {
                   display: flex;
                   flex-direction: row;
+
                   img {
                     margin-right: 5px;
                     width: 17px;
                     height: 17px;
                   }
+
                   span {
                     color: #181a20;
                     font-family: $font;
@@ -683,11 +723,13 @@
                   }
                 }
               }
+
               .bott {
                 display: flex;
                 flex-direction: row;
                 justify-content: space-between;
                 align-items: center;
+
                 p {
                   color: #181a20;
                   font-family: $font;
@@ -697,17 +739,20 @@
                   line-height: normal;
                   text-transform: capitalize;
                 }
+
                 button {
                   margin-left: 7px;
                   width: 16px;
                   height: 16px;
                   box-sizing: border-box;
                 }
+
                 .view-like-box {
                   display: flex;
                   flex-direction: row;
                   gap: 7px;
                   align-items: center;
+
                   .view-cnt {
                     color: #717171;
                     font-family: $font;

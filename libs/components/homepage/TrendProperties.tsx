@@ -54,7 +54,6 @@ const TrendProperties = (props: TrendPropertiesProps) => {
               img.includes(".mov")
           )
         );
-        console.log("Properties with video:", propertiesWithVideo);
 
         if (propertiesWithVideo.length > 0) {
           const sortedVideoProperties = propertiesWithVideo.sort(
@@ -73,7 +72,6 @@ const TrendProperties = (props: TrendPropertiesProps) => {
             "videoRotationIndex",
             ((currentIndex + 1) % sortedVideoProperties.length).toString()
           );
-          console.log("Selected property for video:", selectedProperty);
 
           onPropertiesLoaded(selectedProperty);
         } else {
@@ -101,8 +99,6 @@ const TrendProperties = (props: TrendPropertiesProps) => {
       sweetMixinErrorAlert(err.message).then();
     }
   };
-  if (trendProperties) console.log("trendProperties:", trendProperties);
-  if (!trendProperties) return null;
 
   if (device === "mobile") {
     return (
