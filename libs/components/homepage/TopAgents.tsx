@@ -4,7 +4,7 @@ import { Stack, Box } from "@mui/material";
 import useDeviceDetect from "../../hooks/useDeviceDetect";
 import ArrowBackIosNewIcon from "@mui/icons-material/ArrowBackIosNew";
 import { Swiper, SwiperSlide } from "swiper/react";
-import { Autoplay, Navigation, Pagination } from "swiper";
+import { Autoplay, Navigation, Pagination, EffectCoverflow } from "swiper";
 import TopAgentCard from "./TopAgentCard";
 import { Member } from "../../types/member/member";
 import { AgentsInquiry } from "../../types/member/member.input";
@@ -53,7 +53,16 @@ const TopAgents = (props: TopAgentsProps) => {
               slidesPerView={"auto"}
               centeredSlides={true}
               spaceBetween={29}
-              modules={[Autoplay]}
+              grabCursor={true}
+              effect={"coverflow"}
+              coverflowEffect={{
+                rotate: 20,
+                stretch: 0,
+                depth: 140,
+                modifier: 1.1,
+                slideShadows: true,
+              }}
+              modules={[Autoplay, EffectCoverflow]}
             >
               {topAgents.map((agent: Member) => {
                 return (
@@ -112,8 +121,18 @@ const TopAgents = (props: TopAgentsProps) => {
               <Swiper
                 className={"top-agents-swiper"}
                 slidesPerView={"auto"}
+                centeredSlides={true}
                 spaceBetween={29}
-                modules={[Autoplay, Navigation, Pagination]}
+                grabCursor={true}
+                effect={"coverflow"}
+                coverflowEffect={{
+                  rotate: 20,
+                  stretch: 0,
+                  depth: 160,
+                  modifier: 1.15,
+                  slideShadows: false,
+                }}
+                modules={[Autoplay, Navigation, Pagination, EffectCoverflow]}
                 navigation={{
                   nextEl: ".swiper-agents-next",
                   prevEl: ".swiper-agents-prev",
