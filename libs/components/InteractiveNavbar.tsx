@@ -32,13 +32,32 @@ const InteractiveNavbar = () => {
 
   const handleLogout = async () => {
     try {
-      const result = await sweetConfirmAlert(
+      const result = (await sweetConfirmAlert(
         t("Are you sure you want to logout?")
-      );
-      if (result.isConfirmed) {
+      )) as boolean;
+      if (result) {
         localStorage.removeItem("accessToken");
 
-        userVar(null);
+        userVar({
+          _id: "",
+          memberType: "",
+          memberStatus: "",
+          memberAuthType: "",
+          memberPhone: "",
+          memberNick: "",
+          memberFullName: "",
+          memberImage: "",
+          memberAddress: "",
+          memberDesc: "",
+          memberProperties: 0,
+          memberRank: 0,
+          memberArticles: 0,
+          memberPoints: 0,
+          memberLikes: 0,
+          memberViews: 0,
+          memberWarnings: 0,
+          memberBlocks: 0,
+        });
 
         await sweetTopSmallSuccessAlert(t("Logged out successfully!"), 1000);
 

@@ -4,7 +4,7 @@ import useDeviceDetect from "../../hooks/useDeviceDetect";
 import WestIcon from "@mui/icons-material/West";
 import EastIcon from "@mui/icons-material/East";
 import { Swiper, SwiperSlide } from "swiper/react";
-import { Autoplay, Navigation, Pagination } from "swiper";
+import { Autoplay, Navigation, Pagination, EffectCoverflow } from "swiper";
 import TopPropertyCard from "./TopPropertyCard";
 import { PropertiesInquiry } from "../../types/property/property.input";
 import { Property } from "../../types/property/property";
@@ -111,7 +111,16 @@ const TopProperties = (props: TopPropertiesProps) => {
               slidesPerView={"auto"}
               centeredSlides={true}
               spaceBetween={15}
-              modules={[Autoplay]}
+              grabCursor={true}
+              effect={"coverflow"}
+              coverflowEffect={{
+                rotate: 30,
+                stretch: 0,
+                depth: 150,
+                modifier: 1.2,
+                slideShadows: true,
+              }}
+              modules={[Autoplay, EffectCoverflow]}
             >
               {topProperties.map((property: Property) => {
                 return (
@@ -155,8 +164,18 @@ const TopProperties = (props: TopPropertiesProps) => {
             <Swiper
               className={"top-property-swiper"}
               slidesPerView={"auto"}
+              centeredSlides={true}
               spaceBetween={15}
-              modules={[Autoplay, Navigation, Pagination]}
+              grabCursor={true}
+              effect={"coverflow"}
+              coverflowEffect={{
+                rotate: 30,
+                stretch: 0,
+                depth: 180,
+                modifier: 1.25,
+                slideShadows: true,
+              }}
+              modules={[Autoplay, Navigation, Pagination, EffectCoverflow]}
               navigation={{
                 nextEl: ".swiper-top-next",
                 prevEl: ".swiper-top-prev",

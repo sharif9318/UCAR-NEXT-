@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
-import { useRouter, withRouter } from "next/router";
+import { useRouter } from "next/router";
 import { useTranslation } from "next-i18next";
 import { getJwtToken, logOut, updateUserInfo } from "../auth";
 import { Stack, Box } from "@mui/material";
@@ -442,4 +442,4 @@ const Top = ({ trendingProperty }: TopProps) => {
   }
 };
 
-export default withRouter(Top);
+export default Top;
