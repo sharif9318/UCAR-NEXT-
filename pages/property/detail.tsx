@@ -176,6 +176,12 @@ const PropertyDetail: NextPage = ({ initialComment, ...props }: any) => {
     setSlideImage(image);
   };
 
+  // Helper function to check if file is video
+  const isVideo = (filename: string): boolean => {
+    const videoExtensions = [".mp4", ".webm", ".ogg", ".mov", ".avi"];
+    return videoExtensions.some((ext) => filename.toLowerCase().endsWith(ext));
+  };
+
   const likePropertyHandler = async (user: T, id: string) => {
     try {
       if (!id) return;
@@ -355,7 +361,6 @@ const PropertyDetail: NextPage = ({ initialComment, ...props }: any) => {
                       ) : (
                         <FavoriteBorderIcon
                           fontSize={"medium"}
-                          // @ts-ignore
                           onClick={() =>
                             likePropertyHandler(user, property?._id)
                           }
@@ -371,25 +376,83 @@ const PropertyDetail: NextPage = ({ initialComment, ...props }: any) => {
               </Stack>
               <Stack className={"images"}>
                 <Stack className={"main-image"}>
-                  <img
-                    src={
-                      slideImage
-                        ? `${REACT_APP_API_URL}/${slideImage}`
-                        : "/img/property/bigImage.png"
-                    }
-                    alt={"main-image"}
-                  />
+                  {slideImage && isVideo(slideImage) ? (
+                    <video
+                      src={`${REACT_APP_API_URL}/${slideImage}`}
+                      autoPlay
+                      loop
+                      muted
+                      playsInline
+                      controls
+                      style={{
+                        width: "100%",
+                        height: "100%",
+                        objectFit: "cover",
+                      }}
+                    />
+                  ) : (
+                    <img
+                      src={
+                        slideImage
+                          ? `${REACT_APP_API_URL}/${slideImage}`
+                          : "/img/property/bigImage.png"
+                      }
+                      alt={"main-image"}
+                    />
+                  )}
                 </Stack>
                 <Stack className={"sub-images"}>
                   {property?.propertyImages.map((subImg: string) => {
-                    const imagePath: string = `${REACT_APP_API_URL}/${subImg}`;
+                    const mediaPath: string = `${REACT_APP_API_URL}/${subImg}`;
+                    const isVideoFile = isVideo(subImg);
+
                     return (
                       <Stack
                         className={"sub-img-box"}
                         onClick={() => changeImageHandler(subImg)}
                         key={subImg}
+                        sx={{ position: "relative" }}
                       >
-                        <img src={imagePath} alt={"sub-image"} />
+                        {isVideoFile ? (
+                          <>
+                            <video
+                              src={mediaPath}
+                              style={{
+                                width: "100%",
+                                height: "100%",
+                                objectFit: "cover",
+                              }}
+                            />
+                            <div
+                              style={{
+                                position: "absolute",
+                                top: "50%",
+                                left: "50%",
+                                transform: "translate(-50%, -50%)",
+                                width: "40px",
+                                height: "40px",
+                                backgroundColor: "rgba(0, 0, 0, 0.6)",
+                                borderRadius: "50%",
+                                display: "flex",
+                                alignItems: "center",
+                                justifyContent: "center",
+                                pointerEvents: "none",
+                              }}
+                            >
+                              <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                width="20"
+                                height="20"
+                                viewBox="0 0 24 24"
+                                fill="white"
+                              >
+                                <path d="M8 5v14l11-7z" />
+                              </svg>
+                            </div>
+                          </>
+                        ) : (
+                          <img src={mediaPath} alt={"sub-image"} />
+                        )}
                       </Stack>
                     );
                   })}
@@ -605,6 +668,7 @@ const PropertyDetail: NextPage = ({ initialComment, ...props }: any) => {
                     <img src={"/img/property/floorPlan.png"} alt={"image"} />
                   </Stack>
                 </Stack>
+
                 <Stack className={"address-config"}>
                   <Typography className={"title"}>Address</Typography>
                   <Stack className={"map-box"}>
@@ -684,7 +748,7 @@ const PropertyDetail: NextPage = ({ initialComment, ...props }: any) => {
                       e: React.KeyboardEvent<HTMLTextAreaElement>
                     ) => {
                       if (e.key === "Enter" && !e.shiftKey) {
-                        e.preventDefault(); // Prevent new line
+                        e.preventDefault();
                         if (
                           insertCommentData.commentContent.trim() !== "" &&
                           user?._id

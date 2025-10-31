@@ -1,80 +1,81 @@
-import React, { useEffect } from 'react';
-import { useRouter } from 'next/router';
-import useDeviceDetect from '../../hooks/useDeviceDetect';
-import Head from 'next/head';
-import Top from '../Top';
-import Footer from '../Footer';
-import { Stack } from '@mui/material';
-import { getJwtToken, updateUserInfo } from '../../auth';
-import Chat from '../Chat';
-import { useReactiveVar } from '@apollo/client';
-import { userVar } from '../../../apollo/store';
-import 'swiper/css';
-import 'swiper/css/pagination';
-import 'swiper/css/navigation';
+import React, { useEffect } from "react";
+import { useRouter } from "next/router";
+import useDeviceDetect from "../../hooks/useDeviceDetect";
+import Head from "next/head";
+import Top from "../Top";
+import Footer from "../Footer";
+import { Stack } from "@mui/material";
+import { getJwtToken, updateUserInfo } from "../../auth";
+import Chat from "../Chat";
+import { useReactiveVar } from "@apollo/client";
+import { userVar } from "../../../apollo/store";
+import "swiper/css";
+import "swiper/css/pagination";
+import "swiper/css/navigation";
+import InteractiveNavbar from "../InteractiveNavbar";
 
 const withLayoutFull = (Component: any) => {
-	return (props: any) => {
-		const router = useRouter();
-		const device = useDeviceDetect();
-		const user = useReactiveVar(userVar);
+  return (props: any) => {
+    const router = useRouter();
+    const device = useDeviceDetect();
+    const user = useReactiveVar(userVar);
 
-		/** LIFECYCLES **/
-		useEffect(() => {
-			const jwt = getJwtToken();
-			if (jwt) updateUserInfo(jwt);
-		}, []);
+    /** LIFECYCLES **/
+    useEffect(() => {
+      const jwt = getJwtToken();
+      if (jwt) updateUserInfo(jwt);
+    }, []);
 
-		/** HANDLERS **/
+    /** HANDLERS **/
 
-		if (device == 'mobile') {
-			return (
-				<>
-					<Head>
-						<title>Nestar</title>
-						<meta name={'title'} content={`Nestar`} />
-					</Head>
-					<Stack id="mobile-wrap">
-						<Stack id={'top'}>
-							<Top />
-						</Stack>
+    if (device == "mobile") {
+      return (
+        <>
+          <Head>
+            <title>Nestar</title>
+            <meta name={"title"} content={`Nestar`} />
+          </Head>
+          <Stack id="mobile-wrap">
+            <Stack id={"top"}>
+              <Top />
+            </Stack>
 
-						<Stack id={'main'}>
-							<Component {...props} />
-						</Stack>
+            <Stack id={"main"}>
+              <Component {...props} />
+            </Stack>
 
-						<Stack id={'footer'}>
-							<Footer />
-						</Stack>
-					</Stack>
-				</>
-			);
-		} else {
-			return (
-				<>
-					<Head>
-						<title>Nestar</title>
-						<meta name={'title'} content={`Nestar`} />
-					</Head>
-					<Stack id="pc-wrap">
-						<Stack id={'top'}>
-							<Top />
-						</Stack>
+            <Stack id={"footer"}>
+              <Footer />
+            </Stack>
+          </Stack>
+        </>
+      );
+    } else {
+      return (
+        <>
+          <Head>
+            <title>UCAR NEXT</title>
+            <meta name={"title"} content={`UCAR NEXT`} />
+          </Head>
+          <Stack id="pc-wrap">
+            <Stack className={"InteractiveNavbar"}>
+              <InteractiveNavbar />
+            </Stack>
 
-						<Stack id={'main'}>
-							<Component {...props} />
-						</Stack>
+            <Stack id={"main"}>
+              <Component {...props} />
+            </Stack>
 
-						{user?._id && <Chat />}
+            {user?._id && <Chat />}
 
-						<Stack id={'footer'}>
-							<Footer />
-						</Stack>
-					</Stack>
-				</>
-			);
-		}
-	};
+            <Stack id={"footer"}>
+              <Footer />
+            </Stack>
+          </Stack>
+        </>
+      );
+    }
+  };
 };
 
 export default withLayoutFull;

@@ -45,9 +45,7 @@ const TrendProperties = (props: TrendPropertiesProps) => {
       console.log("All properties loaded:", properties);
       setTrendProperties(properties);
 
-      // Select next property with video in rotation
       if (onPropertiesLoaded && properties?.length > 0) {
-        // Filter properties that have video files
         const propertiesWithVideo = properties.filter((prop: Property) =>
           prop.propertyImages?.some(
             (img) =>
@@ -59,22 +57,18 @@ const TrendProperties = (props: TrendPropertiesProps) => {
         console.log("Properties with video:", propertiesWithVideo);
 
         if (propertiesWithVideo.length > 0) {
-          // Sort by likes descending (highest first)
           const sortedVideoProperties = propertiesWithVideo.sort(
             (a: Property, b: Property) =>
               (b.propertyLikes || 0) - (a.propertyLikes || 0)
           );
 
-          // Get rotation index from localStorage
           const currentIndex = parseInt(
             localStorage.getItem("videoRotationIndex") || "0"
           );
 
-          // Get property at current index (loop back to 0 if exceeded)
           const selectedProperty =
             sortedVideoProperties[currentIndex % sortedVideoProperties.length];
 
-          // Save next index for next page load
           localStorage.setItem(
             "videoRotationIndex",
             ((currentIndex + 1) % sortedVideoProperties.length).toString()
@@ -83,7 +77,6 @@ const TrendProperties = (props: TrendPropertiesProps) => {
 
           onPropertiesLoaded(selectedProperty);
         } else {
-          // No videos available, use first property
           onPropertiesLoaded(properties[0]);
         }
       }
