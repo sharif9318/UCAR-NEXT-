@@ -630,7 +630,6 @@
                 display: block;
               }
 
-              /* Image styles */
               .card-image {
                 width: 100%;
                 height: 100%;
@@ -640,7 +639,6 @@
                 display: block;
               }
 
-              /* Price tag - moved outside media elements */
               .price-tag {
                 position: absolute;
                 padding: 8px 12px;
@@ -654,7 +652,7 @@
                 font-style: normal;
                 font-weight: 600;
                 line-height: normal;
-                z-index: 2; /* Ensure it's above the media */
+                z-index: 2;
               }
             }
 
@@ -871,7 +869,7 @@
                 cursor: pointer;
               }
               span {
-                color: #f7f8f9;
+                color: #181a20;
                 text-align: center;
                 font-family: $font;
                 font-size: 15px;
@@ -892,9 +890,11 @@
       display: flex;
       flex-direction: row;
       background: #181a20;
+
       .container {
         flex-direction: column;
         align-items: center;
+
         .info-box {
           span {
             font-family: "Netflix Sans", "Helvetica Neue", Arial, sans-serif;
@@ -906,30 +906,94 @@
             letter-spacing: -0.5px;
           }
         }
+
         .card-wrapper {
           position: relative;
           margin-top: 48px;
           width: 100%;
           height: auto;
-          display: flex;
-          flex-direction: row;
-          justify-content: space-between;
+          padding: 0 50px; // Add padding for navigation arrows
+
+          // Swiper container styles
+          .swiper {
+            width: 100%;
+            height: auto;
+            padding-bottom: 50px; // Space for pagination dots
+          }
+
+          // Navigation arrows
+          .swiper-button-prev,
+          .swiper-button-next {
+            color: #ffffff !important;
+            width: 44px;
+            height: 44px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+
+            &:after {
+              font-size: 20px;
+              font-weight: bold;
+            }
+
+            &:hover {
+              background: rgba(255, 255, 255, 0.2);
+              transform: scale(1.1);
+            }
+          }
+
+          .swiper-button-prev {
+            left: 0;
+          }
+
+          .swiper-button-next {
+            right: 0;
+          }
+
+          // Pagination dots
+          .swiper-pagination {
+            bottom: 10px !important;
+
+            .swiper-pagination-bullet {
+              width: 10px;
+              height: 10px;
+              background: rgba(255, 255, 255, 0.5);
+              opacity: 1;
+              transition: all 0.3s ease;
+
+              &:hover {
+                background: rgba(255, 255, 255, 0.8);
+                transform: scale(1.2);
+              }
+            }
+
+            .swiper-pagination-bullet-active {
+              background: #ffffff;
+              width: 30px;
+              border-radius: 5px;
+            }
+          }
+
           .event-card {
             position: relative;
-            width: 300px;
+            width: 100%;
             height: 420px;
             border-radius: 12px;
             opacity: 0.9;
             cursor: pointer;
-            transition: opacity 0.4s;
+            transition: all 0.4s ease;
+            overflow: hidden;
+
             &:hover {
               opacity: 1;
-              scale: 1.05;
-              transition: 0.3s;
+              transform: scale(1.05);
+
               .more {
                 opacity: 1;
               }
             }
+
             .info {
               position: absolute;
               display: flex;
@@ -937,6 +1001,8 @@
               top: 35px;
               left: 10px;
               right: 10px;
+              z-index: 2;
+
               strong {
                 color: #f64747;
                 font-family: $font;
@@ -946,6 +1012,7 @@
                 line-height: normal;
                 text-transform: capitalize;
               }
+
               span {
                 color: #f66767;
                 font-family: $font;
@@ -956,6 +1023,7 @@
                 text-transform: capitalize;
               }
             }
+
             .more {
               position: absolute;
               left: 10px;
@@ -965,12 +1033,15 @@
               flex-direction: row;
               align-items: center;
               opacity: 0;
+              transition: opacity 0.3s ease;
+              z-index: 2;
+
               span {
                 padding: 0px 5px;
                 border-radius: 5px;
-                background: #fffdfdc4;
-                color: #9c67f6;
-                font-family: $font;
+                background: #1f1717c4;
+                color: #faf9fc;
+                font-family: "Netflix Sans", "Helvetica Neue", Arial, sans-serif;
                 font-size: 16px;
                 font-style: normal;
                 font-weight: 400;

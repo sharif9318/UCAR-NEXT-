@@ -431,7 +431,7 @@ const PropertyDetail: NextPage = ({ initialComment, ...props }: any) => {
                                 transform: "translate(-50%, -50%)",
                                 width: "40px",
                                 height: "40px",
-                                backgroundColor: "rgba(0, 0, 0, 0.6)",
+                                backgroundColor: "rgba(245, 243, 243, 0.6)",
                                 borderRadius: "50%",
                                 display: "flex",
                                 alignItems: "center",
