@@ -8,20 +8,20 @@ import Select from '@mui/material/Select';
 import MenuItem from '@mui/material/MenuItem';
 import { TabContext } from '@mui/lab';
 import TablePagination from '@mui/material/TablePagination';
-import { PropertyPanelList } from '../../../libs/components/admin/properties/PropertyList';
-import { AllPropertiesInquiry } from '../../../libs/types/property/property.input';
-import { Property } from '../../../libs/types/property/property';
-import { PropertyLocation, PropertyStatus } from '../../../libs/enums/property.enum';
+import { PropertyPanelList } from '../../../libs/components/admin/properties/CarList';
+import { AllCarsInquiry } from.*types/car/car.input';
+import { Property } from.*types/car/car';
+import { CarLocation, CarStatus } from '../../../libs/enums/car.enum';
 import { sweetConfirmAlert, sweetErrorHandling } from '../../../libs/sweetAlert';
-import { PropertyUpdate } from '../../../libs/types/property/property.update';
+import { PropertyUpdate } from.*types/car/car.update';
 
 const AdminProperties: NextPage = ({ initialInquiry, ...props }: any) => {
 	const [anchorEl, setAnchorEl] = useState<[] | HTMLElement[]>([]);
-	const [propertiesInquiry, setPropertiesInquiry] = useState<AllPropertiesInquiry>(initialInquiry);
-	const [properties, setProperties] = useState<Property[]>([]);
-	const [propertiesTotal, setPropertiesTotal] = useState<number>(0);
+	const [carsInquiry, setCarsInquiry] = useState<AllCarsInquiry>(initialInquiry);
+	const [cars, setCars] = useState<Car[]>([]);
+	const [carsTotal, setCarsTotal] = useState<number>(0);
 	const [value, setValue] = useState(
-		propertiesInquiry?.search?.propertyStatus ? propertiesInquiry?.search?.propertyStatus : 'ALL',
+		propertiesInquiry?.search?.carStatus ? propertiesInquiry?.search?.carStatus : 'ALL',
 	);
 	const [searchType, setSearchType] = useState('ALL');
 
@@ -33,18 +33,18 @@ const AdminProperties: NextPage = ({ initialInquiry, ...props }: any) => {
 	/** HANDLERS **/
 	const changePageHandler = async (event: unknown, newPage: number) => {
 		propertiesInquiry.page = newPage + 1;
-		setPropertiesInquiry({ ...propertiesInquiry });
+		setCarsInquiry({ ...propertiesInquiry });
 	};
 
 	const changeRowsPerPageHandler = async (event: React.ChangeEvent<HTMLInputElement>) => {
 		propertiesInquiry.limit = parseInt(event.target.value, 10);
 		propertiesInquiry.page = 1;
-		setPropertiesInquiry({ ...propertiesInquiry });
+		setCarsInquiry({ ...propertiesInquiry });
 	};
 
 	const menuIconClickHandler = (e: any, index: number) => {
 		const tempAnchor = anchorEl.slice();
-		tempAnchor[index] = e.currentTarget;
+		tempAnchor[index] = e.curleaseTarget;
 		setAnchorEl(tempAnchor);
 	};
 
@@ -55,21 +55,21 @@ const AdminProperties: NextPage = ({ initialInquiry, ...props }: any) => {
 	const tabChangeHandler = async (event: any, newValue: string) => {
 		setValue(newValue);
 
-		setPropertiesInquiry({ ...propertiesInquiry, page: 1, sort: 'createdAt' });
+		setCarsInquiry({ ...propertiesInquiry, page: 1, sort: 'createdAt' });
 
 		switch (newValue) {
 			case 'ACTIVE':
-				setPropertiesInquiry({ ...propertiesInquiry, search: { propertyStatus: PropertyStatus.ACTIVE } });
+				setCarsInquiry({ ...propertiesInquiry, search: { carStatus: CarStatus.ACTIVE } });
 				break;
 			case 'SOLD':
-				setPropertiesInquiry({ ...propertiesInquiry, search: { propertyStatus: PropertyStatus.SOLD } });
+				setCarsInquiry({ ...propertiesInquiry, search: { carStatus: CarStatus.SOLD } });
 				break;
 			case 'DELETE':
-				setPropertiesInquiry({ ...propertiesInquiry, search: { propertyStatus: PropertyStatus.DELETE } });
+				setCarsInquiry({ ...propertiesInquiry, search: { carStatus: CarStatus.DELETE } });
 				break;
 			default:
-				delete propertiesInquiry?.search?.propertyStatus;
-				setPropertiesInquiry({ ...propertiesInquiry });
+				delete propertiesInquiry?.search?.carStatus;
+				setCarsInquiry({ ...propertiesInquiry });
 				break;
 		}
 	};
@@ -89,25 +89,25 @@ const AdminProperties: NextPage = ({ initialInquiry, ...props }: any) => {
 			setSearchType(newValue);
 
 			if (newValue !== 'ALL') {
-				setPropertiesInquiry({
+				setCarsInquiry({
 					...propertiesInquiry,
 					page: 1,
 					sort: 'createdAt',
 					search: {
 						...propertiesInquiry.search,
-						propertyLocationList: [newValue as PropertyLocation],
+						carLocationList: [newValue as CarLocation],
 					},
 				});
 			} else {
-				delete propertiesInquiry?.search?.propertyLocationList;
-				setPropertiesInquiry({ ...propertiesInquiry });
+				delete propertiesInquiry?.search?.carLocationList;
+				setCarsInquiry({ ...propertiesInquiry });
 			}
 		} catch (err: any) {
 			console.log('searchTypeHandler: ', err.message);
 		}
 	};
 
-	const updatePropertyHandler = async (updateData: PropertyUpdate) => {
+	const updatePropertyHandler = async (updateData: CarUpdate) => {
 		try {
 			console.log('+updateData: ', updateData);
 			menuIconCloseHandler();
@@ -162,7 +162,7 @@ const AdminProperties: NextPage = ({ initialInquiry, ...props }: any) => {
 									<MenuItem value={'ALL'} onClick={() => searchTypeHandler('ALL')}>
 										ALL
 									</MenuItem>
-									{Object.values(PropertyLocation).map((location: string) => (
+									{Object.values(CarLocation).map((location: string) => (
 										<MenuItem value={location} onClick={() => searchTypeHandler(location)} key={location}>
 											{location}
 										</MenuItem>

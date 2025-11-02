@@ -16,14 +16,14 @@ import { useReactiveVar } from "@apollo/client";
 import { userVar } from "../../apollo/store";
 import { Logout } from "@mui/icons-material";
 import { REACT_APP_API_URL } from "../config";
-import { Property } from "../types/property/property";
+import { Car } from "../types/car/car";
 import { Typography } from "@mui/material";
 
 interface TopProps {
-  trendingProperty?: Property;
+  trendingCar?: Car;
 }
 
-const Top = ({ trendingProperty }: TopProps) => {
+const Top = ({ trendingCar }: TopProps) => {
   const device = useDeviceDetect();
   const user = useReactiveVar(userVar);
   const { t, i18n } = useTranslation("common");
@@ -39,16 +39,13 @@ const Top = ({ trendingProperty }: TopProps) => {
     null
   );
   const logoutOpen = Boolean(logoutAnchor);
-  const [showPropertyInfo, setShowPropertyInfo] = useState(false);
+  const [showCarInfo, setShowCarInfo] = useState(false);
   const videoRef = useRef<HTMLVideoElement>(null);
 
-  // Determine video source - use property video if exists, otherwise default
+  // Determine video source - use car video if exists, otherwise default
   const getVideoSource = () => {
-    if (
-      trendingProperty?.propertyImages &&
-      trendingProperty.propertyImages.length > 0
-    ) {
-      const firstMedia = trendingProperty.propertyImages[0];
+    if (trendingCar?.carImages && trendingCar.carImages.length > 0) {
+      const firstMedia = trendingCar.carImages[0];
       if (firstMedia.includes(".mp4") || firstMedia.includes(".webm")) {
         return `${REACT_APP_API_URL}/${firstMedia}`;
       }
@@ -68,7 +65,7 @@ const Top = ({ trendingProperty }: TopProps) => {
 
   useEffect(() => {
     switch (router.pathname) {
-      case "/property/detail":
+      case "/car/detail":
         setBgColor(true);
         break;
       default:
@@ -85,12 +82,12 @@ const Top = ({ trendingProperty }: TopProps) => {
     if (videoRef.current) {
       videoRef.current
         .play()
-        .catch((err) => console.log("Video autoplay failed:", err));
+        .catch((err: any) => console.log("Video autoplay failed:", err));
     }
-  }, [trendingProperty]);
+  }, [trendingCar]);
 
   useEffect(() => {
-    console.log("Top component - trendingProperty changed:", trendingProperty);
+    console.log("Top component - trendingCar changed:", trendingCar);
     if (videoRef.current) {
       const videoSrc = getVideoSource();
       console.log("Attempting to load video:", videoSrc);
@@ -98,7 +95,7 @@ const Top = ({ trendingProperty }: TopProps) => {
       const videoElement = videoRef.current;
 
       const handleCanPlay = () => {
-        videoElement.play().catch((err) => {
+        videoElement.play().catch((err: any) => {
           console.log("Video autoplay failed:", err);
         });
       };
@@ -110,7 +107,7 @@ const Top = ({ trendingProperty }: TopProps) => {
         videoElement.removeEventListener("canplay", handleCanPlay);
       };
     }
-  }, [trendingProperty]);
+  }, [trendingCar]);
 
   /** HANDLERS **/
   const langClick = (e: any) => {
@@ -211,8 +208,8 @@ const Top = ({ trendingProperty }: TopProps) => {
         <Link href={"/"}>
           <div>{t("Home")}</div>
         </Link>
-        <Link href={"/property"}>
-          <div>{t("Properties")}</div>
+        <Link href={"/car"}>
+          <div>{t("Cars")}</div>
         </Link>
         <Link href={"/agent"}>
           <div> {t("Agents")} </div>
@@ -231,10 +228,10 @@ const Top = ({ trendingProperty }: TopProps) => {
         <Box
           className="video-background"
           onMouseEnter={() => {
-            setShowPropertyInfo(true);
+            setShowCarInfo(true);
           }}
           onMouseLeave={() => {
-            setShowPropertyInfo(false);
+            setShowCarInfo(false);
           }}
         >
           <video
@@ -249,11 +246,9 @@ const Top = ({ trendingProperty }: TopProps) => {
           </video>
           <div className="video-overlay" />
 
-          {trendingProperty && (
+          {trendingCar && (
             <Box
-              className={`property-info-overlay ${
-                showPropertyInfo ? "visible" : ""
-              }`}
+              className={`car-info-overlay ${showCarInfo ? "visible" : ""}`}
               sx={{
                 position: "absolute",
                 bottom: "30px",
@@ -264,27 +259,23 @@ const Top = ({ trendingProperty }: TopProps) => {
                 pointerEvents: "none",
               }}
             >
-              <h2 className="property-title">
-                {trendingProperty.propertyTitle}
-              </h2>
-              <p className="property-desc">
-                {trendingProperty.propertyDesc || "No description available"}
+              <h2 className="car-title">{trendingCar.carTitle}</h2>
+              <p className="car-desc">
+                {trendingCar.carDesc || "No description available"}
               </p>
-              <div className="property-details">
-                <span>🛏️ {trendingProperty.propertyBeds} beds</span>
-                <span>🚪 {trendingProperty.propertyRooms} rooms</span>
-                <span>📏 {trendingProperty.propertySquare} m²</span>
+              <div className="car-details">
+                <span>🛏️ {trendingCar.carYear} year</span>
+                <span>🚪 {trendingCar.carSeats} seats</span>
+                <span>📏 {trendingCar.carMileage} km</span>
               </div>
-              <div className="property-price">
-                ${trendingProperty.propertyPrice}
-              </div>
+              <div className="car-price">${trendingCar.carPrice}</div>
             </Box>
           )}
         </Box>
 
         <Stack
-          className={`navbar-main ${colorChange ? "transparent" : ""} ${
-            bgColor ? "transparent" : ""
+          className={`navbar-main ${colorChange ? "transpalease" : ""} ${
+            bgColor ? "transpalease" : ""
           }`}
           sx={{ pointerEvents: "none" }}
         >

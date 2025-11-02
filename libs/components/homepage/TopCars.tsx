@@ -56,19 +56,20 @@ const TopCars = (props: TopCarsProps) => {
 
         if (carsWithVideo.length > 0) {
           const sortedVideoCars = carsWithVideo.sort(
-            (a: Car, b: Car) => (b.carLikes || 0) - (a.carLikes || 0)
+            (a: Car, b: Car) =>
+              (b.carLikes || 0) - (a.carLikes || 0)
           );
 
-          const currentIndex = parseInt(
+          const curleaseIndex = parseInt(
             localStorage.getItem("videoRotationIndex") || "0"
           );
 
           const selectedCar =
-            sortedVideoCars[currentIndex % sortedVideoCars.length];
+            sortedVideoCars[curleaseIndex % sortedVideoCars.length];
 
           localStorage.setItem(
             "videoRotationIndex",
-            ((currentIndex + 1) % sortedVideoCars.length).toString()
+            ((curleaseIndex + 1) % sortedVideoCars.length).toString()
           );
 
           onCarsLoaded(selectedCar);
@@ -123,8 +124,14 @@ const TopCars = (props: TopCarsProps) => {
             >
               {topCars.map((car: Car) => {
                 return (
-                  <SwiperSlide className={"top-car-slide"} key={car?._id}>
-                    <TopCarCard car={car} likeCarHandler={likeCarHandler} />
+                  <SwiperSlide
+                    className={"top-car-slide"}
+                    key={car?._id}
+                  >
+                    <TopCarCard
+                      car={car}
+                      likeCarHandler={likeCarHandler}
+                    />
                   </SwiperSlide>
                 );
               })}
@@ -179,8 +186,14 @@ const TopCars = (props: TopCarsProps) => {
             >
               {topCars.map((car: Car) => {
                 return (
-                  <SwiperSlide className={"top-car-slide"} key={car?._id}>
-                    <TopCarCard car={car} likeCarHandler={likeCarHandler} />
+                  <SwiperSlide
+                    className={"top-car-slide"}
+                    key={car?._id}
+                  >
+                    <TopCarCard
+                      car={car}
+                      likeCarHandler={likeCarHandler}
+                    />
                   </SwiperSlide>
                 );
               })}

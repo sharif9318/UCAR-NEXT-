@@ -14934,10 +14934,10 @@ three-stdlib@^2.23.5, three-stdlib@^2.8.11:
     fflate "^0.6.9"
     potpack "^1.0.1"
 
-three@0.143.0:
-  version "0.143.0"
-  resolved "https://registry.yarnpkg.com/three/-/three-0.143.0.tgz#1455bca132cc2b20beb7f41d313e10c29e5ed9df"
-  integrity sha512-oKcAGYHhJ46TGEuHjodo2n6TY2R6lbvrkp+feKZxqsUL/WkH7GKKaeu6RHeyb2Xjfk2dPLRKLsOP0KM2VgT8Zg==
+three@^0.181.0:
+  version "0.181.0"
+  resolved "https://registry.yarnpkg.com/three/-/three-0.181.0.tgz#3cdd7784803649ce9a564215591f19364fe08473"
+  integrity sha512-KGf6EOCOQGshXeleKxpxhbowQwAXR2dLlD93egHtZ9Qmk07Saf8sXDR+7wJb53Z1ORZiatZ4WGST9UsVxhHEbg==
 
 throat@^5.0.0:
   version "5.0.0"

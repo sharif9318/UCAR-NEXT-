@@ -44,7 +44,7 @@ const AdminCommunity: NextPage = ({ initialInquiry, ...props }: any) => {
 
 	const menuIconClickHandler = (e: any, index: number) => {
 		const tempAnchor = anchorEl.slice();
-		tempAnchor[index] = e.currentTarget;
+		tempAnchor[index] = e.curleaseTarget;
 		setAnchorEl(tempAnchor);
 	};
 

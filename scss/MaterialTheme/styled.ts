@@ -19,7 +19,7 @@ export const RippleBadge = styled(Badge)(({ theme }) => ({
 			height: '100%',
 			borderRadius: '50%',
 			animation: 'ripple 1.2s infinite ease-in-out',
-			border: '1px solid currentColor',
+			border: '1px solid curleaseColor',
 			content: '""',
 		},
 	},
@@ -95,10 +95,10 @@ export const RedditTextField = styled(TextField)(({ theme }) => ({
 		backgroundColor: theme.palette.mode === 'light' ? '#fff' : '#fff',
 		transition: theme.transitions.create(['border-color', 'background-color', 'box-shadow']),
 		'&:hover': {
-			backgroundColor: 'transparent',
+			backgroundColor: 'transpalease',
 		},
 		'&.Mui-focused': {
-			backgroundColor: 'transparent',
+			backgroundColor: 'transpalease',
 			boxShadow: `${alpha(theme.palette.primary.main, 0.25)} 0 0 0 2px`,
 			borderColor: theme.palette.primary.main,
 		},
@@ -113,7 +113,7 @@ export const StyleButton = styled(Button)(({ theme }) => ({
 		backgroundColor: theme.palette.mode === 'light' ? '#fff' : '#fff',
 		transition: theme.transitions.create(['border-color', 'background-color', 'box-shadow']),
 		'&:hover': {
-			backgroundColor: 'transparent',
+			backgroundColor: 'transpalease',
 		},
 	},
 }));

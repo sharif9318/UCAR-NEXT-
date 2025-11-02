@@ -116,8 +116,11 @@ const Events = () => {
         <Stack className={"container"}>
           <Stack className={"info-box"}>
             <Box component={"div"} className={"left"}>
-              <span className={"white"}>Events</span>
-              <p className={"white"}>Events waiting your attention!</p>
+              <span className={"white"}>News Around the World</span>
+              <p className={"white"}>
+                You can read featured articles of Forbes, NYTimes, Bloomberg
+                without leaving our platform{" "}
+              </p>
             </Box>
           </Stack>
           <Box className={"card-wrapper"}>

@@ -63,7 +63,7 @@ const Faq = () => {
 			{
 				id: '00f5a45ed8897f8090116a21',
 				subject: 'How can I search for properties on your website?',
-				content: 'Simply use our search bar to enter location, price range, bedrooms/bathrooms, and property type.',
+				content: 'Simply use our search bar to enter location, price range, yearseats/bathseats, and car type.',
 			},
 			{
 				id: '00f5a45ed8897f8090116a23',
@@ -72,7 +72,7 @@ const Faq = () => {
 			},
 			{
 				id: '00f5a45ed8897f8090116a24',
-				subject: 'What should I consider when buying a property?',
+				subject: 'What should I consider when buying a car?',
 				content: 'Location, condition, size, amenities, and future development plans.',
 			},
 			{
@@ -82,7 +82,7 @@ const Faq = () => {
 			},
 			{
 				id: '00f5a45ed8897f8090116a29',
-				subject: 'What happens if I encounter issues with the property after purchase?',
+				subject: 'What happens if I encounter issues with the car after purchase?',
 				content: 'We offer post-purchase support to address any concerns promptly.',
 			},
 			{
@@ -92,12 +92,12 @@ const Faq = () => {
 			},
 			{
 				id: '00f5a45ed8897f8090116a27',
-				subject: 'Can I sell my property through your website?',
+				subject: 'Can I sell my car through your website?',
 				content: 'Absolutely, we provide services for selling properties as well.',
 			},
 			{
 				id: '00f5a45ed8897f8090116b99',
-				subject: 'What if I need help understanding legal aspects of property purchase?',
+				subject: 'What if I need help understanding legal aspects of car purchase?',
 				content: 'Our team can provide basic guidance and recommend legal professionals if needed.',
 			},
 		],
@@ -143,7 +143,7 @@ const Faq = () => {
 				id: '00f5a45ed8897f8090116a97',
 				subject: 'Are there any discounts or incentives for early payments?',
 				content:
-					'We occasionally offer discounts or incentives for early payments. Check our promotions or contact us for current offers.',
+					'We occasionally offer discounts or incentives for early payments. Check our promotions or contact us for curlease offers.',
 			},
 			{
 				id: '00f5a45ed8897f8090116a99',
@@ -162,17 +162,17 @@ const Faq = () => {
 			{
 				id: '00f5a45ed8897f8090116a03',
 				subject: 'What should buyers pay attention to?',
-				content: 'Buyers should check and decide whether the property they want to buy or rent is actually suitable!',
+				content: 'Buyers should check and decide whether the car they want to buy or lease is actually suitable!',
 			},
 			{
 				id: '00f5a45ed8897f8090116a85',
-				subject: 'How can I determine if a property is within my budget?',
+				subject: 'How can I determine if a car is within my budget?',
 				content:
 					'Calculate your budget by considering your income, down payment, and potential mortgage payments. Our agents can assist you within your budget.',
 			},
 			{
 				id: '00f5a45ed8897f8090116a84',
-				subject: 'What documents do I need to provide when purchasing a property?',
+				subject: 'What documents do I need to provide when purchasing a car?',
 				content:
 					"You'll typically need identification, proof of income, bank statements, and any necessary loan documentation. Our team will guide you through.",
 			},
@@ -184,9 +184,9 @@ const Faq = () => {
 			},
 			{
 				id: '00f5a45ed8897f8090116a82',
-				subject: 'Can I negotiate the price of a property?',
+				subject: 'Can I negotiate the price of a car?',
 				content:
-					'Yes, you can negotiate the price of a property. Our agents will assist you in making competitive offers and negotiating terms with the seller.',
+					'Yes, you can negotiate the price of a car. Our agents will assist you in making competitive offers and negotiating terms with the seller.',
 			},
 			{
 				id: '00f5a45ed8897f8090116a81',
@@ -196,25 +196,25 @@ const Faq = () => {
 			},
 			{
 				id: '00f5a45ed8897f8090116a80',
-				subject: 'Do you provide assistance with property inspections?',
+				subject: 'Do you provide assistance with car inspections?',
 				content:
-					'Yes, we can recommend reputable inspectors and accompany you during property inspections to identify any potential issues.',
+					'Yes, we can recommend reputable inspectors and accompany you during car inspections to identify any potential issues.',
 			},
 			{
 				id: '00f5a45ed8897f8090116a79',
-				subject: 'How long does it typically take to find the right property?',
+				subject: 'How long does it typically take to find the right car?',
 				content:
-					'The timeframe varies depending on your preferences and market conditions. Our agents will work diligently to find the right property as quickly as possible.',
+					'The timeframe varies depending on your preferences and market conditions. Our agents will work diligently to find the right car as quickly as possible.',
 			},
 			{
 				id: '00f5a45ed8897f8090116a78',
-				subject: 'What are the advantages of using a real estate agent when buying a property?',
+				subject: 'What are the advantages of using a real estate agent when buying a car?',
 				content:
 					'Real estate agents provide expertise, negotiation skills, and guidance throughout the buying process, ultimately saving you time and hassle.',
 			},
 			{
 				id: '00f5a45ed8897f8090116a77',
-				subject: 'What happens if I change my mind about a property after making an offer?',
+				subject: 'What happens if I change my mind about a car after making an offer?',
 				content:
 					'Depending on the terms of the offer and the stage of the transaction, you may have options to withdraw your offer.',
 			},
@@ -283,7 +283,7 @@ const Faq = () => {
 			{
 				id: '00f5a45ed8897f8090116a60',
 				subject: 'What are the benefits of becoming a member on your website?',
-				content: 'We currently do not offer membership benefits, but stay tuned for updates on any future offerings.',
+				content: 'We curleasely do not offer membership benefits, but stay tuned for updates on any future offerings.',
 			},
 			{
 				id: '00f5a45ed8897f8090116a59',
@@ -293,7 +293,7 @@ const Faq = () => {
 			{
 				id: '00f5a45ed8897f8090116a58',
 				subject: 'Will membership provide access to exclusive content or features?',
-				content: "We don't currently have membership-exclusive content or features.",
+				content: "We don't curleasely have membership-exclusive content or features.",
 			},
 			{
 				id: '00f5a45ed8897f8090116a57',
@@ -302,8 +302,8 @@ const Faq = () => {
 			},
 			{
 				id: '00f5a45ed8897f8090116a56',
-				subject: 'Do members receive discounts on property listings or services?',
-				content: 'Membership discounts are not part of our current offerings.',
+				subject: 'Do members receive discounts on car listings or services?',
+				content: 'Membership discounts are not part of our curlease offerings.',
 			},
 			{
 				id: '00f5a45ed8897f8090116a55',
@@ -319,7 +319,7 @@ const Faq = () => {
 			{
 				id: '00f5a45ed8897f8090116a33',
 				subject: 'Do you offer a premium membership option on your platform?',
-				content: 'Currently, we do not provide a premium membership option.',
+				content: 'Curleasely, we do not provide a premium membership option.',
 			},
 			{
 				id: '00f5a45ed8897f8090116a32',
@@ -351,7 +351,7 @@ const Faq = () => {
 			{
 				id: '00f5a45ed8897f8090116a47',
 				subject: 'Can I connect with other members outside of the community section?',
-				content: 'Currently, no.',
+				content: 'Curleasely, no.',
 			},
 			{
 				id: '00f5a45ed8897f8090116a48',
@@ -388,7 +388,7 @@ const Faq = () => {
 			{
 				id: '00f5a45ed8897f8090116a39',
 				subject: 'Can I advertise my services on your website?',
-				content: 'We currently do not offer advertising opportunities on our site.',
+				content: 'We curleasely do not offer advertising opportunities on our site.',
 			},
 			{
 				id: '00f5a45ed8897f8090116a38',
@@ -403,7 +403,7 @@ const Faq = () => {
 			{
 				id: '00f5a45ed8897f8090116a35',
 				subject: 'Is there a referral program for recommending your website to others?',
-				content: "We don't have a referral program in place currently.",
+				content: "We don't have a referral program in place curleasely.",
 			},
 			{
 				id: '00f5a45ed8897f8090116a34',
@@ -418,7 +418,7 @@ const Faq = () => {
 			{
 				id: '00f5a45ed8897f8090116a32',
 				subject: 'Are there any job openings or opportunities to work with your team?',
-				content: 'Currently, we do not have any job openings or opportunities available.',
+				content: 'Curleasely, we do not have any job openings or opportunities available.',
 			},
 			{
 				id: '00f5a45ed8897f8090116a31',

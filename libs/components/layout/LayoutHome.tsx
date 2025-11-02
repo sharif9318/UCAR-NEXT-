@@ -13,15 +13,13 @@ import "swiper/css";
 import "swiper/css/pagination";
 import "swiper/css/navigation";
 import InteractiveNavbar from "../InteractiveNavbar";
-import { Property } from "../../types/property/property";
+import { Car } from "../../types/car/car";
 
 const withLayoutMain = (Component: any) => {
   return (props: any) => {
     const device = useDeviceDetect();
     const user = useReactiveVar(userVar);
-    const [trendingProperty, setTrendingProperty] = useState<
-      Property | undefined
-    >();
+    const [trendingCar, setTrendingCar] = useState<Car | undefined>();
 
     /** LIFECYCLES **/
     useEffect(() => {
@@ -40,11 +38,11 @@ const withLayoutMain = (Component: any) => {
           </Head>
           <Stack id="mobile-wrap">
             <Stack id={"top"}>
-              <Top {...props} trendingProperty={trendingProperty} />
+              <Top {...props} trendingCar={trendingCar} />
             </Stack>
 
             <Stack id={"main"}>
-              <Component {...props} setTrendingProperty={setTrendingProperty} />
+              <Component {...props} setTrendingCar={setTrendingCar} />
             </Stack>
 
             <Stack id={"footer"}>
@@ -62,14 +60,14 @@ const withLayoutMain = (Component: any) => {
           </Head>
           <Stack id="pc-wrap">
             <Stack id={"top"}>
-              <Top {...props} trendingProperty={trendingProperty} />
+              <Top {...props} trendingCar={trendingCar} />
             </Stack>
             <Stack className={"InteractiveNavbar"}>
               <InteractiveNavbar />
             </Stack>
 
             <Stack id={"main"}>
-              <Component {...props} setTrendingProperty={setTrendingProperty} />
+              <Component {...props} setTrendingCar={setTrendingCar} />
             </Stack>
 
             {user?._id && <Chat />}

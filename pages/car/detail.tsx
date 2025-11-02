@@ -9,17 +9,17 @@ import {
 import useDeviceDetect from "../../libs/hooks/useDeviceDetect";
 import withLayoutFull from "../../libs/components/layout/LayoutFull";
 import { NextPage } from "next";
-import Review from "../../libs/components/property/Review";
+import Review from "../libs/components/car/Review";
 import { Swiper, SwiperSlide } from "swiper/react";
 import SwiperCore, { Autoplay, Navigation, Pagination } from "swiper";
-import PropertyBigCard from "../../libs/components/common/PropertyBigCard";
+import CarBigCard from "../../libs/components/common/CarBigCard";
 import FavoriteIcon from "@mui/icons-material/Favorite";
 import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
 import WestIcon from "@mui/icons-material/West";
 import EastIcon from "@mui/icons-material/East";
 import { useMutation, useQuery, useReactiveVar } from "@apollo/client";
 import { useRouter } from "next/router";
-import { Property } from "../../libs/types/property/property";
+import { Car } from "../../libs/types/car/car";
 import moment from "moment";
 import { formatterStr, likeTargetMemberHandler } from "../../libs/utils";
 import { REACT_APP_API_URL } from "../../libs/config";
@@ -36,17 +36,10 @@ import RemoveRedEyeIcon from "@mui/icons-material/RemoveRedEye";
 import { serverSideTranslations } from "next-i18next/serverSideTranslations";
 import "swiper/css";
 import "swiper/css/pagination";
-import {
-  GET_PROPERTY,
-  GET_PROPERTIES,
-  GET_COMMENTS,
-} from "../../apollo/user/query";
+import { GET_CAR, GET_CARS, GET_COMMENTS } from "../../apollo/user/query";
 import { Direction, Message } from "../../libs/enums/common.enum";
 import { T } from "../../libs/types/common";
-import {
-  CREATE_COMMENT,
-  LIKE_TARGET_PROPERTY,
-} from "../../apollo/user/mutation";
+import { CREATE_COMMENT, LIKE_TARGET_CAR } from "../../apollo/user/mutation";
 import {
   sweetErrorHandling,
   sweetMixinErrorAlert,
@@ -61,54 +54,51 @@ export const getStaticProps = async ({ locale }: any) => ({
   },
 });
 
-const PropertyDetail: NextPage = ({ initialComment, ...props }: any) => {
+const CarDetail: NextPage = ({ initialComment, ...props }: any) => {
   const device = useDeviceDetect();
   const router = useRouter();
   const user = useReactiveVar(userVar);
-  const [propertyId, setPropertyId] = useState<string | null>(null);
-  const [property, setProperty] = useState<Property | null>(null);
+  const [carId, setCarId] = useState<string | null>(null);
+  const [car, setCar] = useState<Car | null>(null);
   const [slideImage, setSlideImage] = useState<string>("");
-  const [destinationProperty, setDestinationProperties] = useState<Property[]>(
-    []
-  );
+  const [destinationCars, setDestinationCars] = useState<Car[]>([]);
   const [commentInquiry, setCommentInquiry] =
     useState<CommentsInquiry>(initialComment);
-  const [propertyComments, setPropertyComments] = useState<Comment[]>([]);
+  const [carComments, setCarComments] = useState<Comment[]>([]);
   const [commentTotal, setCommentTotal] = useState<number>(0);
   const [insertCommentData, setInsertCommentData] = useState<CommentInput>({
-    commentGroup: CommentGroup.PROPERTY,
+    commentGroup: CommentGroup.CAR,
     commentContent: "",
     commentRefId: "",
   });
 
   /** APOLLO REQUESTS **/
 
-  const [likeTargetProperty] = useMutation(LIKE_TARGET_PROPERTY);
+  const [likeTargetCar] = useMutation(LIKE_TARGET_CAR);
   const [createComment] = useMutation(CREATE_COMMENT);
 
   const {
-    loading: getPropertyLoading,
-    data: getPropertyData,
-    error: getPropertyError,
-    refetch: getPropertyRefetch,
-  } = useQuery(GET_PROPERTY, {
+    loading: getCarLoading,
+    data: getCarData,
+    error: getCarError,
+    refetch: getCarRefetch,
+  } = useQuery(GET_CAR, {
     fetchPolicy: "network-only",
-    variables: { input: propertyId },
-    skip: !propertyId,
+    variables: { input: carId },
+    skip: !carId,
     notifyOnNetworkStatusChange: true,
     onCompleted: (data: T) => {
-      if (data?.getProperty) setProperty(data?.getProperty);
-      if (data?.getProperty)
-        setSlideImage(data?.getProperty?.propertyImages[0]);
+      if (data?.getCar) setCar(data?.getCar);
+      // Don't set slideImage here anymore, let useEffect handle it based on video check
     },
   });
 
   const {
-    loading: getPropertiesLoading,
-    data: getPropertiesData,
-    error: getPropertiesError,
-    refetch: getPropertiesRefetch,
-  } = useQuery(GET_PROPERTIES, {
+    loading: getCarsLoading,
+    data: getCarsData,
+    error: getCarsError,
+    refetch: getCarsRefetch,
+  } = useQuery(GET_CARS, {
     fetchPolicy: "cache-and-network",
     variables: {
       input: {
@@ -117,17 +107,14 @@ const PropertyDetail: NextPage = ({ initialComment, ...props }: any) => {
         sort: "createdAt",
         direction: Direction.DESC,
         search: {
-          locationList: property?.propertyLocation
-            ? [property?.propertyLocation]
-            : [],
+          locationList: car?.carLocation ? [car?.carLocation] : [],
         },
       },
     },
-    skip: !propertyId || !property,
+    skip: !carId || !car,
     notifyOnNetworkStatusChange: true,
     onCompleted: (data: T) => {
-      if (data?.getProperties?.list)
-        setDestinationProperties(data?.getProperties?.list);
+      if (data?.getCars?.list) setDestinationCars(data?.getCars?.list);
     },
   });
 
@@ -142,7 +129,7 @@ const PropertyDetail: NextPage = ({ initialComment, ...props }: any) => {
     skip: !commentInquiry?.search.commentRefId,
     notifyOnNetworkStatusChange: true,
     onCompleted: (data: T) => {
-      if (data?.getComments?.list) setPropertyComments(data?.getComments?.list);
+      if (data?.getComments?.list) setCarComments(data?.getComments?.list);
       setCommentTotal(data?.getComments?.metaCounter[0]?.total ?? 0);
     },
   });
@@ -151,7 +138,7 @@ const PropertyDetail: NextPage = ({ initialComment, ...props }: any) => {
 
   useEffect(() => {
     if (router.query.id) {
-      setPropertyId(router.query.id as string);
+      setCarId(router.query.id as string);
       setCommentInquiry({
         ...commentInquiry,
         search: {
@@ -171,41 +158,50 @@ const PropertyDetail: NextPage = ({ initialComment, ...props }: any) => {
     }
   }, [commentInquiry]);
 
+  useEffect(() => {
+    if (car?.carImages && car.carImages.length > 0) {
+      // Check if first image is a video
+      const firstMedia = car.carImages[0];
+      const isVideo = firstMedia.match(/\.(mp4|webm|ogg|mov)$/i);
+      if (!isVideo) {
+        setSlideImage(firstMedia);
+      }
+    }
+  }, [car]);
+
   /** HANDLERS **/
   const changeImageHandler = (image: string) => {
     setSlideImage(image);
   };
 
-  // Helper function to check if file is video
-  const isVideo = (filename: string): boolean => {
-    const videoExtensions = [".mp4", ".webm", ".ogg", ".mov", ".avi"];
-    return videoExtensions.some((ext) => filename.toLowerCase().endsWith(ext));
+  const isVideoFile = (filename: string) => {
+    return filename.match(/\.(mp4|webm|ogg|mov)$/i);
   };
 
-  const likePropertyHandler = async (user: T, id: string) => {
+  const likeCarHandler = async (user: T, id: string) => {
     try {
       if (!id) return;
       if (!user._id) throw new Error(Message.NOT_AUTHENTICATED);
 
-      await likeTargetProperty({
+      await likeTargetCar({
         variables: { input: id },
       });
-      await getPropertyRefetch({ input: id });
-      await getPropertiesRefetch({
+      await getCarRefetch({ input: id });
+      await getCarsRefetch({
         input: {
           page: 1,
           limit: 4,
           sort: "createdAt",
           direction: Direction.DESC,
           search: {
-            locationList: [property?.propertyLocation],
+            locationList: [car?.carLocation],
           },
         },
       });
 
       await sweetTopSmallSuccessAlert("success", 800);
     } catch (err: any) {
-      console.log("ERROR, LikePropertyHandler:", err.message);
+      console.log("ERROR, LikeCarHandler:", err.message);
       sweetMixinErrorAlert(err.message).then();
     }
   };
@@ -231,7 +227,7 @@ const PropertyDetail: NextPage = ({ initialComment, ...props }: any) => {
     }
   };
 
-  if (getPropertyLoading) {
+  if (getCarLoading) {
     return (
       <Stack
         sx={{
@@ -248,7 +244,7 @@ const PropertyDetail: NextPage = ({ initialComment, ...props }: any) => {
   }
 
   if (device === "mobile") {
-    return <div>PROPERTY DETAIL PAGE</div>;
+    return <div>CAR DETAIL PAGE</div>;
   } else {
     return (
       <div id={"property-detail-page"}>
@@ -258,15 +254,15 @@ const PropertyDetail: NextPage = ({ initialComment, ...props }: any) => {
               <Stack className={"info"}>
                 <Stack className={"left-box"}>
                   <Typography className={"title-main"}>
-                    {property?.propertyTitle}
+                    {car?.carTitle}
                   </Typography>
                   <Stack className={"top-box"}>
                     <Typography className={"city"}>
-                      {property?.propertyLocation}
+                      {car?.carLocation}
                     </Typography>
                     <Stack className={"divider"}></Stack>
-                    <Stack className={"buy-rent-box"}>
-                      {property?.propertyBarter && (
+                    <Stack className={"buy-lease-box"}>
+                      {car?.carTradeIn && (
                         <>
                           <Stack className={"circle"}>
                             <svg
@@ -279,11 +275,13 @@ const PropertyDetail: NextPage = ({ initialComment, ...props }: any) => {
                               <circle cx="3" cy="3" r="3" fill="#EB6753" />
                             </svg>
                           </Stack>
-                          <Typography className={"buy-rent"}>Barter</Typography>
+                          <Typography className={"buy-lease"}>
+                            Trade-In
+                          </Typography>
                         </>
                       )}
 
-                      {property?.propertyRent && (
+                      {car?.carLease && (
                         <>
                           <Stack className={"circle"}>
                             <svg
@@ -296,7 +294,7 @@ const PropertyDetail: NextPage = ({ initialComment, ...props }: any) => {
                               <circle cx="3" cy="3" r="3" fill="#EB6753" />
                             </svg>
                           </Stack>
-                          <Typography className={"buy-rent"}>rent</Typography>
+                          <Typography className={"buy-lease"}>Lease</Typography>
                         </>
                       )}
                     </Stack>
@@ -325,21 +323,66 @@ const PropertyDetail: NextPage = ({ initialComment, ...props }: any) => {
                       </defs>
                     </svg>
                     <Typography className={"date"}>
-                      {moment().diff(property?.createdAt, "days")} days ago
+                      {moment().diff(car?.createdAt, "days")} days ago
                     </Typography>
                   </Stack>
                   <Stack className={"bottom-box"}>
                     <Stack className="option">
-                      <img src="/img/icons/bed.svg" alt="" />{" "}
-                      <Typography>{property?.propertyBeds} bed</Typography>
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="20"
+                        height="20"
+                        viewBox="0 0 20 20"
+                        fill="none"
+                      >
+                        <path
+                          d="M10 0C4.48 0 0 4.48 0 10C0 15.52 4.48 20 10 20C15.52 20 20 15.52 20 10C20 4.48 15.52 0 10 0ZM10 18C5.59 18 2 14.41 2 10C2 5.59 5.59 2 10 2C14.41 2 18 5.59 18 10C18 14.41 14.41 18 10 18Z"
+                          fill="#181A20"
+                        />
+                        <path
+                          d="M10.5 5H9V11L14.2 14.2L15 12.9L10.5 10.2V5Z"
+                          fill="#181A20"
+                        />
+                      </svg>
+                      <Typography>
+                        {moment(car?.createdAt).format("YYYY")} Model
+                      </Typography>
                     </Stack>
                     <Stack className="option">
-                      <img src="/img/icons/room.svg" alt="" />{" "}
-                      <Typography>{property?.propertyRooms} room</Typography>
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="20"
+                        height="20"
+                        viewBox="0 0 20 20"
+                        fill="none"
+                      >
+                        <path
+                          d="M17 3H3C1.9 3 1 3.9 1 5V15C1 16.1 1.9 17 3 17H17C18.1 17 19 16.1 19 15V5C19 3.9 18.1 3 17 3ZM17 15H3V5H17V15Z"
+                          fill="#181A20"
+                        />
+                        <path
+                          d="M5.5 9C6.33 9 7 8.33 7 7.5C7 6.67 6.33 6 5.5 6C4.67 6 4 6.67 4 7.5C4 8.33 4.67 9 5.5 9ZM14.5 9C15.33 9 16 8.33 16 7.5C16 6.67 15.33 6 14.5 6C13.67 6 13 6.67 13 7.5C13 8.33 13.67 9 14.5 9ZM5.5 14C6.33 14 7 13.33 7 12.5C7 11.67 6.33 11 5.5 11C4.67 11 4 11.67 4 12.5C4 13.33 4.67 14 5.5 14ZM14.5 14C15.33 14 16 13.33 16 12.5C16 11.67 15.33 11 14.5 11C13.67 11 13 11.67 13 12.5C13 13.33 13.67 14 14.5 14Z"
+                          fill="#181A20"
+                        />
+                      </svg>
+                      <Typography>{car?.carType}</Typography>
                     </Stack>
                     <Stack className="option">
-                      <img src="/img/icons/expand.svg" alt="" />{" "}
-                      <Typography>{property?.propertySquare} m2</Typography>
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="20"
+                        height="20"
+                        viewBox="0 0 20 20"
+                        fill="none"
+                      >
+                        <path
+                          d="M18 2H2C0.9 2 0 2.9 0 4V16C0 17.1 0.9 18 2 18H18C19.1 18 20 17.1 20 16V4C20 2.9 19.1 2 18 2ZM18 16H2V4H18V16ZM5 14H7V10H5V14ZM9 14H11V6H9V14ZM13 14H15V8H13V14Z"
+                          fill="#181A20"
+                        />
+                      </svg>
+                      <Typography>
+                        {formatterStr(car?.carMileage)} km
+                      </Typography>
                     </Stack>
                   </Stack>
                 </Stack>
@@ -347,111 +390,87 @@ const PropertyDetail: NextPage = ({ initialComment, ...props }: any) => {
                   <Stack className="buttons">
                     <Stack className="button-box">
                       <RemoveRedEyeIcon fontSize="medium" />
-                      <Typography>{property?.propertyViews}</Typography>
+                      <Typography>{car?.carViews}</Typography>
                     </Stack>
                     <Stack className="button-box">
-                      {property?.meLiked && property?.meLiked[0]?.myFavorite ? (
+                      {car?.meLiked && car?.meLiked[0]?.myFavorite ? (
                         <FavoriteIcon
                           color="primary"
                           fontSize={"medium"}
-                          onClick={() =>
-                            likePropertyHandler(user, property?._id)
-                          }
+                          onClick={() => likeCarHandler(user, car?._id)}
                         />
                       ) : (
                         <FavoriteBorderIcon
                           fontSize={"medium"}
-                          onClick={() =>
-                            likePropertyHandler(user, property?._id)
-                          }
+                          onClick={() => likeCarHandler(user, car?._id)}
                         />
                       )}
-                      <Typography>{property?.propertyLikes}</Typography>
+                      <Typography>{car?.carLikes}</Typography>
                     </Stack>
                   </Stack>
-                  <Typography>
-                    ${formatterStr(property?.propertyPrice)}
-                  </Typography>
+                  <Typography>${formatterStr(car?.carPrice)}</Typography>
                 </Stack>
               </Stack>
               <Stack className={"images"}>
                 <Stack className={"main-image"}>
-                  {slideImage && isVideo(slideImage) ? (
+                  {car?.carImages &&
+                  car.carImages.length > 0 &&
+                  isVideoFile(car.carImages[0]) ? (
                     <video
-                      src={`${REACT_APP_API_URL}/${slideImage}`}
                       autoPlay
-                      loop
                       muted
+                      loop
                       playsInline
                       controls
                       style={{
                         width: "100%",
                         height: "100%",
                         objectFit: "cover",
+                        borderRadius: "12px",
                       }}
-                    />
+                    >
+                      <source
+                        src={`${REACT_APP_API_URL}/${car.carImages[0]}`}
+                        type="video/mp4"
+                      />
+                      Your browser does not support the video tag.
+                    </video>
                   ) : (
                     <img
                       src={
                         slideImage
                           ? `${REACT_APP_API_URL}/${slideImage}`
-                          : "/img/property/bigImage.png"
+                          : "/img/cars/default.png"
                       }
                       alt={"main-image"}
                     />
                   )}
                 </Stack>
                 <Stack className={"sub-images"}>
-                  {property?.propertyImages.map((subImg: string) => {
-                    const mediaPath: string = `${REACT_APP_API_URL}/${subImg}`;
-                    const isVideoFile = isVideo(subImg);
+                  {car?.carImages.map((subImg: string, index: number) => {
+                    const imagePath: string = `${REACT_APP_API_URL}/${subImg}`;
+                    const isVideo = isVideoFile(subImg);
 
                     return (
                       <Stack
                         className={"sub-img-box"}
-                        onClick={() => changeImageHandler(subImg)}
+                        onClick={() => !isVideo && changeImageHandler(subImg)}
                         key={subImg}
-                        sx={{ position: "relative" }}
+                        style={{ cursor: isVideo ? "default" : "pointer" }}
                       >
-                        {isVideoFile ? (
-                          <>
-                            <video
-                              src={mediaPath}
-                              style={{
-                                width: "100%",
-                                height: "100%",
-                                objectFit: "cover",
-                              }}
-                            />
-                            <div
-                              style={{
-                                position: "absolute",
-                                top: "50%",
-                                left: "50%",
-                                transform: "translate(-50%, -50%)",
-                                width: "40px",
-                                height: "40px",
-                                backgroundColor: "rgba(245, 243, 243, 0.6)",
-                                borderRadius: "50%",
-                                display: "flex",
-                                alignItems: "center",
-                                justifyContent: "center",
-                                pointerEvents: "none",
-                              }}
-                            >
-                              <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                width="20"
-                                height="20"
-                                viewBox="0 0 24 24"
-                                fill="white"
-                              >
-                                <path d="M8 5v14l11-7z" />
-                              </svg>
-                            </div>
-                          </>
+                        {isVideo ? (
+                          <video
+                            style={{
+                              width: "100%",
+                              height: "100%",
+                              objectFit: "cover",
+                              borderRadius: "12px",
+                            }}
+                          >
+                            <source src={imagePath} type="video/mp4" />
+                          </video>
                         ) : (
-                          <img src={mediaPath} alt={"sub-image"} />
+                          <img src={imagePath} alt={"sub-image"} />
                         )}
                       </Stack>
                     );
@@ -467,31 +486,24 @@ const PropertyDetail: NextPage = ({ initialComment, ...props }: any) => {
                       <svg
                         xmlns="http://www.w3.org/2000/svg"
                         width="24"
-                        height="20"
-                        viewBox="0 0 24 20"
+                        height="24"
+                        viewBox="0 0 24 24"
                         fill="none"
                       >
                         <path
-                          d="M21.4883 11.1135L21.4071 11.0524V5.26354C21.4071 4.47769 21.0568 3.72395 20.4331 3.16775C19.8094 2.61155 18.9632 2.29835 18.0803 2.29688H6.09625C5.21335 2.29835 4.36717 2.61155 3.74345 3.16775C3.11973 3.72395 2.76942 4.47769 2.76942 5.26354V11.058L2.68828 11.1135C2.31313 11.4484 2.10218 11.9018 2.10156 12.3747V17.1135C2.10156 17.2712 2.17193 17.4224 2.29717 17.5339C2.42242 17.6454 2.5923 17.708 2.76942 17.708H6.09625C6.20637 17.7077 6.31471 17.6833 6.41163 17.6367C6.50855 17.5902 6.59104 17.5231 6.65176 17.4413L7.78775 15.9302H16.3951L17.531 17.4413C17.5918 17.5231 17.6743 17.5902 17.7712 17.6367C17.8681 17.6833 17.9764 17.7077 18.0866 17.708H21.4134C21.5894 17.7065 21.7577 17.6432 21.8816 17.5319C22.0055 17.4206 22.075 17.2702 22.075 17.1135V12.3747C22.0744 11.9018 21.8634 11.4484 21.4883 11.1135ZM6.09625 3.48576H18.0803C18.61 3.48576 19.1181 3.67306 19.4927 4.00646C19.8672 4.33986 20.0777 4.79205 20.0777 5.26354V8.83576C19.778 8.45662 19.3781 8.14887 18.9134 7.93961C18.4486 7.73035 17.9332 7.62601 17.4125 7.63576H6.76411C6.32701 7.63469 5.894 7.71072 5.4901 7.85948C5.08621 8.00824 4.71944 8.22676 4.41099 8.50243C4.29799 8.60664 4.19369 8.71804 4.09891 8.83576V5.26354C4.09891 4.79205 4.30934 4.33986 4.68392 4.00646C5.05849 3.67306 5.56652 3.48576 6.09625 3.48576ZM19.4098 10.5969H4.76677C4.76677 10.1254 4.9772 9.67319 5.35178 9.3398C5.72635 9.0064 6.23438 8.8191 6.76411 8.8191H17.4125C17.9422 8.8191 18.4502 9.0064 18.8248 9.3398C19.1994 9.67319 19.4098 10.1254 19.4098 10.5969ZM20.7393 16.5247H18.4299L17.3001 15.0024C17.2387 14.9217 17.1559 14.8556 17.059 14.8101C16.9621 14.7646 16.8541 14.741 16.7446 14.7413H7.42573C7.31618 14.741 7.20821 14.7646 7.11133 14.8101C7.01446 14.8556 6.93165 14.9217 6.87022 15.0024L5.74047 16.5191H3.43104V12.3747C3.43104 12.2966 3.44832 12.2193 3.48188 12.1472C3.51545 12.075 3.56464 12.0095 3.62666 11.9543C3.68867 11.8991 3.7623 11.8553 3.84333 11.8255C3.92436 11.7956 4.0112 11.7802 4.09891 11.7802H20.0777C20.2548 11.7802 20.4247 11.8428 20.5499 11.9543C20.6752 12.0658 20.7455 12.217 20.7455 12.3747L20.7393 16.5247Z"
+                          d="M12 2C6.48 2 2 6.48 2 12C2 17.52 6.48 22 12 22C17.52 22 22 17.52 22 12C22 6.48 17.52 2 12 2ZM12 20C7.59 20 4 16.41 4 12C4 7.59 7.59 4 12 4C16.41 4 20 7.59 20 12C20 16.41 16.41 20 12 20Z"
+                          fill="#181A20"
+                        />
+                        <path
+                          d="M12.5 7H11V13L16.2 16.2L17 14.9L12.5 12.2V7Z"
                           fill="#181A20"
                         />
                       </svg>
                     </Stack>
                     <Stack className={"option-includes"}>
-                      <Typography className={"title"}>Bedroom</Typography>
+                      <Typography className={"title"}>Model Year</Typography>
                       <Typography className={"option-data"}>
-                        {property?.propertyBeds}
-                      </Typography>
-                    </Stack>
-                  </Stack>
-                  <Stack className={"option"}>
-                    <Stack className={"svg-box"}>
-                      <img src={"/img/icons/room.svg"} />
-                    </Stack>
-                    <Stack className={"option-includes"}>
-                      <Typography className={"title"}>Room</Typography>
-                      <Typography className={"option-data"}>
-                        {property?.propertyRooms}
+                        {moment(car?.createdAt).format("YYYY")}
                       </Typography>
                     </Stack>
                   </Stack>
@@ -500,66 +512,20 @@ const PropertyDetail: NextPage = ({ initialComment, ...props }: any) => {
                       <svg
                         xmlns="http://www.w3.org/2000/svg"
                         width="24"
-                        height="20"
-                        viewBox="0 0 24 20"
+                        height="24"
+                        viewBox="0 0 24 24"
                         fill="none"
                       >
                         <path
-                          d="M20.0464 2.29271H16.7196V1.10938H15.3839V2.29271H8.73021V1.10938H7.39448V2.29271H4.06766C3.53793 2.29271 3.0299 2.48001 2.65532 2.81341C2.28075 3.14681 2.07031 3.59899 2.07031 4.07049V17.1094C2.07031 17.5809 2.28075 18.0331 2.65532 18.3665C3.0299 18.6999 3.53793 18.8872 4.06766 18.8872H20.0464C20.5761 18.8872 21.0842 18.6999 21.4587 18.3665C21.8333 18.0331 22.0438 17.5809 22.0438 17.1094V4.07049C22.0438 3.59899 21.8333 3.14681 21.4587 2.81341C21.0842 2.48001 20.5761 2.29271 20.0464 2.29271ZM4.06766 3.4816H7.39448V4.66493H8.72397V3.4816H15.3839V4.66493H16.7133V3.4816H20.0464C20.2235 3.4816 20.3934 3.54423 20.5187 3.65571C20.6439 3.76719 20.7143 3.91839 20.7143 4.07604V7.03715H3.39979V4.07049C3.40144 3.91379 3.47253 3.76402 3.5976 3.65374C3.72267 3.54346 3.8916 3.48159 4.06766 3.4816ZM20.0464 17.7038H4.06766C3.89053 17.7038 3.72066 17.6412 3.59541 17.5297C3.47016 17.4182 3.39979 17.267 3.39979 17.1094V8.22049H20.7143V17.1094C20.7143 17.267 20.6439 17.4182 20.5187 17.5297C20.3934 17.6412 20.2235 17.7038 20.0464 17.7038Z"
-                          fill="#181A20"
-                        />
-                        <path
-                          d="M15.1397 11.8023L13.6042 11.2801L12.5744 10.1412C12.5117 10.0727 12.4327 10.0174 12.3431 9.97949C12.2535 9.94156 12.1555 9.92188 12.0563 9.92188C11.9571 9.92188 11.8591 9.94156 11.7695 9.97949C11.6798 10.0174 11.6009 10.0727 11.5382 10.1412L10.5083 11.2801L8.97289 11.8023C8.88037 11.8343 8.79703 11.8842 8.72892 11.9485C8.66081 12.0127 8.60965 12.0897 8.57916 12.1738C8.54868 12.2578 8.53962 12.3469 8.55267 12.4345C8.56571 12.5221 8.60052 12.606 8.65456 12.6801L9.55961 13.8912L9.64075 15.3523C9.64596 15.4408 9.67332 15.5271 9.72083 15.6049C9.76835 15.6828 9.83482 15.7502 9.91539 15.8023C9.99685 15.8535 10.0898 15.8884 10.1878 15.9047C10.2858 15.921 10.3866 15.9183 10.4834 15.8967L12.0563 15.5245L13.6417 15.9078C13.7387 15.9304 13.8401 15.9332 13.9385 15.9161C14.0369 15.8991 14.1297 15.8625 14.21 15.8091C14.2903 15.7558 14.3562 15.687 14.4026 15.6079C14.449 15.5288 14.4748 15.4414 14.4781 15.3523L14.553 13.8912L15.4518 12.6634C15.5058 12.5893 15.5406 12.5054 15.5537 12.4178C15.5667 12.3302 15.5577 12.2412 15.5272 12.1571C15.4967 12.073 15.4455 11.9961 15.3774 11.9318C15.3093 11.8675 15.226 11.8176 15.1334 11.7856L15.1397 11.8023ZM13.3483 13.3912C13.2844 13.4793 13.2478 13.5808 13.2422 13.6856L13.1923 14.5745L12.2311 14.3412C12.1166 14.3138 11.996 14.3138 11.8815 14.3412L10.9203 14.5745L10.8704 13.6856C10.8648 13.5808 10.8282 13.4793 10.7643 13.3912L10.2212 12.6467L11.1512 12.3301C11.2614 12.2921 11.3584 12.2289 11.4321 12.1467L12.0563 11.4523L12.6805 12.1467C12.7542 12.2289 12.8511 12.2921 12.9613 12.3301L13.8913 12.6467L13.3483 13.3912Z"
+                          d="M18.92 6.01C18.72 5.42 18.16 5 17.5 5H6.5C5.84 5 5.29 5.42 5.08 6.01L3 12V20C3 20.55 3.45 21 4 21H5C5.55 21 6 20.55 6 20V19H18V20C18 20.55 18.45 21 19 21H20C20.55 21 21 20.55 21 20V12L18.92 6.01ZM6.5 16C5.67 16 5 15.33 5 14.5C5 13.67 5.67 13 6.5 13C7.33 13 8 13.67 8 14.5C8 15.33 7.33 16 6.5 16ZM17.5 16C16.67 16 16 15.33 16 14.5C16 13.67 16.67 13 17.5 13C18.33 13 19 13.67 19 14.5C19 15.33 18.33 16 17.5 16ZM5 11L6.5 6.5H17.5L19 11H5Z"
                           fill="#181A20"
                         />
                       </svg>
                     </Stack>
                     <Stack className={"option-includes"}>
-                      <Typography className={"title"}>Year Build</Typography>
+                      <Typography className={"title"}>Body Type</Typography>
                       <Typography className={"option-data"}>
-                        {moment(property?.createdAt).format("YYYY")}
-                      </Typography>
-                    </Stack>
-                  </Stack>
-                  <Stack className={"option"}>
-                    <Stack className={"svg-box"}>
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        width="23"
-                        height="20"
-                        viewBox="0 0 23 20"
-                        fill="none"
-                      >
-                        <path
-                          d="M9.60156 1.10938H13.5963V2.29271H9.60156V1.10938Z"
-                          fill="#181A20"
-                        />
-                        <path
-                          d="M20.2628 17.1144C20.2628 17.2721 20.1924 17.4233 20.0671 17.5347C19.9419 17.6462 19.772 17.7089 19.5949 17.7089H16.9297V18.8922H19.5949C20.1246 18.8922 20.6327 18.7049 21.0072 18.3715C21.3818 18.0381 21.5922 17.5859 21.5922 17.1144V14.7422H20.2628V17.1144Z"
-                          fill="#181A20"
-                        />
-                        <path
-                          d="M19.5949 1.10938H16.9297V2.29271H19.5949C19.6826 2.29271 19.7694 2.30808 19.8505 2.33796C19.9315 2.36783 20.0051 2.41162 20.0671 2.46682C20.1292 2.52202 20.1784 2.58755 20.2119 2.65967C20.2455 2.73179 20.2628 2.80909 20.2628 2.88715V5.25938H21.5922V2.88715C21.5922 2.41566 21.3818 1.96347 21.0072 1.63007C20.6327 1.29668 20.1246 1.10938 19.5949 1.10938Z"
-                          fill="#181A20"
-                        />
-                        <path
-                          d="M2.94667 2.88715C2.94667 2.80909 2.96394 2.73179 2.99751 2.65967C3.03107 2.58755 3.08027 2.52202 3.14228 2.46682C3.2043 2.41162 3.27792 2.36783 3.35895 2.33796C3.43998 2.30808 3.52683 2.29271 3.61453 2.29271H6.27974V1.10938H3.61453C3.0848 1.10938 2.57677 1.29668 2.2022 1.63007C1.82762 1.96347 1.61719 2.41566 1.61719 2.88715V5.25938H2.94667V2.88715Z"
-                          fill="#181A20"
-                        />
-                        <path
-                          d="M20.2578 8.21875H21.5873V11.7743H20.2578V8.21875Z"
-                          fill="#181A20"
-                        />
-                        <path
-                          d="M16.9281 9.40781V5.85226C16.9281 5.6946 16.8577 5.5434 16.7325 5.43192C16.6072 5.32044 16.4373 5.25781 16.2602 5.25781H12.2655V6.4467H14.6499L11.1233 9.58559C10.8569 9.46989 10.5646 9.40912 10.2682 9.40781H3.61453C3.38637 9.41019 3.16039 9.44778 2.94667 9.51892V8.22448H1.61719V17.1134C1.61719 17.5849 1.82762 18.037 2.2022 18.3704C2.57677 18.7038 3.0848 18.8911 3.61453 18.8911H13.6013V17.7078H12.1469C12.2269 17.5176 12.2691 17.3165 12.2718 17.1134V11.1856C12.2703 10.9218 12.202 10.6616 12.072 10.4245L15.5986 7.28559V9.40781H16.9281ZM3.61453 17.7078C3.4374 17.7078 3.26753 17.6452 3.14228 17.5337C3.01703 17.4222 2.94667 17.271 2.94667 17.1134V11.1856C2.94832 11.0289 3.0194 10.8791 3.14447 10.7688C3.26955 10.6586 3.43848 10.5967 3.61453 10.5967H10.2744C10.4516 10.5967 10.6214 10.6593 10.7467 10.7708C10.8719 10.8823 10.9423 11.0335 10.9423 11.1911V17.1134C10.9423 17.271 10.8719 17.4222 10.7467 17.5337C10.6214 17.6452 10.4516 17.7078 10.2744 17.7078H3.61453Z"
-                          fill="#181A20"
-                        />
-                      </svg>
-                    </Stack>
-                    <Stack className={"option-includes"}>
-                      <Typography className={"title"}>Size</Typography>
-                      <Typography className={"option-data"}>
-                        {property?.propertySquare} m2
+                        {car?.carType}
                       </Typography>
                     </Stack>
                   </Stack>
@@ -568,24 +534,72 @@ const PropertyDetail: NextPage = ({ initialComment, ...props }: any) => {
                       <svg
                         xmlns="http://www.w3.org/2000/svg"
                         width="24"
-                        height="20"
-                        viewBox="0 0 24 20"
+                        height="24"
+                        viewBox="0 0 24 24"
                         fill="none"
                       >
                         <path
-                          d="M17.2955 18.8863H6.64714C5.76532 18.8848 4.92008 18.5724 4.29654 18.0174C3.673 17.4624 3.32196 16.7101 3.32031 15.9252V7.21961C3.32207 6.73455 3.45794 6.25732 3.71592 5.83005C3.97391 5.40277 4.34608 5.03858 4.7996 4.76961L10.0988 1.6085C10.6506 1.27315 11.3032 1.09375 11.9713 1.09375C12.6394 1.09375 13.292 1.27315 13.8438 1.6085L19.168 4.76961C19.618 5.04048 19.9866 5.4055 20.2412 5.83265C20.4958 6.25981 20.6289 6.73605 20.6285 7.21961V15.9252C20.6269 16.711 20.275 17.4642 19.6501 18.0193C19.0252 18.5745 18.1784 18.8863 17.2955 18.8863ZM11.9713 2.29183C11.5779 2.29281 11.1936 2.39717 10.8665 2.59183L5.53612 5.75294C5.26468 5.91407 5.04189 6.1321 4.88734 6.38784C4.73279 6.64359 4.65122 6.92922 4.64979 7.21961V15.9252C4.64979 16.3967 4.86023 16.8488 5.2348 17.1822C5.60938 17.5156 6.11741 17.7029 6.64714 17.7029H17.2955C17.8252 17.7029 18.3332 17.5156 18.7078 17.1822C19.0824 16.8488 19.2928 16.3967 19.2928 15.9252V7.21961C19.2935 6.92734 19.2129 6.63946 19.0582 6.38163C18.9036 6.12379 18.6797 5.904 18.4065 5.74183L13.0761 2.59183C12.7492 2.39687 12.3648 2.29248 11.9713 2.29183Z"
+                          d="M19 3H5C3.9 3 3 3.9 3 5V19C3 20.1 3.9 21 5 21H19C20.1 21 21 20.1 21 19V5C21 3.9 20.1 3 19 3ZM19 19H5V5H19V19Z"
                           fill="#181A20"
                         />
                         <path
-                          d="M9.30469 14.7422H14.6289V15.9255H9.30469V14.7422Z"
+                          d="M7 17H9V13H7V17ZM11 17H13V7H11V17ZM15 17H17V10H15V17Z"
                           fill="#181A20"
                         />
                       </svg>
                     </Stack>
                     <Stack className={"option-includes"}>
-                      <Typography className={"title"}>Property Type</Typography>
+                      <Typography className={"title"}>Mileage</Typography>
                       <Typography className={"option-data"}>
-                        {property?.propertyType}
+                        {formatterStr(car?.carMileage)} km
+                      </Typography>
+                    </Stack>
+                  </Stack>
+                  <Stack className={"option"}>
+                    <Stack className={"svg-box"}>
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="24"
+                        height="24"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                      >
+                        <path
+                          d="M19.77 7.23L19.78 7.22L16.06 3.5L15 4.56L17.11 6.67C16.17 7.03 15.5 7.93 15.5 9C15.5 10.38 16.62 11.5 18 11.5C18.36 11.5 18.69 11.42 19 11.29V18.5C19 19.05 18.55 19.5 18 19.5C17.45 19.5 17 19.05 17 18.5V14C17 12.9 16.1 12 15 12H13V5C13 3.9 12.1 3 11 3H6C4.9 3 4 3.9 4 5V21H6V19H12V21H14V13.5H15.5V18.5C15.5 19.88 16.62 21 18 21C19.38 21 20.5 19.88 20.5 18.5V9C20.5 8.31 20.22 7.68 19.77 7.23ZM12 10H6V5H12V10Z"
+                          fill="#181A20"
+                        />
+                      </svg>
+                    </Stack>
+                    <Stack className={"option-includes"}>
+                      <Typography className={"title"}>Fuel Type</Typography>
+                      <Typography className={"option-data"}>
+                        {car?.carYear} L/100km
+                      </Typography>
+                    </Stack>
+                  </Stack>
+                  <Stack className={"option"}>
+                    <Stack className={"svg-box"}>
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="24"
+                        height="24"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                      >
+                        <path
+                          d="M15 11V5L9 11H13V17L19 11H15Z"
+                          fill="#181A20"
+                        />
+                        <path
+                          d="M19.35 10.04C18.67 6.59 15.64 4 12 4C9.11 4 6.6 5.64 5.35 8.04C2.34 8.36 0 10.91 0 14C0 17.31 2.69 20 6 20H19C21.76 20 24 17.76 24 15C24 12.36 21.95 10.22 19.35 10.04ZM19 18H6C3.79 18 2 16.21 2 14C2 11.95 3.53 10.24 5.56 10.03L6.63 9.92L7.13 8.97C8.08 7.14 9.94 6 12 6C14.62 6 16.88 7.86 17.39 10.43L17.69 11.93L19.22 12.04C20.78 12.14 22 13.45 22 15C22 16.65 20.65 18 19 18Z"
+                          fill="#181A20"
+                        />
+                      </svg>
+                    </Stack>
+                    <Stack className={"option-includes"}>
+                      <Typography className={"title"}>Transmission</Typography>
+                      <Typography className={"option-data"}>
+                        {car?.carSeats === 1 ? "Manual" : "Automatic"}
                       </Typography>
                     </Stack>
                   </Stack>
@@ -593,69 +607,67 @@ const PropertyDetail: NextPage = ({ initialComment, ...props }: any) => {
                 <Stack className={"prop-desc-config"}>
                   <Stack className={"top"}>
                     <Typography className={"title"}>
-                      Property Description
+                      Vehicle Description
                     </Typography>
                     <Typography className={"desc"}>
-                      {property?.propertyDesc ?? "No Description!"}
+                      {car?.propertyDesc ?? "No Description!"}
                     </Typography>
                   </Stack>
                   <Stack className={"bottom"}>
                     <Typography className={"title"}>
-                      Property Details
+                      Vehicle Specifications
                     </Typography>
                     <Stack className={"info-box"}>
                       <Stack className={"left"}>
                         <Box component={"div"} className={"info"}>
                           <Typography className={"title"}>Price</Typography>
                           <Typography className={"data"}>
-                            ${formatterStr(property?.propertyPrice)}
+                            ${formatterStr(car?.carPrice)}
+                          </Typography>
+                        </Box>
+                        <Box component={"div"} className={"info"}>
+                          <Typography className={"title"}>Mileage</Typography>
+                          <Typography className={"data"}>
+                            {formatterStr(car?.carMileage)} km
                           </Typography>
                         </Box>
                         <Box component={"div"} className={"info"}>
                           <Typography className={"title"}>
-                            Property Size
+                            Transmission
                           </Typography>
                           <Typography className={"data"}>
-                            {property?.propertySquare} m2
-                          </Typography>
-                        </Box>
-                        <Box component={"div"} className={"info"}>
-                          <Typography className={"title"}>Rooms</Typography>
-                          <Typography className={"data"}>
-                            {property?.propertyRooms}
+                            {car?.carSeats === 1 ? "Manual" : "Automatic"}
                           </Typography>
                         </Box>
                         <Box component={"div"} className={"info"}>
-                          <Typography className={"title"}>Bedrooms</Typography>
+                          <Typography className={"title"}>
+                            Fuel Economy
+                          </Typography>
                           <Typography className={"data"}>
-                            {property?.propertyBeds}
+                            {car?.carYear} L/100km
                           </Typography>
                         </Box>
                       </Stack>
                       <Stack className={"right"}>
                         <Box component={"div"} className={"info"}>
-                          <Typography className={"title"}>
-                            Year Built
-                          </Typography>
+                          <Typography className={"title"}>Year</Typography>
                           <Typography className={"data"}>
-                            {moment(property?.createdAt).format("YYYY")}
+                            {moment(car?.createdAt).format("YYYY")}
+                          </Typography>
+                        </Box>
+                        <Box component={"div"} className={"info"}>
+                          <Typography className={"title"}>Body Type</Typography>
+                          <Typography className={"data"}>
+                            {car?.carType}
                           </Typography>
                         </Box>
                         <Box component={"div"} className={"info"}>
                           <Typography className={"title"}>
-                            Property Type
+                            Availability
                           </Typography>
                           <Typography className={"data"}>
-                            {property?.propertyType}
-                          </Typography>
-                        </Box>
-                        <Box component={"div"} className={"info"}>
-                          <Typography className={"title"}>
-                            Property Options
-                          </Typography>
-                          <Typography className={"data"}>
-                            For {property?.propertyBarter && "Barter"}{" "}
-                            {property?.propertyRent && "Rent"}
+                            {car?.carTradeIn && "Trade-In"}{" "}
+                            {car?.carLease && "Lease"}
                           </Typography>
                         </Box>
                       </Stack>
@@ -663,17 +675,20 @@ const PropertyDetail: NextPage = ({ initialComment, ...props }: any) => {
                   </Stack>
                 </Stack>
                 <Stack className={"floor-plans-config"}>
-                  <Typography className={"title"}>Floor Plans</Typography>
+                  <Typography className={"title"}>
+                    360° Interior View
+                  </Typography>
                   <Stack className={"image-box"}>
-                    <img src={"/img/property/floorPlan.png"} alt={"image"} />
+                    <img src={"/img/cars/interior.png"} alt={"interior"} />
                   </Stack>
                 </Stack>
-
                 <Stack className={"address-config"}>
-                  <Typography className={"title"}>Address</Typography>
+                  <Typography className={"title"}>
+                    Dealership Location
+                  </Typography>
                   <Stack className={"map-box"}>
                     <iframe
-                      src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d25867.098915951767!2d128.68632810247993!3d35.86402299180927!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x35660bba427bf179%3A0x1fc02da732b9072f!2sGeumhogangbyeon-ro%2C%20Dong-gu%2C%20Daegu!5e0!3m2!1suz!2skr!4v1695537640704!5m2!1suz!2skr"
+                      src="https://www.google.com/maps/emyear?pb=!1m18!1m12!1m3!1d25867.098915951767!2d128.68632810247993!3d35.86402299180927!2m3!1f0!2f0!3f0!3km!1i1024!2i768!4f13.1!3m3!1km!1s0x35660bba427bf179%3A0x1fc02da732b9072f!2sGeumhogangbyeon-ro%2C%20Dong-gu%2C%20Daegu!5e0!3km!1suz!2skr!4v1695537640704!5km!1suz!2skr"
                       width="100%"
                       height="100%"
                       style={{ border: 0 }}
@@ -717,7 +732,7 @@ const PropertyDetail: NextPage = ({ initialComment, ...props }: any) => {
                       </Stack>
                     </Stack>
                     <Stack className={"review-list"}>
-                      {propertyComments?.map((comment: Comment) => {
+                      {carComments?.map((comment: Comment) => {
                         return <Review comment={comment} key={comment?._id} />;
                       })}
                       <Box component={"div"} className={"pagination-box"}>
@@ -801,23 +816,21 @@ const PropertyDetail: NextPage = ({ initialComment, ...props }: any) => {
               <Stack className={"right-config"}>
                 <Stack className={"info-box"}>
                   <Typography className={"main-title"}>
-                    Get More Information
+                    Contact Dealer
                   </Typography>
                   <Stack className={"image-info"}>
                     <img
                       className={"member-image"}
                       src={
-                        property?.memberData?.memberImage
-                          ? `${REACT_APP_API_URL}/${property?.memberData?.memberImage}`
+                        car?.memberData?.memberImage
+                          ? `${REACT_APP_API_URL}/${car?.memberData?.memberImage}`
                           : "/img/profile/defaultUser.svg"
                       }
                     />
                     <Stack className={"name-phone-listings"}>
-                      <Link
-                        href={`/member?memberId=${property?.memberData?._id}`}
-                      >
+                      <Link href={`/member?memberId=${car?.memberData?._id}`}>
                         <Typography className={"name"}>
-                          {property?.memberData?.memberNick}
+                          {car?.memberData?.memberNick}
                         </Typography>
                       </Link>
                       <Stack className={"phone-number"}>
@@ -846,11 +859,11 @@ const PropertyDetail: NextPage = ({ initialComment, ...props }: any) => {
                           </defs>
                         </svg>
                         <Typography className={"number"}>
-                          {property?.memberData?.memberPhone}
+                          {car?.memberData?.memberPhone}
                         </Typography>
                       </Stack>
                       <Typography className={"listings"}>
-                        View Listings
+                        View All Listings
                       </Typography>
                     </Stack>
                   </Stack>
@@ -865,20 +878,21 @@ const PropertyDetail: NextPage = ({ initialComment, ...props }: any) => {
                 </Stack>
                 <Stack className={"info-box"}>
                   <Typography className={"sub-title"}>Email</Typography>
-                  <input type={"text"} placeholder={"creativelayers088"} />
+                  <input type={"text"} placeholder={"your.email@example.com"} />
                 </Stack>
                 <Stack className={"info-box"}>
                   <Typography className={"sub-title"}>Message</Typography>
                   <textarea
                     placeholder={
-                      "Hello, I am interested in \n" +
-                      "[Renovated property at  floor]"
+                      "Hello, I am interested in this vehicle...\nPlease contact me."
                     }
                   ></textarea>
                 </Stack>
                 <Stack className={"info-box"}>
                   <Button className={"send-message"}>
-                    <Typography className={"title"}>Send Message</Typography>
+                    <Typography className={"title"}>
+                      Request Test Drive
+                    </Typography>
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
                       width="17"
@@ -907,15 +921,15 @@ const PropertyDetail: NextPage = ({ initialComment, ...props }: any) => {
                 </Stack>
               </Stack>
             </Stack>
-            {destinationProperty.length !== 0 && (
+            {destinationCars.length !== 0 && (
               <Stack className={"similar-properties-config"}>
                 <Stack className={"title-pagination-box"}>
                   <Stack className={"title-box"}>
                     <Typography className={"main-title"}>
-                      Destination Property
+                      Similar Vehicles
                     </Typography>
                     <Typography className={"sub-title"}>
-                      Aliquam lacinia diam quis lacus euismod
+                      Browse similar cars in your area
                     </Typography>
                   </Stack>
                   <Stack className={"pagination-box"}>
@@ -938,16 +952,16 @@ const PropertyDetail: NextPage = ({ initialComment, ...props }: any) => {
                       el: ".swiper-similar-pagination",
                     }}
                   >
-                    {destinationProperty.map((property: Property) => {
+                    {destinationCars.map((property: Car) => {
                       return (
                         <SwiperSlide
                           className={"similar-homes-slide"}
-                          key={property.propertyTitle}
+                          key={car.carTitle}
                         >
-                          <PropertyBigCard
+                          <CarBigCard
                             property={property}
-                            likePropertyHandler={likePropertyHandler}
-                            key={property?._id}
+                            likeCarHandler={likeCarHandler}
+                            key={car?._id}
                           />
                         </SwiperSlide>
                       );
@@ -963,7 +977,7 @@ const PropertyDetail: NextPage = ({ initialComment, ...props }: any) => {
   }
 };
 
-PropertyDetail.defaultProps = {
+CarDetail.defaultProps = {
   initialComment: {
     page: 1,
     limit: 5,
@@ -975,4 +989,4 @@ PropertyDetail.defaultProps = {
   },
 };
 
-export default withLayoutFull(PropertyDetail);
+export default withLayoutFull(CarDetail);

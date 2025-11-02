@@ -3,15 +3,15 @@ import { useState } from "react";
 import useDeviceDetect from "../libs/hooks/useDeviceDetect";
 import withLayoutMain from "../libs/components/layout/LayoutHome";
 import CommunityBoards from "../libs/components/homepage/CommunityBoards";
-import PopularProperties from "../libs/components/homepage/PopularProperties";
+import PopularCars from "../libs/components/homepage/PopularCars";
 import TopAgents from "../libs/components/homepage/TopAgents";
 import Events from "../libs/components/homepage/Events";
-import TrendProperties from "../libs/components/homepage/TrendProperties";
-import TopProperties from "../libs/components/homepage/TopProperties";
+import TrendCars from "../libs/components/homepage/TrendCars";
+import TopCars from "../libs/components/homepage/TopCars";
 import { Stack } from "@mui/material";
 import Advertisement from "../libs/components/homepage/Advertisement";
 import { serverSideTranslations } from "next-i18next/serverSideTranslations";
-import { Property } from "../libs/types/property/property";
+import { Car } from "../libs/types/car/car";
 
 export const getStaticProps = async ({ locale }: any) => ({
   props: {
@@ -21,32 +21,32 @@ export const getStaticProps = async ({ locale }: any) => ({
 
 const Home: NextPage = (props: any) => {
   const device = useDeviceDetect();
-  const { setTrendingProperty } = props;
+  const { setTrendingCar } = props;
 
-  const handlePropertiesLoaded = (property: Property | undefined) => {
-    console.log("handlePropertiesLoaded called with:", property);
-    if (setTrendingProperty) {
-      setTrendingProperty(property);
+  const handleCarsLoaded = (car: Car | undefined) => {
+    console.log("handleCarsLoaded called with:", car);
+    if (setTrendingCar) {
+      setTrendingCar(car);
     }
   };
 
   if (device === "mobile") {
     return (
       <Stack className={"home-page"}>
-        <TrendProperties onPropertiesLoaded={handlePropertiesLoaded} />
-        <PopularProperties />
+        <TrendCars onCarsLoaded={handleCarsLoaded} />
+        <PopularCars />
         <Advertisement />
-        <TopProperties />
+        <TopCars />
         <TopAgents />
       </Stack>
     );
   } else {
     return (
       <Stack className={"home-page"}>
-        <TrendProperties onPropertiesLoaded={handlePropertiesLoaded} />
-        <PopularProperties />
+        <TrendCars onCarsLoaded={handleCarsLoaded} />
+        <PopularCars />
         <Advertisement />
-        <TopProperties />
+        <TopCars />
         <TopAgents />
         <Events />
         <CommunityBoards />

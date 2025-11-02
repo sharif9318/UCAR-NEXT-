@@ -100,7 +100,7 @@ const InteractiveNavbar = () => {
           </div>
         </Link>
 
-        <Link href={"/property"}>
+        <Link href={"/car"}>
           <div className="menu-item">
             <span className="icon">
               <DirectionsCarIcon sx={{ fontSize: 32 }} />

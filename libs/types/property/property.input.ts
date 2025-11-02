@@ -1,37 +1,37 @@
-import { PropertyLocation, PropertyStatus, PropertyType } from '../../enums/property.enum';
+import { CarLocation, CarStatus, CarType } from '../../enums/car.enum';
 import { Direction } from '../../enums/common.enum';
 
 export interface PropertyInput {
-	propertyType: PropertyType;
-	propertyLocation: PropertyLocation;
-	propertyAddress: string;
-	propertyTitle: string;
-	propertyPrice: number;
-	propertySquare: number;
-	propertyBeds: number;
-	propertyRooms: number;
-	propertyImages: string[];
+	carType: CarType;
+	carLocation: CarLocation;
+	carAddress: string;
+	carTitle: string;
+	carPrice: number;
+	carMileage: number;
+	carYear: number;
+	carSeats: number;
+	carImages: string[];
 	propertyDesc?: string;
-	propertyBarter?: boolean;
-	propertyRent?: boolean;
+	carTradeIn?: boolean;
+	carLease?: boolean;
 	memberId?: string;
-	constructedAt?: Date;
+	manufacturedAt?: Date;
 }
 
 interface PISearch {
 	memberId?: string;
-	locationList?: PropertyLocation[];
-	typeList?: PropertyType[];
-	roomsList?: Number[];
+	locationList?: CarLocation[];
+	typeList?: CarType[];
+	seatsList?: Number[];
 	options?: string[];
-	bedsList?: Number[];
+	yearsList?: Number[];
 	pricesRange?: Range;
 	periodsRange?: PeriodsRange;
-	squaresRange?: Range;
+	mileageRange?: Range;
 	text?: string;
 }
 
-export interface PropertiesInquiry {
+export interface CarsInquiry {
 	page: number;
 	limit: number;
 	sort?: string;
@@ -40,10 +40,10 @@ export interface PropertiesInquiry {
 }
 
 interface APISearch {
-	propertyStatus?: PropertyStatus;
+	carStatus?: CarStatus;
 }
 
-export interface AgentPropertiesInquiry {
+export interface AgentCarsInquiry {
 	page: number;
 	limit: number;
 	sort?: string;
@@ -52,11 +52,11 @@ export interface AgentPropertiesInquiry {
 }
 
 interface ALPISearch {
-	propertyStatus?: PropertyStatus;
-	propertyLocationList?: PropertyLocation[];
+	carStatus?: CarStatus;
+	carLocationList?: CarLocation[];
 }
 
-export interface AllPropertiesInquiry {
+export interface AllCarsInquiry {
 	page: number;
 	limit: number;
 	sort?: string;

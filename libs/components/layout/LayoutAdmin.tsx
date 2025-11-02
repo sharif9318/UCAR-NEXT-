@@ -46,7 +46,7 @@ const withAdminLayout = (Component: ComponentType) => {
 
 		/** HANDLERS **/
 		const handleOpenUserMenu = (event: React.MouseEvent<HTMLElement>) => {
-			setAnchorElUser(event.currentTarget);
+			setAnchorElUser(event.curleaseTarget);
 		};
 
 		const handleCloseUserMenu = () => {

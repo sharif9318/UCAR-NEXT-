@@ -2,50 +2,50 @@ import React, { useRef, useState } from "react";
 import { Stack, Box, Typography, IconButton } from "@mui/material";
 import useDeviceDetect from "../../hooks/useDeviceDetect";
 import FavoriteIcon from "@mui/icons-material/Favorite";
-import { Property } from "../../types/property/property";
+import { Car } from "../../types/car/car";
 import RemoveRedEyeIcon from "@mui/icons-material/RemoveRedEye";
 import { REACT_APP_API_URL } from "../../config";
 import { useRouter } from "next/router";
 import { useReactiveVar } from "@apollo/client";
 import { userVar } from "../../../apollo/store";
 
-interface TrendPropertyCardProps {
-  property: Property;
-  likePropertyHandler: any;
+interface TrendCarCardProps {
+  car: Car;
+  likeCarHandler: any;
   index: number;
 }
 
-const TrendPropertyCard = (props: TrendPropertyCardProps) => {
-  const { property, likePropertyHandler, index } = props;
+const TrendCarCard = (props: TrendCarCardProps) => {
+  const { car, likeCarHandler, index } = props;
   const device = useDeviceDetect();
   const router = useRouter();
   const user = useReactiveVar(userVar);
   const videoRef = useRef<HTMLVideoElement>(null);
   const [isVideoLoaded, setIsVideoLoaded] = useState(false);
 
-  // Find video file in propertyImages
-  const videoFile = property.propertyImages?.find(
+  // Find video file in carImages
+  const videoFile = car.carImages?.find(
     (img) =>
       img.includes(".mp4") || img.includes(".webm") || img.includes(".mov")
   );
 
   // Fallback to first image if no video
-  const mediaFile = videoFile || property.propertyImages?.[0];
+  const mediaFile = videoFile || car.carImages?.[0];
   const isVideo = videoFile ? true : false;
 
   /** HANDLERS **/
 
-  const pushDetailHandler = async (propertyId: string) => {
-    console.log("propertyId:", propertyId);
+  const pushDetailHandler = async (carId: string) => {
+    console.log("carId:", carId);
     await router.push({
-      pathname: "/property/detail",
-      query: { id: propertyId },
+      pathname: "/car/detail",
+      query: { id: carId },
     });
   };
 
   if (device === "mobile") {
     return (
-      <Stack className="trend-card-box" key={property._id}>
+      <Stack className="trend-card-box" key={car._id}>
         <Box className="card-wrapper">
           <Typography className="rank-number">{index + 1}</Typography>
 
@@ -59,7 +59,7 @@ const TrendPropertyCard = (props: TrendPropertyCardProps) => {
                 muted
                 playsInline
                 onLoadedData={() => setIsVideoLoaded(true)}
-                onClick={() => pushDetailHandler(property._id)}
+                onClick={() => pushDetailHandler(car._id)}
               >
                 <source
                   src={`${REACT_APP_API_URL}/${mediaFile}`}
@@ -73,15 +73,15 @@ const TrendPropertyCard = (props: TrendPropertyCardProps) => {
                 style={{
                   backgroundImage: `url(${REACT_APP_API_URL}/${mediaFile})`,
                 }}
-                onClick={() => pushDetailHandler(property._id)}
+                onClick={() => pushDetailHandler(car._id)}
               />
             )}
 
             <Box className="netflix-badge">UCAR</Box>
-            <div className="price-badge">${property.propertyPrice}</div>
+            <div className="price-badge">${car.carPrice}</div>
 
             <Box className="info">
-              <strong className={"title"}>{property.propertyTitle}</strong>
+              <strong className={"title"}>{car.carTitle}</strong>
             </Box>
           </Box>
         </Box>
@@ -91,30 +91,26 @@ const TrendPropertyCard = (props: TrendPropertyCardProps) => {
             <IconButton size="small" color={"default"}>
               <RemoveRedEyeIcon fontSize="small" />
             </IconButton>
-            <Typography className="view-cnt">
-              {property?.propertyViews}
-            </Typography>
+            <Typography className="view-cnt">{car?.carViews}</Typography>
             <IconButton
               size="small"
               color={"default"}
-              onClick={() => likePropertyHandler(user, property?._id)}
+              onClick={() => likeCarHandler(user, car?._id)}
             >
-              {property?.meLiked && property?.meLiked[0]?.myFavorite ? (
+              {car?.meLiked && car?.meLiked[0]?.myFavorite ? (
                 <FavoriteIcon style={{ color: "red" }} fontSize="small" />
               ) : (
                 <FavoriteIcon fontSize="small" />
               )}
             </IconButton>
-            <Typography className="view-cnt">
-              {property?.propertyLikes}
-            </Typography>
+            <Typography className="view-cnt">{car?.carLikes}</Typography>
           </div>
         </Box>
       </Stack>
     );
   } else {
     return (
-      <Stack className="trend-card-box" key={property._id}>
+      <Stack className="trend-card-box" key={car._id}>
         <Box className="card-wrapper">
           <Typography className="rank-number">{index + 1}</Typography>
 
@@ -128,7 +124,7 @@ const TrendPropertyCard = (props: TrendPropertyCardProps) => {
                 muted
                 playsInline
                 onLoadedData={() => setIsVideoLoaded(true)}
-                onClick={() => pushDetailHandler(property._id)}
+                onClick={() => pushDetailHandler(car._id)}
               >
                 <source
                   src={`${REACT_APP_API_URL}/${mediaFile}`}
@@ -142,17 +138,17 @@ const TrendPropertyCard = (props: TrendPropertyCardProps) => {
                 style={{
                   backgroundImage: `url(${REACT_APP_API_URL}/${mediaFile})`,
                 }}
-                onClick={() => pushDetailHandler(property._id)}
+                onClick={() => pushDetailHandler(car._id)}
               />
             )}
 
             <Box className="logo">
               <img src="/img/logo/ucar_logo (1)2.svg" />
             </Box>
-            <div className="price-badge">{property.propertyPrice}₩</div>
+            <div className="price-badge">{car.carPrice}₩</div>
 
             <Box className="info">
-              <strong className={"title"}>{property.propertyTitle}</strong>
+              <strong className={"title"}>{car.carTitle}</strong>
             </Box>
           </Box>
         </Box>
@@ -162,23 +158,19 @@ const TrendPropertyCard = (props: TrendPropertyCardProps) => {
             <IconButton size="small" sx={{ color: "white" }}>
               <RemoveRedEyeIcon fontSize="small" />
             </IconButton>
-            <Typography className="view-cnt">
-              {property?.propertyViews}
-            </Typography>
+            <Typography className="view-cnt">{car?.carViews}</Typography>
             <IconButton
               size="small"
               sx={{ color: "white" }}
-              onClick={() => likePropertyHandler(user, property?._id)}
+              onClick={() => likeCarHandler(user, car?._id)}
             >
-              {property?.meLiked && property?.meLiked[0]?.myFavorite ? (
+              {car?.meLiked && car?.meLiked[0]?.myFavorite ? (
                 <FavoriteIcon style={{ color: "red" }} fontSize="small" />
               ) : (
                 <FavoriteIcon fontSize="small" />
               )}
             </IconButton>
-            <Typography className="view-cnt">
-              {property?.propertyLikes}
-            </Typography>
+            <Typography className="view-cnt">{car?.carLikes}</Typography>
           </div>
         </Box>
       </Stack>
@@ -186,4 +178,4 @@ const TrendPropertyCard = (props: TrendPropertyCardProps) => {
   }
 };
 
-export default TrendPropertyCard;
+export default TrendCarCard;

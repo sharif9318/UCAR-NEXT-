@@ -1,4 +1,4 @@
-import { PropertyLocation, PropertyStatus, PropertyType } from '../../enums/property.enum';
+import { CarLocation, CarStatus, CarType } from '../../enums/car.enum';
 import { Member } from '../member/member';
 
 export interface MeLiked {
@@ -13,27 +13,27 @@ export interface TotalCounter {
 
 export interface Property {
 	_id: string;
-	propertyType: PropertyType;
-	propertyStatus: PropertyStatus;
-	propertyLocation: PropertyLocation;
-	propertyAddress: string;
-	propertyTitle: string;
-	propertyPrice: number;
-	propertySquare: number;
-	propertyBeds: number;
-	propertyRooms: number;
-	propertyViews: number;
-	propertyLikes: number;
+	carType: CarType;
+	carStatus: CarStatus;
+	carLocation: CarLocation;
+	carAddress: string;
+	carTitle: string;
+	carPrice: number;
+	carMileage: number;
+	carYear: number;
+	carSeats: number;
+	carViews: number;
+	carLikes: number;
 	propertyComments: number;
-	propertyRank: number;
-	propertyImages: string[];
+	carRank: number;
+	carImages: string[];
 	propertyDesc?: string;
-	propertyBarter: boolean;
-	propertyRent: boolean;
+	carTradeIn: boolean;
+	carLease: boolean;
 	memberId: string;
 	soldAt?: Date;
 	deletedAt?: Date;
-	constructedAt?: Date;
+	manufacturedAt?: Date;
 	createdAt: Date;
 	updatedAt: Date;
 	/** from aggregation **/
@@ -42,6 +42,6 @@ export interface Property {
 }
 
 export interface Properties {
-	list: Property[];
+	list: Car[];
 	metaCounter: TotalCounter[];
 }

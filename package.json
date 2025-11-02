@@ -75,7 +75,7 @@
     "subscriptions-transport-ws": "^0.9.19",
     "sweetalert2": "^11.7.27",
     "swiper": "^8.3.1",
-    "three": "0.143.0",
+    "three": "^0.181.0",
     "valtio": "1.10.3",
     "view": "^1.1.1"
   },

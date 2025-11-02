@@ -1,54 +1,82 @@
-import React from "react";
+import React, { memo, useMemo } from "react";
 import { Stack, Typography, Box } from "@mui/material";
 import useDeviceDetect from "../../hooks/useDeviceDetect";
 import FavoriteIcon from "@mui/icons-material/Favorite";
 import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
-import { Property } from "../../types/property/property";
+import { Car } from "../../types/car/car";
 import Link from "next/link";
 import { formatterStr } from "../../utils";
-import { REACT_APP_API_URL, topPropertyRank } from "../../config";
+import { REACT_APP_API_URL, topCarRank } from "../../config";
 import { useReactiveVar } from "@apollo/client";
 import { userVar } from "../../../apollo/store";
 import IconButton from "@mui/material/IconButton";
 import RemoveRedEyeIcon from "@mui/icons-material/RemoveRedEye";
 
-interface PropertyCardType {
-  property: Property;
-  likePropertyHandler?: any;
+interface CarCardType {
+  car: Car;
+  likeCarHandler?: (user: any, id: string) => Promise<void>;
   myFavorites?: boolean;
   recentlyVisited?: boolean;
 }
 
-const PropertyCard = (props: PropertyCardType) => {
-  const { property, likePropertyHandler, myFavorites, recentlyVisited } = props;
+const CarCard = memo((props: CarCardType) => {
+  const { car, likeCarHandler, myFavorites, recentlyVisited } = props;
   const device = useDeviceDetect();
   const user = useReactiveVar(userVar);
-  const imagePath: string = property?.propertyImages[0]
-    ? `${REACT_APP_API_URL}/${property?.propertyImages[0]}`
-    : "/img/banner/header1.svg";
+  
+  const imagePath = useMemo(
+    () =>
+      car?.carImages?.[0]
+        ? `${REACT_APP_API_URL}/${car.carImages[0]}`
+        : "/img/banner/header1.svg",
+    [car?.carImages]
+  );
+
+  const isTopCar = useMemo(
+    () => car?.carRank && car.carRank > topCarRank,
+    [car?.carRank]
+  );
+
+  const isLiked = useMemo(
+    () => myFavorites || (car?.meLiked?.[0]?.myFavorite ?? false),
+    [myFavorites, car?.meLiked]
+  );
+
+  const handleLikeClick = useMemo(
+    () =>
+      likeCarHandler && user?._id
+        ? () => likeCarHandler(user, car?._id)
+        : undefined,
+    [likeCarHandler, user, car?._id]
+  );
 
   if (device === "mobile") {
-    return <div>PROPERTY CARD</div>;
+    return <div>CAR CARD</div>;
   } else {
     return (
       <Stack className="card-config">
         <Stack className="top">
           <Link
             href={{
-              pathname: "/property/detail",
-              query: { id: property?._id },
+              pathname: "/car/detail",
+              query: { id: car?._id },
             }}
           >
-            <img src={imagePath} alt="" />
+            <img
+              src={imagePath}
+              alt={car?.carTitle || "Car image"}
+              loading="lazy"
+              style={{ width: "100%", height: "100%", objectFit: "cover" }}
+            />
           </Link>
-          {property && property?.propertyRank > topPropertyRank && (
+          {isTopCar && (
             <Box component={"div"} className={"top-badge"}>
-              <img src="/img/icons/electricity.svg" alt="" />
+              <img src="/img/icons/electricity.svg" alt="Top car badge" />
               <Typography>TOP</Typography>
             </Box>
           )}
           <Box component={"div"} className={"price-box"}>
-            <Typography>${formatterStr(property?.propertyPrice)}</Typography>
+            <Typography>${formatterStr(car?.carPrice)}</Typography>
           </Box>
         </Stack>
         <Stack className="bottom">
@@ -56,31 +84,31 @@ const PropertyCard = (props: PropertyCardType) => {
             <Stack className="name">
               <Link
                 href={{
-                  pathname: "/property/detail",
-                  query: { id: property?._id },
+                  pathname: "/car/detail",
+                  query: { id: car?._id },
                 }}
               >
-                <Typography>{property.propertyTitle}</Typography>
+                <Typography>{car.carTitle}</Typography>
               </Link>
             </Stack>
             <Stack className="address">
               <Typography>
-                {property.propertyAddress}, {property.propertyLocation}
+                {car.carAddress}, {car.carLocation}
               </Typography>
             </Stack>
           </Stack>
           <Stack className="options">
             <Stack className="option">
-              <img src="/img/icons/bed.svg" alt="" />{" "}
-              <Typography>{property.propertyBeds} bed</Typography>
+              <img src="/img/icons/year.svg" alt="" />{" "}
+              <Typography>{car.carYear} year</Typography>
             </Stack>
             <Stack className="option">
-              <img src="/img/icons/room.svg" alt="" />{" "}
-              <Typography>{property.propertyRooms} room</Typography>
+              <img src="/img/icons/seat.svg" alt="" />{" "}
+              <Typography>{car.carSeats} seat</Typography>
             </Stack>
             <Stack className="option">
               <img src="/img/icons/expand.svg" alt="" />{" "}
-              <Typography>{property.propertySquare} m2</Typography>
+              <Typography>{car.carMileage} km</Typography>
             </Stack>
           </Stack>
           <Stack className="divider"></Stack>
@@ -88,15 +116,15 @@ const PropertyCard = (props: PropertyCardType) => {
             <Stack className="type">
               <Typography
                 sx={{ fontWeight: 500, fontSize: "13px" }}
-                className={property.propertyRent ? "" : "disabled-type"}
+                className={car.carLease ? "" : "disabled-type"}
               >
-                Rent
+                Lease
               </Typography>
               <Typography
                 sx={{ fontWeight: 500, fontSize: "13px" }}
-                className={property.propertyBarter ? "" : "disabled-type"}
+                className={car.carTradeIn ? "" : "disabled-type"}
               >
-                Barter
+                Trade-In
               </Typography>
             </Stack>
             {!recentlyVisited && (
@@ -104,24 +132,19 @@ const PropertyCard = (props: PropertyCardType) => {
                 <IconButton color={"default"}>
                   <RemoveRedEyeIcon />
                 </IconButton>
-                <Typography className="view-cnt">
-                  {property?.propertyViews}
-                </Typography>
+                <Typography className="view-cnt">{car?.carViews}</Typography>
                 <IconButton
                   color={"default"}
-                  onClick={() => likePropertyHandler(user, property?._id)}
+                  onClick={handleLikeClick}
+                  disabled={!handleLikeClick}
                 >
-                  {myFavorites ? (
-                    <FavoriteIcon color="primary" />
-                  ) : property?.meLiked && property?.meLiked[0]?.myFavorite ? (
+                  {isLiked ? (
                     <FavoriteIcon color="primary" />
                   ) : (
                     <FavoriteBorderIcon />
                   )}
                 </IconButton>
-                <Typography className="view-cnt">
-                  {property?.propertyLikes}
-                </Typography>
+                <Typography className="view-cnt">{car?.carLikes}</Typography>
               </Stack>
             )}
           </Stack>
@@ -129,6 +152,8 @@ const PropertyCard = (props: PropertyCardType) => {
       </Stack>
     );
   }
-};
+});
 
-export default PropertyCard;
+CarCard.displayName = "CarCard";
+
+export default CarCard;

@@ -1,16 +1,16 @@
-export enum PropertyType {
+export enum CarType {
 	APARTMENT = 'APARTMENT',
 	VILLA = 'VILLA',
 	HOUSE = 'HOUSE',
 }
 
-export enum PropertyStatus {
+export enum CarStatus {
 	ACTIVE = 'ACTIVE',
 	SOLD = 'SOLD',
 	DELETE = 'DELETE',
 }
 
-export enum PropertyLocation {
+export enum CarLocation {
 	SEOUL = 'SEOUL',
 	BUSAN = 'BUSAN',
 	INCHEON = 'INCHEON',

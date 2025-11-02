@@ -1,21 +1,21 @@
-import { PropertyLocation, PropertyStatus, PropertyType } from '../../enums/property.enum';
+import { CarLocation, CarStatus, CarType } from '../../enums/car.enum';
 
 export interface PropertyUpdate {
 	_id: string;
-	propertyType?: PropertyType;
-	propertyStatus?: PropertyStatus;
-	propertyLocation?: PropertyLocation;
-	propertyAddress?: string;
-	propertyTitle?: string;
-	propertyPrice?: number;
-	propertySquare?: number;
-	propertyBeds?: number;
-	propertyRooms?: number;
-	propertyImages?: string[];
+	carType?: CarType;
+	carStatus?: CarStatus;
+	carLocation?: CarLocation;
+	carAddress?: string;
+	carTitle?: string;
+	carPrice?: number;
+	carMileage?: number;
+	carYear?: number;
+	carSeats?: number;
+	carImages?: string[];
 	propertyDesc?: string;
-	propertyBarter?: boolean;
-	propertyRent?: boolean;
+	carTradeIn?: boolean;
+	carLease?: boolean;
 	soldAt?: Date;
 	deletedAt?: Date;
-	constructedAt?: Date;
+	manufacturedAt?: Date;
 }
