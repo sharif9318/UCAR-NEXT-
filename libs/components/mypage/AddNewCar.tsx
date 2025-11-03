@@ -1,15 +1,18 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { useRouter } from "next/router";
-import { Button, Stack, Typography } from "@mui/material";
+import { Button, Stack, Typography, Box } from "@mui/material";
 import useDeviceDetect from "../../hooks/useDeviceDetect";
 import { CarLocation, CarType } from "../../enums/car.enum";
 import { REACT_APP_API_URL, carMileage, carYears } from "../../config";
 import { CarInput } from "../../types/car/car.input";
+import { CarUpdate } from "../../types/car/car.update";
 import axios from "axios";
 import { getJwtToken } from "../../auth";
-import { sweetMixinErrorAlert } from "../../sweetAlert";
-import { useReactiveVar } from "@apollo/client";
+import { sweetMixinErrorAlert, sweetMixinSuccessAlert } from "../../sweetAlert";
+import { useMutation, useReactiveVar } from "@apollo/client";
 import { userVar } from "../../../apollo/store";
+import { CREATE_CAR, UPDATE_CAR } from "../../../apollo/user/mutation";
+import Panorama360Modal from "../common/Panorama360Modal";
 
 const AddNewCar = ({ initialValues, ...props }: any) => {
   const device = useDeviceDetect();
@@ -23,9 +26,13 @@ const AddNewCar = ({ initialValues, ...props }: any) => {
   );
   const token = getJwtToken();
   const user = useReactiveVar(userVar);
+  const [show360Modal, setShow360Modal] = useState(false);
 
   /** APOLLO REQUESTS **/
   let getCarData: any, getCarLoading: any;
+
+  const [createCar] = useMutation(CREATE_CAR);
+  const [updateCar] = useMutation(UPDATE_CAR);
 
   /** LIFECYCLES **/
   useEffect(() => {
@@ -68,7 +75,7 @@ const AddNewCar = ({ initialValues, ...props }: any) => {
 				  }`,
           variables: {
             files: [null, null, null, null, null],
-            target: "car",
+            target: "car360",
           },
         })
       );
@@ -196,9 +203,91 @@ const AddNewCar = ({ initialValues, ...props }: any) => {
     return false;
   };
 
-  const insertCarHandler = useCallback(async () => {}, [insertCarData]);
+  const insertCarHandler = useCallback(async () => {
+    try {
+      if (doDisabledCheck()) return;
 
-  const updateCarHandler = useCallback(async () => {}, [insertCarData]);
+      const input: CarInput = {
+        carTitle: insertCarData.carTitle,
+        carPrice: insertCarData.carPrice,
+        carType: insertCarData.carType as CarType,
+        carLocation: insertCarData.carLocation as CarLocation,
+        carAddress: insertCarData.carAddress,
+        carTradeIn: insertCarData.carTradeIn,
+        carLease: insertCarData.carLease,
+        carSeats: insertCarData.carSeats,
+        carYear: insertCarData.carYear,
+        carMileage: insertCarData.carMileage,
+        carDesc: insertCarData.carDesc || "",
+        carImages: insertCarData.carImages,
+        car360Images: insertCarData.car360Images || [],
+        manufacturedAt: insertCarData.manufacturedAt,
+      };
+
+      console.log("Creating car with data:", input);
+
+      const result = await createCar({
+        variables: { input },
+      });
+
+      if (result.data?.createCar) {
+        console.log("Car created successfully:", result.data.createCar);
+        // Show success message
+        await sweetMixinSuccessAlert("Car created successfully!");
+        // Redirect to car detail or cars list
+        await router.push(`/car/detail?carId=${result.data.createCar._id}`);
+      }
+    } catch (err: any) {
+      console.error("Error creating car:", err);
+      await sweetMixinErrorAlert(err.message || "Failed to create car");
+    }
+  }, [insertCarData, createCar, router]);
+
+  const updateCarHandler = useCallback(async () => {
+    try {
+      if (doDisabledCheck()) return;
+
+      const carId = router.query.carId as string;
+      if (!carId) {
+        throw new Error("Car ID is required for update");
+      }
+
+      const input: CarUpdate = {
+        _id: carId,
+        carTitle: insertCarData.carTitle,
+        carPrice: insertCarData.carPrice,
+        carType: insertCarData.carType as CarType,
+        carLocation: insertCarData.carLocation as CarLocation,
+        carAddress: insertCarData.carAddress,
+        carTradeIn: insertCarData.carTradeIn,
+        carLease: insertCarData.carLease,
+        carSeats: insertCarData.carSeats,
+        carYear: insertCarData.carYear,
+        carMileage: insertCarData.carMileage,
+        carDesc: insertCarData.carDesc || "",
+        carImages: insertCarData.carImages,
+        car360Images: insertCarData.car360Images || [],
+        manufacturedAt: insertCarData.manufacturedAt,
+      };
+
+      console.log("Updating car with data:", input);
+
+      const result = await updateCar({
+        variables: { input },
+      });
+
+      if (result.data?.updateCar) {
+        console.log("Car updated successfully:", result.data.updateCar);
+        // Show success message
+        await sweetMixinSuccessAlert("Car updated successfully!");
+        // Redirect to car detail
+        await router.push(`/car/detail?carId=${result.data.updateCar._id}`);
+      }
+    } catch (err: any) {
+      console.error("Error updating car:", err);
+      await sweetMixinErrorAlert(err.message || "Failed to update car");
+    }
+  }, [insertCarData, updateCar, router]);
 
   if (user?.memberType !== "AGENT") {
     router.back();
@@ -562,7 +651,8 @@ const AddNewCar = ({ initialValues, ...props }: any) => {
                     Drag and drop images here
                   </Typography>
                   <Typography className="format-title">
-                    Photos must be JPEG or PNG format and least 2048x768
+                    Photos must be JPEG, JPG, PNG, or AVIF format and least
+                    2048x768
                   </Typography>
                 </Stack>
                 <Button
@@ -580,7 +670,7 @@ const AddNewCar = ({ initialValues, ...props }: any) => {
                     hidden={true}
                     onChange={uploadImages}
                     multiple={true}
-                    accept="image/jpg, image/jpeg, image/png"
+                    accept="image/jpeg, image/jpg, image/png, image/avif"
                   />
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
@@ -628,32 +718,73 @@ const AddNewCar = ({ initialValues, ...props }: any) => {
                 >
                   360° Images
                 </Typography>
-                <Button
-                  className="browse-button"
-                  onClick={() => {
-                    car360Ref.current?.click();
-                  }}
-                >
-                  <Typography className="browse-button-text">
-                    Browse 360° Files
-                  </Typography>
-                  <input
-                    ref={car360Ref}
-                    type="file"
-                    hidden={true}
-                    onChange={upload360Images}
-                    multiple={true}
-                    accept="image/jpg, image/jpeg, image/png"
-                  />
-                </Button>
+                <Stack direction="row" spacing={2}>
+                  <Button
+                    className="browse-button"
+                    onClick={() => {
+                      car360Ref.current?.click();
+                    }}
+                  >
+                    <Typography className="browse-button-text">
+                      Browse 360° Files
+                    </Typography>
+                    <input
+                      ref={car360Ref}
+                      type="file"
+                      hidden={true}
+                      onChange={upload360Images}
+                      multiple={true}
+                      accept="image/jpeg, image/jpg, image/png, image/avif"
+                    />
+                  </Button>
+                  {insertCarData?.car360Images &&
+                    insertCarData.car360Images.length > 0 && (
+                      <Button
+                        variant="outlined"
+                        onClick={() => setShow360Modal(true)}
+                        sx={{
+                          borderColor: "#181A20",
+                          color: "#181A20",
+                          "&:hover": {
+                            borderColor: "#181A20",
+                            backgroundColor: "rgba(24, 26, 32, 0.04)",
+                          },
+                        }}
+                      >
+                        <Typography style={{ fontSize: "14px" }}>
+                          Preview 360° View
+                        </Typography>
+                      </Button>
+                    )}
+                </Stack>
               </Stack>
               <Stack className="gallery-box">
                 {insertCarData?.car360Images?.map(
                   (image: string, index: number) => {
                     const imagePath: string = `${REACT_APP_API_URL}/${image}`;
                     return (
-                      <Stack className="image-box" key={index}>
+                      <Stack
+                        className="image-box"
+                        key={index}
+                        sx={{ position: "relative" }}
+                      >
                         <img src={imagePath} alt={`360° ${index + 1}`} />
+                        {/* 360° indicator */}
+                        <Box
+                          sx={{
+                            position: "absolute",
+                            top: 8,
+                            left: 8,
+                            backgroundColor: "rgba(0,0,0,0.7)",
+                            color: "white",
+                            padding: "4px 8px",
+                            borderRadius: "4px",
+                            fontSize: "10px",
+                            fontWeight: "bold",
+                          }}
+                        >
+                          360°
+                        </Box>
                       </Stack>
                     );
                   }
@@ -682,6 +813,13 @@ const AddNewCar = ({ initialValues, ...props }: any) => {
             </Stack>
           </Stack>
         </div>
+
+        {/* 360° Image Viewer Modal */}
+        <Panorama360Modal
+          open={show360Modal}
+          onClose={() => setShow360Modal(false)}
+          images={insertCarData?.car360Images || []}
+        />
       </div>
     );
   }

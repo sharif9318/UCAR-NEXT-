@@ -13,6 +13,7 @@ import Review from "../../libs/components/car/Review";
 import { Swiper, SwiperSlide } from "swiper/react";
 import SwiperCore, { Autoplay, Navigation, Pagination } from "swiper";
 import CarBigCard from "../../libs/components/common/CarBigCard";
+import Car360Viewer from "../../libs/components/car/Car360Viewer";
 import FavoriteIcon from "@mui/icons-material/Favorite";
 import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
 import WestIcon from "@mui/icons-material/West";
@@ -476,6 +477,41 @@ const CarDetail: NextPage = ({ initialComment, ...props }: any) => {
                       </Stack>
                     );
                   })}
+
+                  {/* 360° Images Section */}
+                  {car?.car360Images &&
+                    car.car360Images.length > 0 &&
+                    car.car360Images.map((img360: string, index: number) => {
+                      const imagePath: string = `${REACT_APP_API_URL}/${img360}`;
+                      return (
+                        <Stack
+                          className={"sub-img-box"}
+                          key={`360-${index}`}
+                          sx={{ position: "relative", cursor: "pointer" }}
+                        >
+                          <Car360Viewer
+                            car360Images={[img360]}
+                            variant="thumbnail"
+                          />
+                          <Box
+                            sx={{
+                              position: "absolute",
+                              bottom: 4,
+                              left: 4,
+                              backgroundColor: "rgba(0,0,0,0.8)",
+                              color: "white",
+                              padding: "2px 6px",
+                              borderRadius: "3px",
+                              fontSize: "8px",
+                              fontWeight: "bold",
+                              zIndex: 2,
+                            }}
+                          >
+                            360°
+                          </Box>
+                        </Stack>
+                      );
+                    })}
                 </Stack>
               </Stack>
             </Stack>
@@ -680,7 +716,29 @@ const CarDetail: NextPage = ({ initialComment, ...props }: any) => {
                     360° Interior View
                   </Typography>
                   <Stack className={"image-box"}>
-                    <img src={"/img/cars/interior.png"} alt={"interior"} />
+                    {car?.car360Images && car.car360Images.length > 0 ? (
+                      <Stack direction="row" spacing={2} alignItems="center">
+                        <Car360Viewer
+                          car360Images={car.car360Images}
+                          buttonText="Experience Interior 360°"
+                        />
+                        <Car360Viewer
+                          car360Images={car.car360Images}
+                          variant="thumbnail"
+                        />
+                        <Typography variant="body2" color="text.secondary">
+                          {car.car360Images.length} 360° image
+                          {car.car360Images.length > 1 ? "s" : ""} available
+                        </Typography>
+                      </Stack>
+                    ) : (
+                      <Stack alignItems="center" spacing={2}>
+                        <img src={"/img/cars/interior.png"} alt={"interior"} />
+                        <Typography variant="body2" color="text.secondary">
+                          No 360° images available for this vehicle
+                        </Typography>
+                      </Stack>
+                    )}
                   </Stack>
                 </Stack>
                 <Stack className={"address-config"}>

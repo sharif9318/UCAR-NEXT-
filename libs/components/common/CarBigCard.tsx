@@ -50,6 +50,26 @@ const CarBigCard = (props: CarBigCardProps) => {
             </div>
           )}
 
+          {car?.car360Images && car.car360Images.length > 0 && (
+            <div
+              className={"car360-indicator"}
+              style={{
+                position: "absolute",
+                top: "10px",
+                left: "10px",
+                backgroundColor: "rgba(0,0,0,0.8)",
+                color: "white",
+                padding: "4px 8px",
+                borderRadius: "4px",
+                fontSize: "10px",
+                fontWeight: "bold",
+                zIndex: 2,
+              }}
+            >
+              360° ({car.car360Images.length})
+            </div>
+          )}
+
           <div className={"price"}>${formatterStr(car?.carPrice)}</div>
         </Box>
         <Box component={"div"} className={"info"}>

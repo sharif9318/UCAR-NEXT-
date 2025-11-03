@@ -23,7 +23,7 @@ const CarCard = memo((props: CarCardType) => {
   const { car, likeCarHandler, myFavorites, recentlyVisited } = props;
   const device = useDeviceDetect();
   const user = useReactiveVar(userVar);
-  
+
   const imagePath = useMemo(
     () =>
       car?.carImages?.[0]
@@ -73,6 +73,28 @@ const CarCard = memo((props: CarCardType) => {
             <Box component={"div"} className={"top-badge"}>
               <img src="/img/icons/electricity.svg" alt="Top car badge" />
               <Typography>TOP</Typography>
+            </Box>
+          )}
+          {car?.car360Images && car.car360Images.length > 0 && (
+            <Box
+              component={"div"}
+              className={"car360-badge"}
+              sx={{
+                position: "absolute",
+                top: 10,
+                left: 10,
+                backgroundColor: "rgba(0,0,0,0.8)",
+                color: "white",
+                padding: "4px 8px",
+                borderRadius: "4px",
+                fontSize: "10px",
+                fontWeight: "bold",
+                zIndex: 2,
+              }}
+            >
+              <Typography sx={{ fontSize: "10px", fontWeight: "bold" }}>
+                360° ({car.car360Images.length})
+              </Typography>
             </Box>
           )}
           <Box component={"div"} className={"price-box"}>
