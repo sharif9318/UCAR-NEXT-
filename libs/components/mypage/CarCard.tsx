@@ -54,7 +54,7 @@ export const CarCard = (props: CarCardProps) => {
     return <div>MOBILE PROPERTY CARD</div>;
   } else
     return (
-      <Stack className="property-card-box">
+      <Stack className="car-card-box">
         <Stack className="image-box" onClick={() => pushCarDetail(car?._id)}>
           <img
             src={`${process.env.REACT_APP_API_URL}/${car.carImages[0]}`}

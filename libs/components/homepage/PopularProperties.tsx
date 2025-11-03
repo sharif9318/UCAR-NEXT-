@@ -43,14 +43,14 @@ const PopularCars = (props: PopularCarsProps) => {
 
   if (device === "mobile") {
     return (
-      <Stack className={"popular-properties"}>
+      <Stack className={"popular-cars"}>
         <Stack className={"container"}>
           <Stack className={"info-box"}>
             <span>Popular Cars</span>
           </Stack>
           <Stack className={"card-box"}>
             <Swiper
-              className={"popular-property-swiper"}
+              className={"popular-car-swiper"}
               slidesPerView={"auto"}
               centeredSlides={true}
               spaceBetween={25}
@@ -71,7 +71,7 @@ const PopularCars = (props: PopularCarsProps) => {
   } else {
     return (
       <Stack
-        className={"popular-properties"}
+        className={"popular-cars"}
         sx={{
           backgroundImage:
             "url(/img/banner/arteum-ro-SkKTh9ZyTxU-unsplash.jpg)!important",
@@ -124,7 +124,7 @@ const PopularCars = (props: PopularCarsProps) => {
           </Stack>
           <Stack className={"card-box"}>
             <Swiper
-              className={"popular-property-swiper"}
+              className={"popular-car-swiper"}
               slidesPerView={"auto"}
               spaceBetween={25}
               modules={[Autoplay, Navigation, Pagination]}

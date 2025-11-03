@@ -4,14 +4,14 @@
 
 // Page-specific imports
 @import "/scss/pc/homepage/homepage";
-@import "/scss/pc/property/property";
-@import "/scss/pc/property/detail.scss";
+@import "/scss/pc/car/car";
+@import "/scss/pc/car/detail.scss";
 @import "/scss/pc/car/car";
 @import "/scss/pc/agent/agent";
 @import "/scss/pc/agent/detail.scss";
 @import "/scss/pc/mypage/mypage.scss";
-@import "/scss/pc/mypage/addNewProperty.scss";
-@import "/scss/pc/mypage/myProperties.scss";
+@import "/scss/pc/mypage/addNewCar.scss";
+@import "/scss/pc/mypage/myCars.scss";
 @import "/scss/pc/mypage/myFavorites.scss";
 @import "/scss/pc/mypage/mySaved.scss";
 @import "/scss/pc/mypage/myProfile.scss";
@@ -27,7 +27,7 @@
 @import "/scss/pc/member/memberPage.scss";
 @import "/scss/pc/member/memberFollows.scss";
 @import "/scss/pc/member/memberArticles.scss";
-@import "/scss/pc/member/memberProperties.scss";
+@import "/scss/pc/member/memberCars.scss";
 
 // ============================================
 // GLOBAL STYLES
@@ -98,8 +98,8 @@ body {
           }
         }
 
-        // Property Info Overlay
-        .property-info-overlay {
+        // Car Info Overlay
+        .car-info-overlay {
           position: absolute;
           bottom: 30px;
           left: 18%;
@@ -116,21 +116,21 @@ body {
             transform: translateY(0);
           }
 
-          .property-title {
+          .car-title {
             font-size: 1.8rem;
             font-weight: 700;
             margin-bottom: 0.8rem;
             text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);
           }
 
-          .property-desc {
+          .car-desc {
             font-size: 0.95rem;
             line-height: 1.5;
             margin-bottom: 1rem;
             text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.7);
           }
 
-          .property-details {
+          .car-details {
             display: flex;
             gap: 1rem;
             margin-bottom: 0.8rem;
@@ -145,7 +145,7 @@ body {
             }
           }
 
-          .property-price {
+          .car-price {
             font-size: 1.5rem;
             font-weight: 700;
             color: #e20c0ced;

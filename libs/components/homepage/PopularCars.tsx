@@ -50,7 +50,7 @@ const PopularCars = (props: PopularCarsProps) => {
           </Stack>
           <Stack className={"card-box"}>
             <Swiper
-              className={"popular-property-swiper"}
+              className={"popular-car-swiper"}
               slidesPerView={"auto"}
               centeredSlides={true}
               spaceBetween={25}
@@ -124,7 +124,7 @@ const PopularCars = (props: PopularCarsProps) => {
           </Stack>
           <Stack className={"card-box"}>
             <Swiper
-              className={"popular-property-swiper"}
+              className={"popular-car-swiper"}
               slidesPerView={"auto"}
               spaceBetween={25}
               modules={[Autoplay, Navigation, Pagination]}

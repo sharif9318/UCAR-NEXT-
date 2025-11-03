@@ -3,7 +3,7 @@ import { Stack, Box, Divider, Typography } from "@mui/material";
 import IconButton from "@mui/material/IconButton";
 import useDeviceDetect from "../../hooks/useDeviceDetect";
 import FavoriteIcon from "@mui/icons-material/Favorite";
-import { Property } from "../../types/car/car";
+import { Car } from "../../types/car/car";
 import { REACT_APP_API_URL, topCarRank } from "../../config";
 import { formatterStr } from "../../utils";
 import { useReactiveVar } from "@apollo/client";
@@ -13,18 +13,18 @@ import RemoveRedEyeIcon from "@mui/icons-material/RemoveRedEye";
 import moment from "moment";
 
 interface CarBigCardProps {
-  property: Car;
+  car: Car;
   likeCarHandler?: any;
 }
 
 const CarBigCard = (props: CarBigCardProps) => {
-  const { property, likeCarHandler } = props;
+  const { car, likeCarHandler } = props;
   const device = useDeviceDetect();
   const user = useReactiveVar(userVar);
   const router = useRouter();
 
   /** HANDLERS **/
-  const goPropertyDetatilPage = (carId: string) => {
+  const goCarDetailPage = (carId: string) => {
     router.push(`/car/detail?id=${carId}`);
   };
 
@@ -33,8 +33,8 @@ const CarBigCard = (props: CarBigCardProps) => {
   } else {
     return (
       <Stack
-        className="property-big-card-box"
-        onClick={() => goPropertyDetatilPage(car?._id)}
+        className="car-big-card-box"
+        onClick={() => goCarDetailPage(car?._id)}
       >
         <Box
           component={"div"}
@@ -43,16 +43,14 @@ const CarBigCard = (props: CarBigCardProps) => {
             backgroundImage: `url(${REACT_APP_API_URL}/${car?.carImages?.[0]})`,
           }}
         >
-          {property && car?.carRank >= topCarRank && (
+          {car?.carRank >= topCarRank && (
             <div className={"status"}>
               <img src="/img/icons/electricity.svg" alt="" />
               <span>Featured</span>
             </div>
           )}
 
-          <div className={"price"}>
-            ${formatterStr(car?.carPrice)}
-          </div>
+          <div className={"price"}>${formatterStr(car?.carPrice)}</div>
         </Box>
         <Box component={"div"} className={"info"}>
           <strong className={"title"}>{car?.carTitle}</strong>
@@ -122,9 +120,7 @@ const CarBigCard = (props: CarBigCardProps) => {
               <IconButton color={"default"}>
                 <RemoveRedEyeIcon />
               </IconButton>
-              <Typography className="view-cnt">
-                {car?.carViews}
-              </Typography>
+              <Typography className="view-cnt">{car?.carViews}</Typography>
               <IconButton
                 color={"default"}
                 onClick={(e) => {
@@ -138,9 +134,7 @@ const CarBigCard = (props: CarBigCardProps) => {
                   <FavoriteIcon />
                 )}
               </IconButton>
-              <Typography className="view-cnt">
-                {car?.carLikes}
-              </Typography>
+              <Typography className="view-cnt">{car?.carLikes}</Typography>
             </div>
           </div>
         </Box>

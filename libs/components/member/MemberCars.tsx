@@ -2,26 +2,46 @@ import React, { useEffect, useState } from "react";
 import { NextPage } from "next";
 import { Pagination, Stack, Typography } from "@mui/material";
 import useDeviceDetect from "../../hooks/useDeviceDetect";
-import { CarCard } from "../mypage/CarCard";
-import { Car } from "../../types/car/car";
-import { CarsInquiry } from "../../types/car/car.input";
+import { PropertyCard } from "../mypage/PropertyCard";
+import { Property } from "../../types/property/property";
+import { PropertiesInquiry } from "../../types/property/property.input";
 import { T } from "../../types/common";
 import { useRouter } from "next/router";
+import { useQuery } from "@apollo/client";
+import { GET_PROPERTIES } from "../../../apollo/user/query";
 
-const MyCars: NextPage = ({ initialInput, ...props }: any) => {
+const MyProperties: NextPage = ({ initialInput, ...props }: any) => {
   const device = useDeviceDetect();
   const router = useRouter();
   const { memberId } = router.query;
-  const [searchFilter, setSearchFilter] = useState<CarsInquiry>({
+  const [searchFilter, setSearchFilter] = useState<PropertiesInquiry>({
     ...initialInput,
   });
-  const [agentProperties, setAgentProperties] = useState<Car[]>([]);
+  const [agentProperties, setAgentProperties] = useState<Property[]>([]);
   const [total, setTotal] = useState<number>(0);
 
   /** APOLLO REQUESTS **/
 
+  const {
+    loading: getPropertiesLoading,
+    data: getPropertiesData,
+    error: getPropertiesError,
+    refetch: getPropertiesRefetch,
+  } = useQuery(GET_PROPERTIES, {
+    fetchPolicy: "network-only",
+    variables: { input: searchFilter },
+    skip: !searchFilter?.search?.memberId,
+    notifyOnNetworkStatusChange: true,
+    onCompleted: (data: any) => {
+      setAgentProperties(data?.getProperties?.list);
+      setTotal(data?.getProperties?.metaCounter?.total ?? 0);
+    },
+  });
+
   /** LIFECYCLES **/
-  useEffect(() => {}, [searchFilter]);
+  useEffect(() => {
+    getPropertiesRefetch().then();
+  }, [searchFilter]);
 
   useEffect(() => {
     if (memberId)
@@ -59,12 +79,18 @@ const MyCars: NextPage = ({ initialInput, ...props }: any) => {
             {agentProperties?.length === 0 && (
               <div className={"no-data"}>
                 <img src="/img/icons/icoAlert.svg" alt="" />
-                <p>No Car found!</p>
+                <p>No Property found!</p>
               </div>
             )}
-            {agentProperties?.map((car: Car) => (
-              <CarCard key={car?._id} car={car} memberPage={true} />
-            ))}
+            {agentProperties?.map((property: Property) => {
+              return (
+                <PropertyCard
+                  property={property}
+                  memberPage={true}
+                  key={property?._id}
+                />
+              );
+            })}
 
             {agentProperties.length !== 0 && (
               <Stack className="pagination-config">
@@ -78,7 +104,7 @@ const MyCars: NextPage = ({ initialInput, ...props }: any) => {
                   />
                 </Stack>
                 <Stack className="total-result">
-                  <Typography>{total} car available</Typography>
+                  <Typography>{total} property available</Typography>
                 </Stack>
               </Stack>
             )}
@@ -89,7 +115,7 @@ const MyCars: NextPage = ({ initialInput, ...props }: any) => {
   }
 };
 
-MyCars.defaultProps = {
+MyProperties.defaultProps = {
   initialInput: {
     page: 1,
     limit: 5,
@@ -100,4 +126,4 @@ MyCars.defaultProps = {
   },
 };
 
-export default MyCars;
+export default MyProperties;

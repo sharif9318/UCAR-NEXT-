@@ -57,8 +57,7 @@ const TrendCars = (props: TrendCarsProps) => {
 
         if (carsWithVideo.length > 0) {
           const sortedVideoCars = carsWithVideo.sort(
-            (a: Car, b: Car) =>
-              (b.carLikes || 0) - (a.carLikes || 0)
+            (a: Car, b: Car) => (b.carLikes || 0) - (a.carLikes || 0)
           );
 
           const currentIndex = parseInt(
@@ -114,7 +113,7 @@ const TrendCars = (props: TrendCarsProps) => {
               </Box>
             ) : (
               <Swiper
-                className={"trend-property-swiper"}
+                className={"trend-car-swiper"}
                 slidesPerView={"auto"}
                 centeredSlides={true}
                 spaceBetween={15}
@@ -122,10 +121,7 @@ const TrendCars = (props: TrendCarsProps) => {
               >
                 {trendCars.map((car: Car, index: number) => {
                   return (
-                    <SwiperSlide
-                      key={car._id}
-                      className={"trend-car-slide"}
-                    >
+                    <SwiperSlide key={car._id} className={"trend-car-slide"}>
                       <TrendCarCard
                         car={car}
                         likeCarHandler={likeCarHandler}
@@ -169,7 +165,7 @@ const TrendCars = (props: TrendCarsProps) => {
               </Box>
             ) : (
               <Swiper
-                className={"trend-property-swiper"}
+                className={"trend-car-swiper"}
                 slidesPerView={"auto"}
                 spaceBetween={15}
                 modules={[Autoplay, Navigation, Pagination]}
@@ -183,10 +179,7 @@ const TrendCars = (props: TrendCarsProps) => {
               >
                 {trendCars.map((car: Car, index: number) => {
                   return (
-                    <SwiperSlide
-                      key={car._id}
-                      className={"trend-car-slide"}
-                    >
+                    <SwiperSlide key={car._id} className={"trend-car-slide"}>
                       <TrendCarCard
                         car={car}
                         likeCarHandler={likeCarHandler}

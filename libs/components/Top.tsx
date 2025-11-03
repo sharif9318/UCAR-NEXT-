@@ -50,7 +50,7 @@ const Top = ({ trendingCar }: TopProps) => {
         return `${REACT_APP_API_URL}/${firstMedia}`;
       }
     }
-    return "/img/video/default-property.mp4";
+    return "/img/video/default-car.mp4";
   };
 
   /** LIFECYCLES **/

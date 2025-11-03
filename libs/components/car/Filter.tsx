@@ -209,7 +209,6 @@ const Filter = (props: FilterType) => {
             { scroll: false }
           );
         }
-
       } catch (err: any) {
         console.error("ERROR, carLocationSelectHandler:", err);
       }
@@ -263,7 +262,6 @@ const Filter = (props: FilterType) => {
             { scroll: false }
           );
         }
-
       } catch (err: any) {
         console.error("ERROR, carTypeSelectHandler:", err);
       }
@@ -271,7 +269,7 @@ const Filter = (props: FilterType) => {
     [searchFilter]
   );
 
-  const propertyRoomSelectHandler = useCallback(
+  const carSeatSelectHandler = useCallback(
     async (number: Number) => {
       try {
         if (number != 0) {
@@ -341,15 +339,14 @@ const Filter = (props: FilterType) => {
             { scroll: false }
           );
         }
-
       } catch (err: any) {
-        console.error("ERROR, propertyRoomSelectHandler:", err);
+        console.error("ERROR, carSeatSelectHandler:", err);
       }
     },
     [searchFilter]
   );
 
-  const propertyOptionSelectHandler = useCallback(
+  const carOptionSelectHandler = useCallback(
     async (e: any) => {
       try {
         const isChecked = e.target.checked;
@@ -395,15 +392,14 @@ const Filter = (props: FilterType) => {
             { scroll: false }
           );
         }
-
       } catch (err: any) {
-        console.error("ERROR, propertyOptionSelectHandler:", err);
+        console.error("ERROR, carOptionSelectHandler:", err);
       }
     },
     [searchFilter]
   );
 
-  const propertyBedSelectHandler = useCallback(
+  const carYearSelectHandler = useCallback(
     async (number: Number) => {
       try {
         if (number != 0) {
@@ -473,9 +469,8 @@ const Filter = (props: FilterType) => {
             { scroll: false }
           );
         }
-
       } catch (err: any) {
-        console.error("ERROR, propertyBedSelectHandler:", err);
+        console.error("ERROR, carYearSelectHandler:", err);
       }
     },
     [searchFilter]
@@ -649,7 +644,7 @@ const Filter = (props: FilterType) => {
             Location
           </p>
           <Stack
-            className={`property-location`}
+            className={`car-location`}
             style={{ height: showMore ? "253px" : "115px" }}
             onMouseEnter={() => setShowMore(true)}
             onMouseLeave={() => {
@@ -663,7 +658,7 @@ const Filter = (props: FilterType) => {
                 <Stack className={"input-box"} key={location}>
                   <Checkbox
                     id={location}
-                    className="property-checkbox"
+                    className="car-checkbox"
                     color="default"
                     size="small"
                     value={location}
@@ -673,9 +668,7 @@ const Filter = (props: FilterType) => {
                     onChange={carLocationSelectHandler}
                   />
                   <label htmlFor={location} style={{ cursor: "pointer" }}>
-                    <Typography className="property-type">
-                      {location}
-                    </Typography>
+                    <Typography className="car-type">{location}</Typography>
                   </label>
                 </Stack>
               );
@@ -688,7 +681,7 @@ const Filter = (props: FilterType) => {
             <Stack className={"input-box"} key={type}>
               <Checkbox
                 id={type}
-                className="property-checkbox"
+                className="car-checkbox"
                 color="default"
                 size="small"
                 value={type}
@@ -698,7 +691,7 @@ const Filter = (props: FilterType) => {
                 )}
               />
               <label style={{ cursor: "pointer" }}>
-                <Typography className="property_type">{type}</Typography>
+                <Typography className="car_type">{type}</Typography>
               </label>
             </Stack>
           ))}
@@ -713,7 +706,7 @@ const Filter = (props: FilterType) => {
                   ? "2px solid #181A20"
                   : "1px solid #b9b9b9",
               }}
-              onClick={() => propertyRoomSelectHandler(0)}
+              onClick={() => carSeatSelectHandler(0)}
             >
               Any
             </Button>
@@ -727,7 +720,7 @@ const Filter = (props: FilterType) => {
                   ? undefined
                   : "none",
               }}
-              onClick={() => propertyRoomSelectHandler(1)}
+              onClick={() => carSeatSelectHandler(1)}
             >
               1
             </Button>
@@ -741,7 +734,7 @@ const Filter = (props: FilterType) => {
                   ? undefined
                   : "none",
               }}
-              onClick={() => propertyRoomSelectHandler(2)}
+              onClick={() => carSeatSelectHandler(2)}
             >
               2
             </Button>
@@ -755,7 +748,7 @@ const Filter = (props: FilterType) => {
                   ? undefined
                   : "none",
               }}
-              onClick={() => propertyRoomSelectHandler(3)}
+              onClick={() => carSeatSelectHandler(3)}
             >
               3
             </Button>
@@ -772,7 +765,7 @@ const Filter = (props: FilterType) => {
                   ? undefined
                   : "none",
               }}
-              onClick={() => propertyRoomSelectHandler(4)}
+              onClick={() => carSeatSelectHandler(4)}
             >
               4
             </Button>
@@ -783,7 +776,7 @@ const Filter = (props: FilterType) => {
                   ? "2px solid #181A20"
                   : "1px solid #b9b9b9",
               }}
-              onClick={() => propertyRoomSelectHandler(5)}
+              onClick={() => carSeatSelectHandler(5)}
             >
               5+
             </Button>
@@ -799,7 +792,7 @@ const Filter = (props: FilterType) => {
                   ? "2px solid #181A20"
                   : "1px solid #b9b9b9",
               }}
-              onClick={() => propertyBedSelectHandler(0)}
+              onClick={() => carYearSelectHandler(0)}
             >
               Any
             </Button>
@@ -813,7 +806,7 @@ const Filter = (props: FilterType) => {
                   ? undefined
                   : "none",
               }}
-              onClick={() => propertyBedSelectHandler(1)}
+              onClick={() => carYearSelectHandler(1)}
             >
               1
             </Button>
@@ -827,7 +820,7 @@ const Filter = (props: FilterType) => {
                   ? undefined
                   : "none",
               }}
-              onClick={() => propertyBedSelectHandler(2)}
+              onClick={() => carYearSelectHandler(2)}
             >
               2
             </Button>
@@ -841,7 +834,7 @@ const Filter = (props: FilterType) => {
                   ? undefined
                   : "none",
               }}
-              onClick={() => propertyBedSelectHandler(3)}
+              onClick={() => carYearSelectHandler(3)}
             >
               3
             </Button>
@@ -856,7 +849,7 @@ const Filter = (props: FilterType) => {
                   : "none",
                 // borderRight: false ? undefined : 'none',
               }}
-              onClick={() => propertyBedSelectHandler(4)}
+              onClick={() => carYearSelectHandler(4)}
             >
               4
             </Button>
@@ -870,7 +863,7 @@ const Filter = (props: FilterType) => {
                   ? undefined
                   : "none",
               }}
-              onClick={() => propertyBedSelectHandler(5)}
+              onClick={() => carYearSelectHandler(5)}
             >
               5+
             </Button>
@@ -881,33 +874,33 @@ const Filter = (props: FilterType) => {
           <Stack className={"input-box"}>
             <Checkbox
               id={"Trade-In"}
-              className="property-checkbox"
+              className="car-checkbox"
               color="default"
               size="small"
               value={"carTradeIn"}
               checked={(searchFilter?.search?.options || []).includes(
                 "carTradeIn"
               )}
-              onChange={propertyOptionSelectHandler}
+              onChange={carOptionSelectHandler}
             />
             <label htmlFor={"Trade-In"} style={{ cursor: "pointer" }}>
-              <Typography className="propert-type">Trade-In</Typography>
+              <Typography className="car-option-type">Trade-In</Typography>
             </label>
           </Stack>
           <Stack className={"input-box"}>
             <Checkbox
               id={"Lease"}
-              className="property-checkbox"
+              className="car-checkbox"
               color="default"
               size="small"
               value={"carLease"}
               checked={(searchFilter?.search?.options || []).includes(
                 "carLease"
               )}
-              onChange={propertyOptionSelectHandler}
+              onChange={carOptionSelectHandler}
             />
             <label htmlFor={"Lease"} style={{ cursor: "pointer" }}>
-              <Typography className="propert-type">Lease</Typography>
+              <Typography className="car-option-type">Lease</Typography>
             </label>
           </Stack>
         </Stack>

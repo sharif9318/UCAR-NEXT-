@@ -106,7 +106,7 @@ const TopCars = (props: TopCarsProps) => {
           </Stack>
           <Stack className={"card-box"}>
             <Swiper
-              className={"top-property-swiper"}
+              className={"top-car-swiper"}
               slidesPerView={"auto"}
               centeredSlides={true}
               spaceBetween={15}
@@ -155,7 +155,7 @@ const TopCars = (props: TopCarsProps) => {
           </Stack>
           <Stack className={"card-box"}>
             <Swiper
-              className={"top-property-swiper"}
+              className={"top-car-swiper"}
               slidesPerView={"auto"}
               centeredSlides={true}
               spaceBetween={15}

@@ -11,12 +11,12 @@ import { useReactiveVar } from "@apollo/client";
 import { userVar } from "../../../apollo/store";
 
 interface TopCarCardProps {
-  property: Car;
+  car: Car;
   likeCarHandler: any;
 }
 
 const TopCarCard = (props: TopCarCardProps) => {
-  const { property, likeCarHandler } = props;
+  const { car, likeCarHandler } = props;
   const device = useDeviceDetect();
   const router = useRouter();
   const user = useReactiveVar(userVar);

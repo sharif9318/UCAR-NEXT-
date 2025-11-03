@@ -56,8 +56,7 @@ const TopCars = (props: TopCarsProps) => {
 
         if (carsWithVideo.length > 0) {
           const sortedVideoCars = carsWithVideo.sort(
-            (a: Car, b: Car) =>
-              (b.carLikes || 0) - (a.carLikes || 0)
+            (a: Car, b: Car) => (b.carLikes || 0) - (a.carLikes || 0)
           );
 
           const curleaseIndex = parseInt(
@@ -103,11 +102,11 @@ const TopCars = (props: TopCarsProps) => {
       <Stack className={"top-properties"}>
         <Stack className={"container"}>
           <Stack className={"info-box"}>
-            <span>Top properties</span>
+            <span>Top Cars</span>
           </Stack>
           <Stack className={"card-box"}>
             <Swiper
-              className={"top-property-swiper"}
+              className={"top-car-swiper"}
               slidesPerView={"auto"}
               centeredSlides={true}
               spaceBetween={15}
@@ -124,14 +123,8 @@ const TopCars = (props: TopCarsProps) => {
             >
               {topCars.map((car: Car) => {
                 return (
-                  <SwiperSlide
-                    className={"top-car-slide"}
-                    key={car?._id}
-                  >
-                    <TopCarCard
-                      car={car}
-                      likeCarHandler={likeCarHandler}
-                    />
+                  <SwiperSlide className={"top-car-slide"} key={car?._id}>
+                    <TopCarCard car={car} likeCarHandler={likeCarHandler} />
                   </SwiperSlide>
                 );
               })}
@@ -162,7 +155,7 @@ const TopCars = (props: TopCarsProps) => {
           </Stack>
           <Stack className={"card-box"}>
             <Swiper
-              className={"top-property-swiper"}
+              className={"top-car-swiper"}
               slidesPerView={"auto"}
               centeredSlides={true}
               spaceBetween={15}
@@ -186,14 +179,8 @@ const TopCars = (props: TopCarsProps) => {
             >
               {topCars.map((car: Car) => {
                 return (
-                  <SwiperSlide
-                    className={"top-car-slide"}
-                    key={car?._id}
-                  >
-                    <TopCarCard
-                      car={car}
-                      likeCarHandler={likeCarHandler}
-                    />
+                  <SwiperSlide className={"top-car-slide"} key={car?._id}>
+                    <TopCarCard car={car} likeCarHandler={likeCarHandler} />
                   </SwiperSlide>
                 );
               })}
