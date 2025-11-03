@@ -149,7 +149,7 @@ const HeaderFilter = (props: HeaderFilterProps) => {
     [searchFilter]
   );
 
-  const propertyRoomSelectHandler = useCallback(
+  const carSeatsSelectHandler = useCallback(
     async (value: any) => {
       try {
         setSearchFilter({
@@ -161,13 +161,13 @@ const HeaderFilter = (props: HeaderFilterProps) => {
         });
         disableAllStateHandler();
       } catch (err: any) {
-        console.log("ERROR, propertyRoomSelectHandler:", err);
+        console.log("ERROR, carSeatsSelectHandler:", err);
       }
     },
     [searchFilter]
   );
 
-  const propertyBedSelectHandler = useCallback(
+  const carYearSelectHandler = useCallback(
     async (number: Number) => {
       try {
         if (number != 0) {
@@ -195,15 +195,15 @@ const HeaderFilter = (props: HeaderFilterProps) => {
           setSearchFilter({ ...searchFilter });
         }
 
-        console.log("propertyBedSelectHandler:", number);
+        console.log("carYearSelectHandler:", number);
       } catch (err: any) {
-        console.log("ERROR, propertyBedSelectHandler:", err);
+        console.log("ERROR, carYearSelectHandler:", err);
       }
     },
     [searchFilter]
   );
 
-  const propertyOptionSelectHandler = useCallback(
+  const carOptionSelectHandler = useCallback(
     async (e: any) => {
       try {
         const value = e.target.value;
@@ -227,7 +227,7 @@ const HeaderFilter = (props: HeaderFilterProps) => {
           });
         }
       } catch (err: any) {
-        console.log("ERROR, propertyOptionSelectHandler:", err);
+        console.log("ERROR, carOptionSelectHandler:", err);
       }
     },
     [searchFilter]
@@ -357,7 +357,7 @@ const HeaderFilter = (props: HeaderFilterProps) => {
                 {" "}
                 {searchFilter?.search?.typeList
                   ? searchFilter?.search?.typeList[0]
-                  : t("Property type")}{" "}
+                  : t("Car type")}{" "}
               </span>
               <ExpandMoreIcon />
             </Box>
@@ -426,10 +426,7 @@ const HeaderFilter = (props: HeaderFilterProps) => {
           >
             {[1, 2, 3, 4, 5].map((seat: number) => {
               return (
-                <span
-                  onClick={() => propertyRoomSelectHandler(seat)}
-                  key={seat}
-                >
+                <span onClick={() => carSeatsSelectHandler(seat)} key={seat}>
                   {seat} seat{seat > 1 ? "s" : ""}
                 </span>
               );
@@ -483,7 +480,7 @@ const HeaderFilter = (props: HeaderFilterProps) => {
                         className={`seat ${
                           !searchFilter?.search?.yearsList ? "active" : ""
                         }`}
-                        onClick={() => propertyBedSelectHandler(0)}
+                        onClick={() => carYearSelectHandler(0)}
                       >
                         Any
                       </div>
@@ -494,7 +491,7 @@ const HeaderFilter = (props: HeaderFilterProps) => {
                               ? "active"
                               : ""
                           }`}
-                          onClick={() => propertyBedSelectHandler(year)}
+                          onClick={() => carYearSelectHandler(year)}
                           key={year}
                         >
                           {year == 0 ? "Any" : year}
@@ -508,7 +505,7 @@ const HeaderFilter = (props: HeaderFilterProps) => {
                       <FormControl>
                         <Select
                           value={optionCheck}
-                          onChange={propertyOptionSelectHandler}
+                          onChange={carOptionSelectHandler}
                           displayEmpty
                           inputProps={{ "aria-label": "Without label" }}
                         >

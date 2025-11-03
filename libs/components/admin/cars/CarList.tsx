@@ -86,10 +86,7 @@ const headCells: readonly HeadCell[] = [
 
 interface EnhancedTableProps {
   numSelected: number;
-  onRequestSort: (
-    event: React.MouseEvent<unknown>,
-    property: keyof Data
-  ) => void;
+  onRequestSort: (event: React.MouseEvent<unknown>, car: keyof Data) => void;
   onSelectAllClick: (event: React.ChangeEvent<HTMLInputElement>) => void;
   order: Order;
   orderBy: string;
@@ -116,23 +113,24 @@ function EnhancedTableHead(props: EnhancedTableProps) {
   );
 }
 
-interface PropertyPanelListType {
-  properties: Car[];
+interface CarPanelListType {
+  cars: Car[];
+  removeCar?: any;
+  updateCar?: any;
   anchorEl: any;
-  menuIconClickHandler: any;
-  menuIconCloseHandler: any;
-  updatePropertyHandler: any;
-  removePropertyHandler: any;
+  handleMenuIconClick?: any;
+  handleMenuIconClose?: any;
+  generateId?: any;
 }
 
-export const PropertyPanelList = (props: CarPanelListType) => {
+export const CarPanelList = (props: CarPanelListType) => {
   const {
-    properties,
+    cars,
     anchorEl,
-    menuIconClickHandler,
-    menuIconCloseHandler,
-    updatePropertyHandler,
-    removePropertyHandler,
+    handleMenuIconClick,
+    handleMenuIconClose,
+    updateCar,
+    removeCar,
   } = props;
 
   return (
@@ -155,8 +153,8 @@ export const PropertyPanelList = (props: CarPanelListType) => {
             )}
 
             {cars.length !== 0 &&
-              cars.map((property: Car, index: number) => {
-                const propertyImage = `${REACT_APP_API_URL}/${car?.carImages[0]}`;
+              cars.map((car: Car, index: number) => {
+                const carImage = `${REACT_APP_API_URL}/${car?.carImages[0]}`;
 
                 return (
                   <TableRow
@@ -171,7 +169,7 @@ export const PropertyPanelList = (props: CarPanelListType) => {
                           <div>
                             <Avatar
                               alt="Remy Sharp"
-                              src={propertyImage}
+                              src={carImage}
                               sx={{ ml: "2px", mr: "10px" }}
                             />
                           </div>
@@ -196,7 +194,7 @@ export const PropertyPanelList = (props: CarPanelListType) => {
                             border: "none",
                             ":hover": { border: "1px solid #000000" },
                           }}
-                          onClick={() => removePropertyHandler(car._id)}
+                          onClick={() => removeCar(car._id)}
                         >
                           <DeleteIcon fontSize="small" />
                         </Button>
@@ -211,7 +209,7 @@ export const PropertyPanelList = (props: CarPanelListType) => {
                       {car.carStatus === CarStatus.ACTIVE && (
                         <>
                           <Button
-                            onClick={(e: any) => menuIconClickHandler(e, index)}
+                            onClick={(e: any) => handleMenuIconClick(e, index)}
                             className={"badge success"}
                           >
                             {car.carStatus}
@@ -224,7 +222,7 @@ export const PropertyPanelList = (props: CarPanelListType) => {
                             }}
                             anchorEl={anchorEl[index]}
                             open={Boolean(anchorEl[index])}
-                            onClose={menuIconCloseHandler}
+                            onClose={handleMenuIconClose}
                             TransitionComponent={Fade}
                             sx={{ p: 1 }}
                           >
@@ -233,7 +231,7 @@ export const PropertyPanelList = (props: CarPanelListType) => {
                               .map((status: string) => (
                                 <MenuItem
                                   onClick={() =>
-                                    updatePropertyHandler({
+                                    updateCar({
                                       _id: car._id,
                                       carStatus: status,
                                     })

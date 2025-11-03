@@ -151,12 +151,12 @@
             justify-content: center;
             align-items: center;
           }
-          .trend-car-swiper {
+          .trend-property-swiper {
             width: 100%;
             height: 400px;
             display: flex;
             flex-direction: row;
-            .trend-car-slide {
+            .trend-property-slide {
               width: auto;
               height: auto;
               display: flex;
@@ -356,12 +356,12 @@
           display: flex;
           flex-direction: row;
           justify-content: space-between;
-          .popular-car-swiper {
+          .popular-property-swiper {
             width: 100%;
             height: 425px;
             display: flex;
             flex-direction: row;
-            .popular-car-slide {
+            .popular-property-slide {
               width: auto;
               height: auto;
               display: flex;
@@ -588,13 +588,13 @@
           display: flex;
           flex-direction: row;
 
-          .top-car-swiper {
+          .top-property-swiper {
             width: 100%;
             height: 400px;
             display: flex;
             flex-direction: row;
 
-            .top-car-slide {
+            .top-property-slide {
               width: auto;
               height: auto;
               display: flex;

@@ -40,7 +40,7 @@ const PopularCarCard = (props: PopularCarCardProps) => {
           }}
           onClick={() => pushDetailHandler(car._id)}
         >
-          {car?.carRank >= topCarRank ? (
+          {car && car?.carRank >= topCarRank ? (
             <div className={"status"}>
               <img src="/img/icons/electricity.svg" alt="" />
               <span>top</span>
@@ -97,7 +97,7 @@ const PopularCarCard = (props: PopularCarCardProps) => {
           }}
           onClick={() => pushDetailHandler(car._id)}
         >
-          {car?.carRank >= topCarRank ? (
+          {car && car?.carRank >= topCarRank ? (
             <div className={"status"}>
               <img src="/img/icons/electricity.svg" alt="" />
               <span>top</span>

@@ -7,19 +7,21 @@ export const formatterStr = (value: number | undefined): string => {
     : "";
 };
 
-export const likeTargetPropertyHandler = async (
-  likeTargetProperty: any,
-  id: string
+export const likeTargetCarHandler = async (
+  likeTargetCar: any,
+  id: string,
+  refetch: any,
+  checkoutRefetch: any
 ) => {
   try {
-    await likeTargetProperty({
-      variables: {
-        input: id,
-      },
+    await likeTargetCar({
+      variables: { input: id },
     });
+
+    await refetch({ input: id });
+    await checkoutRefetch({ input: id });
   } catch (err: any) {
-    console.log("ERROR, likeTargetPropertyHandler:", err.message);
-    sweetMixinErrorAlert(err.message).then();
+    console.log("ERROR, likeTargetCarHandler:", err.message);
   }
 };
 

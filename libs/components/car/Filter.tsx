@@ -269,7 +269,7 @@ const Filter = (props: FilterType) => {
     [searchFilter]
   );
 
-  const carSeatSelectHandler = useCallback(
+  const carSeatsSelectHandler = useCallback(
     async (number: Number) => {
       try {
         if (number != 0) {
@@ -340,7 +340,7 @@ const Filter = (props: FilterType) => {
           );
         }
       } catch (err: any) {
-        console.error("ERROR, carSeatSelectHandler:", err);
+        console.error("ERROR, carSeatsSelectHandler:", err);
       }
     },
     [searchFilter]
@@ -596,7 +596,7 @@ const Filter = (props: FilterType) => {
   }, [router, initialInput]);
 
   if (device === "mobile") {
-    return <div>PROPERTIES FILTER</div>;
+    return <div>CARS FILTER</div>;
   } else {
     return (
       <Stack className={"filter-main"}>
@@ -706,7 +706,7 @@ const Filter = (props: FilterType) => {
                   ? "2px solid #181A20"
                   : "1px solid #b9b9b9",
               }}
-              onClick={() => carSeatSelectHandler(0)}
+              onClick={() => carSeatsSelectHandler(0)}
             >
               Any
             </Button>
@@ -720,7 +720,7 @@ const Filter = (props: FilterType) => {
                   ? undefined
                   : "none",
               }}
-              onClick={() => carSeatSelectHandler(1)}
+              onClick={() => carSeatsSelectHandler(1)}
             >
               1
             </Button>
@@ -734,7 +734,7 @@ const Filter = (props: FilterType) => {
                   ? undefined
                   : "none",
               }}
-              onClick={() => carSeatSelectHandler(2)}
+              onClick={() => carSeatsSelectHandler(2)}
             >
               2
             </Button>
@@ -748,7 +748,7 @@ const Filter = (props: FilterType) => {
                   ? undefined
                   : "none",
               }}
-              onClick={() => carSeatSelectHandler(3)}
+              onClick={() => carSeatsSelectHandler(3)}
             >
               3
             </Button>
@@ -765,7 +765,7 @@ const Filter = (props: FilterType) => {
                   ? undefined
                   : "none",
               }}
-              onClick={() => carSeatSelectHandler(4)}
+              onClick={() => carSeatsSelectHandler(4)}
             >
               4
             </Button>
@@ -776,7 +776,7 @@ const Filter = (props: FilterType) => {
                   ? "2px solid #181A20"
                   : "1px solid #b9b9b9",
               }}
-              onClick={() => carSeatSelectHandler(5)}
+              onClick={() => carSeatsSelectHandler(5)}
             >
               5+
             </Button>
@@ -884,7 +884,7 @@ const Filter = (props: FilterType) => {
               onChange={carOptionSelectHandler}
             />
             <label htmlFor={"Trade-In"} style={{ cursor: "pointer" }}>
-              <Typography className="car-option-type">Trade-In</Typography>
+              <Typography className="car-type">Trade-In</Typography>
             </label>
           </Stack>
           <Stack className={"input-box"}>
@@ -900,7 +900,7 @@ const Filter = (props: FilterType) => {
               onChange={carOptionSelectHandler}
             />
             <label htmlFor={"Lease"} style={{ cursor: "pointer" }}>
-              <Typography className="car-option-type">Lease</Typography>
+              <Typography className="car-type">Lease</Typography>
             </label>
           </Stack>
         </Stack>

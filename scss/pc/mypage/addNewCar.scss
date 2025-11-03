@@ -1,6 +1,6 @@
 #pc-wrap {
   #my-page {
-    #add-car-page {
+    #add-property-page {
       width: 100%;
       height: auto;
       display: flex;
@@ -149,7 +149,7 @@
               }
             }
           }
-          .car-title {
+          .property-title {
             margin-top: 30px;
             color: #181a20;
             font-family: $font;
@@ -566,7 +566,7 @@
             flex-direction: row;
             gap: 16px;
             align-items: center;
-            .car-checkbox {
+            .property-checkbox {
               width: 18px;
               height: 19px;
               border-radius: 12px;

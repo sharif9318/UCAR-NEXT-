@@ -102,7 +102,7 @@ const TopCars = (props: TopCarsProps) => {
       <Stack className={"top-properties"}>
         <Stack className={"container"}>
           <Stack className={"info-box"}>
-            <span>Top Cars</span>
+            <span>Top cars</span>
           </Stack>
           <Stack className={"card-box"}>
             <Swiper

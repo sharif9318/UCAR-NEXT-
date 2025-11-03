@@ -32,6 +32,9 @@ const tokenRefreshLink = new TokenRefreshLink({
     // execute refresh token
     return null;
   },
+  handleFetch: (accessToken) => {
+    // Handle the new access token
+  },
 });
 
 function createIsomorphicLink() {

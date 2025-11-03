@@ -43,7 +43,7 @@ const MyCars: NextPage = ({ initialInput, ...props }: any) => {
     return <div>NESTAR PROPERTIES MOBILE</div>;
   } else {
     return (
-      <div id="my-car-page">
+      <div id="my-cars-page">
         <Stack className="main-title-box">
           <Stack className="right-box">
             <Typography className="main-title">My Cars</Typography>

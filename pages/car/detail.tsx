@@ -9,7 +9,7 @@ import {
 import useDeviceDetect from "../../libs/hooks/useDeviceDetect";
 import withLayoutFull from "../../libs/components/layout/LayoutFull";
 import { NextPage } from "next";
-import Review from "../libs/components/car/Review";
+import Review from "../../libs/components/car/Review";
 import { Swiper, SwiperSlide } from "swiper/react";
 import SwiperCore, { Autoplay, Navigation, Pagination } from "swiper";
 import CarBigCard from "../../libs/components/common/CarBigCard";
@@ -89,7 +89,6 @@ const CarDetail: NextPage = ({ initialComment, ...props }: any) => {
     notifyOnNetworkStatusChange: true,
     onCompleted: (data: T) => {
       if (data?.getCar) setCar(data?.getCar);
-      // Don't set slideImage here anymore, let useEffect handle it based on video check
     },
   });
 
@@ -247,10 +246,10 @@ const CarDetail: NextPage = ({ initialComment, ...props }: any) => {
     return <div>CAR DETAIL PAGE</div>;
   } else {
     return (
-      <div id={"property-detail-page"}>
+      <div id={"car-detail-page"}>
         <div className={"container"}>
-          <Stack className={"property-detail-config"}>
-            <Stack className={"property-info-config"}>
+          <Stack className={"car-detail-config"}>
+            <Stack className={"car-info-config"}>
               <Stack className={"info"}>
                 <Stack className={"left-box"}>
                   <Typography className={"title-main"}>
@@ -402,7 +401,9 @@ const CarDetail: NextPage = ({ initialComment, ...props }: any) => {
                       ) : (
                         <FavoriteBorderIcon
                           fontSize={"medium"}
-                          onClick={() => likeCarHandler(user, car?._id)}
+                          onClick={() =>
+                            car?._id && likeCarHandler(user, car._id)
+                          }
                         />
                       )}
                       <Typography>{car?.carLikes}</Typography>
@@ -478,7 +479,7 @@ const CarDetail: NextPage = ({ initialComment, ...props }: any) => {
                 </Stack>
               </Stack>
             </Stack>
-            <Stack className={"property-desc-config"}>
+            <Stack className={"car-desc-config"}>
               <Stack className={"left-config"}>
                 <Stack className={"options-config"}>
                   <Stack className={"option"}>
@@ -610,7 +611,7 @@ const CarDetail: NextPage = ({ initialComment, ...props }: any) => {
                       Vehicle Description
                     </Typography>
                     <Typography className={"desc"}>
-                      {car?.propertyDesc ?? "No Description!"}
+                      {car?.carDesc ?? "No Description!"}
                     </Typography>
                   </Stack>
                   <Stack className={"bottom"}>
@@ -922,7 +923,7 @@ const CarDetail: NextPage = ({ initialComment, ...props }: any) => {
               </Stack>
             </Stack>
             {destinationCars.length !== 0 && (
-              <Stack className={"similar-properties-config"}>
+              <Stack className={"similar-cars-config"}>
                 <Stack className={"title-pagination-box"}>
                   <Stack className={"title-box"}>
                     <Typography className={"main-title"}>
@@ -952,14 +953,14 @@ const CarDetail: NextPage = ({ initialComment, ...props }: any) => {
                       el: ".swiper-similar-pagination",
                     }}
                   >
-                    {destinationCars.map((property: Car) => {
+                    {destinationCars.map((car: Car) => {
                       return (
                         <SwiperSlide
                           className={"similar-homes-slide"}
-                          key={car.carTitle}
+                          key={car?.carTitle}
                         >
                           <CarBigCard
-                            property={property}
+                            car={car}
                             likeCarHandler={likeCarHandler}
                             key={car?._id}
                           />

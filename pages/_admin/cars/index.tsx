@@ -8,7 +8,7 @@ import Select from "@mui/material/Select";
 import MenuItem from "@mui/material/MenuItem";
 import { TabContext } from "@mui/lab";
 import TablePagination from "@mui/material/TablePagination";
-import { PropertyPanelList } from "../../../libs/components/admin/cars/CarList";
+import { CarPanelList } from "../../../libs/components/admin/cars/CarList";
 import { AllCarsInquiry } from "../../../libs/types/car/car.input";
 import { Car } from "../../../libs/types/car/car";
 import { CarLocation, CarStatus } from "../../../libs/enums/car.enum";
@@ -135,7 +135,7 @@ const AdminCars: NextPage = ({ initialInquiry, ...props }: any) => {
   return (
     <Box component={"div"} className={"content"}>
       <Typography variant={"h2"} className={"tit"} sx={{ mb: "24px" }}>
-        Property List
+        Car List
       </Typography>
       <Box component={"div"} className={"table-wrap"}>
         <Box component={"div"} sx={{ width: "100%", typography: "body1" }}>
@@ -193,13 +193,13 @@ const AdminCars: NextPage = ({ initialInquiry, ...props }: any) => {
               </Stack>
               <Divider />
             </Box>
-            <PropertyPanelList
-              properties={cars}
+            <CarPanelList
+              cars={cars}
               anchorEl={anchorEl}
-              menuIconClickHandler={menuIconClickHandler}
-              menuIconCloseHandler={menuIconCloseHandler}
-              updatePropertyHandler={updateCarHandler}
-              removePropertyHandler={removeCarHandler}
+              handleMenuIconClick={menuIconClickHandler}
+              handleMenuIconClose={menuIconCloseHandler}
+              updateCar={updateCarHandler}
+              removeCar={removeCarHandler}
             />
 
             <TablePagination

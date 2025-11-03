@@ -11,12 +11,11 @@ import { sweetMixinErrorAlert } from "../../sweetAlert";
 import { useReactiveVar } from "@apollo/client";
 import { userVar } from "../../../apollo/store";
 
-const AddProperty = ({ initialValues, ...props }: any) => {
+const AddNewCar = ({ initialValues, ...props }: any) => {
   const device = useDeviceDetect();
   const router = useRouter();
   const inputRef = useRef<any>(null);
-  const [insertPropertyData, setInsertPropertyData] =
-    useState<CarInput>(initialValues);
+  const [insertCarData, setInsertCarData] = useState<CarInput>(initialValues);
   const [carType, setCarType] = useState<CarType[]>(Object.values(CarType));
   const [carLocation, setCarLocation] = useState<CarLocation[]>(
     Object.values(CarLocation)
@@ -29,8 +28,8 @@ const AddProperty = ({ initialValues, ...props }: any) => {
 
   /** LIFECYCLES **/
   useEffect(() => {
-    setInsertPropertyData({
-      ...insertPropertyData,
+    setInsertCarData({
+      ...insertCarData,
       carTitle: getCarData?.getCar ? getCarData?.getCar?.carTitle : "",
       carPrice: getCarData?.getCar ? getCarData?.getCar?.carPrice : 0,
       carType: getCarData?.getCar ? getCarData?.getCar?.carType : "",
@@ -97,8 +96,8 @@ const AddProperty = ({ initialValues, ...props }: any) => {
       const responseImages = response.data.data.imagesUploader;
 
       console.log("+responseImages: ", responseImages);
-      setInsertPropertyData({
-        ...insertPropertyData,
+      setInsertCarData({
+        ...insertCarData,
         carImages: responseImages,
       });
     } catch (err: any) {
@@ -109,39 +108,35 @@ const AddProperty = ({ initialValues, ...props }: any) => {
 
   const doDisabledCheck = () => {
     if (
-      insertPropertyData.carTitle === "" ||
-      insertPropertyData.carPrice === 0 || // @ts-ignore
-      insertPropertyData.carType === "" || // @ts-ignore
-      insertPropertyData.carLocation === "" || // @ts-ignore
-      insertPropertyData.carAddress === "" || // @ts-ignore
-      insertPropertyData.carTradeIn === "" || // @ts-ignore
-      insertPropertyData.carLease === "" ||
-      insertPropertyData.carSeats === 0 ||
-      insertPropertyData.carYear === 0 ||
-      insertPropertyData.carMileage === 0 ||
-      insertPropertyData.carDesc === "" ||
-      insertPropertyData.carImages.length === 0
+      insertCarData.carTitle === "" ||
+      insertCarData.carPrice === 0 || // @ts-ignore
+      insertCarData.carType === "" || // @ts-ignore
+      insertCarData.carLocation === "" || // @ts-ignore
+      insertCarData.carAddress === "" || // @ts-ignore
+      insertCarData.carTradeIn === "" || // @ts-ignore
+      insertCarData.carLease === "" ||
+      insertCarData.carSeats === 0 ||
+      insertCarData.carYear === 0 ||
+      insertCarData.carMileage === 0 ||
+      insertCarData.carDesc === "" ||
+      insertCarData.carImages.length === 0
     ) {
       return true;
     }
   };
 
-  const insertPropertyHandler = useCallback(async () => {}, [
-    insertPropertyData,
-  ]);
+  const insertCarHandler = useCallback(async () => {}, [insertCarData]);
 
-  const updatePropertyHandler = useCallback(async () => {}, [
-    insertPropertyData,
-  ]);
+  const updateCarHandler = useCallback(async () => {}, [insertCarData]);
 
   if (user?.memberType !== "AGENT") {
     router.back();
   }
 
-  console.log("+insertPropertyData", insertPropertyData);
+  console.log("+insertCarData", insertCarData);
 
   if (device === "mobile") {
-    return <div>ADD NEW PROPERTY MOBILE PAGE</div>;
+    return <div>ADD NEW CAR MOBILE PAGE</div>;
   } else {
     return (
       <div id="add-car-page">
@@ -161,10 +156,10 @@ const AddProperty = ({ initialValues, ...props }: any) => {
                   type="text"
                   className="description-input"
                   placeholder={"Title"}
-                  value={insertPropertyData.carTitle}
+                  value={insertCarData.carTitle}
                   onChange={({ target: { value } }) =>
-                    setInsertPropertyData({
-                      ...insertPropertyData,
+                    setInsertCarData({
+                      ...insertCarData,
                       carTitle: value,
                     })
                   }
@@ -178,10 +173,10 @@ const AddProperty = ({ initialValues, ...props }: any) => {
                     type="text"
                     className="description-input"
                     placeholder={"Price"}
-                    value={insertPropertyData.carPrice}
+                    value={insertCarData.carPrice}
                     onChange={({ target: { value } }) =>
-                      setInsertPropertyData({
-                        ...insertPropertyData,
+                      setInsertCarData({
+                        ...insertCarData,
                         carPrice: parseInt(value),
                       })
                     }
@@ -191,13 +186,12 @@ const AddProperty = ({ initialValues, ...props }: any) => {
                   <Typography className="title">Select Type</Typography>
                   <select
                     className={"select-description"}
-                    defaultValue={insertPropertyData.carType || "select"}
-                    value={insertPropertyData.carType || "select"}
+                    defaultValue={insertCarData.carType || "select"}
+                    value={insertCarData.carType || "select"}
                     onChange={({ target: { value } }) =>
-                      // @ts-ignore
-                      setInsertPropertyData({
-                        ...insertPropertyData,
-                        carType: value,
+                      setInsertCarData({
+                        ...insertCarData,
+                        carType: value as CarType,
                       })
                     }
                   >
@@ -222,13 +216,12 @@ const AddProperty = ({ initialValues, ...props }: any) => {
                   <Typography className="title">Select Location</Typography>
                   <select
                     className={"select-description"}
-                    defaultValue={insertPropertyData.carLocation || "select"}
-                    value={insertPropertyData.carLocation || "select"}
+                    defaultValue={insertCarData.carLocation || "select"}
+                    value={insertCarData.carLocation || "select"}
                     onChange={({ target: { value } }) =>
-                      // @ts-ignore
-                      setInsertPropertyData({
-                        ...insertPropertyData,
-                        carLocation: value,
+                      setInsertCarData({
+                        ...insertCarData,
+                        carLocation: value as CarLocation,
                       })
                     }
                   >
@@ -252,10 +245,10 @@ const AddProperty = ({ initialValues, ...props }: any) => {
                     type="text"
                     className="description-input"
                     placeholder={"Address"}
-                    value={insertPropertyData.carAddress}
+                    value={insertCarData.carAddress}
                     onChange={({ target: { value } }) =>
-                      setInsertPropertyData({
-                        ...insertPropertyData,
+                      setInsertCarData({
+                        ...insertCarData,
                         carAddress: value,
                       })
                     }
@@ -268,11 +261,11 @@ const AddProperty = ({ initialValues, ...props }: any) => {
                   <Typography className="title">Trade-In</Typography>
                   <select
                     className={"select-description"}
-                    value={insertPropertyData.carTradeIn ? "yes" : "no"}
-                    defaultValue={insertPropertyData.carTradeIn ? "yes" : "no"}
+                    value={insertCarData.carTradeIn ? "yes" : "no"}
+                    defaultValue={insertCarData.carTradeIn ? "yes" : "no"}
                     onChange={({ target: { value } }) =>
-                      setInsertPropertyData({
-                        ...insertPropertyData,
+                      setInsertCarData({
+                        ...insertCarData,
                         carTradeIn: value === "yes",
                       })
                     }
@@ -290,11 +283,11 @@ const AddProperty = ({ initialValues, ...props }: any) => {
                   <Typography className="title">Lease</Typography>
                   <select
                     className={"select-description"}
-                    value={insertPropertyData.carLease ? "yes" : "no"}
-                    defaultValue={insertPropertyData.carLease ? "yes" : "no"}
+                    value={insertCarData.carLease ? "yes" : "no"}
+                    defaultValue={insertCarData.carLease ? "yes" : "no"}
                     onChange={({ target: { value } }) =>
-                      setInsertPropertyData({
-                        ...insertPropertyData,
+                      setInsertCarData({
+                        ...insertCarData,
                         carLease: value === "yes",
                       })
                     }
@@ -315,11 +308,11 @@ const AddProperty = ({ initialValues, ...props }: any) => {
                   <Typography className="title">Rooms</Typography>
                   <select
                     className={"select-description"}
-                    value={insertPropertyData.carSeats || "select"}
-                    defaultValue={insertPropertyData.carSeats || "select"}
+                    value={insertCarData.carSeats || "select"}
+                    defaultValue={insertCarData.carSeats || "select"}
                     onChange={({ target: { value } }) =>
-                      setInsertPropertyData({
-                        ...insertPropertyData,
+                      setInsertCarData({
+                        ...insertCarData,
                         carSeats: parseInt(value),
                       })
                     }
@@ -338,11 +331,11 @@ const AddProperty = ({ initialValues, ...props }: any) => {
                   <Typography className="title">Bed</Typography>
                   <select
                     className={"select-description"}
-                    value={insertPropertyData.carYear || "select"}
-                    defaultValue={insertPropertyData.carYear || "select"}
+                    value={insertCarData.carYear || "select"}
+                    defaultValue={insertCarData.carYear || "select"}
                     onChange={({ target: { value } }) =>
-                      setInsertPropertyData({
-                        ...insertPropertyData,
+                      setInsertCarData({
+                        ...insertCarData,
                         carYear: parseInt(value),
                       })
                     }
@@ -361,11 +354,11 @@ const AddProperty = ({ initialValues, ...props }: any) => {
                   <Typography className="title">Square</Typography>
                   <select
                     className={"select-description"}
-                    value={insertPropertyData.carMileage || "select"}
-                    defaultValue={insertPropertyData.carMileage || "select"}
+                    value={insertCarData.carMileage || "select"}
+                    defaultValue={insertCarData.carMileage || "select"}
                     onChange={({ target: { value } }) =>
-                      setInsertPropertyData({
-                        ...insertPropertyData,
+                      setInsertCarData({
+                        ...insertCarData,
                         carMileage: parseInt(value),
                       })
                     }
@@ -391,10 +384,10 @@ const AddProperty = ({ initialValues, ...props }: any) => {
                   name=""
                   id=""
                   className="description-text"
-                  value={insertPropertyData.carDesc || ""}
+                  value={insertCarData.carDesc || ""}
                   onChange={({ target: { value } }) =>
-                    setInsertPropertyData({
-                      ...insertPropertyData,
+                    setInsertCarData({
+                      ...insertCarData,
                       carDesc: value,
                     })
                   }
@@ -506,7 +499,7 @@ const AddProperty = ({ initialValues, ...props }: any) => {
                 </Button>
               </Stack>
               <Stack className="gallery-box">
-                {insertPropertyData?.carImages.map((image: string) => {
+                {insertCarData?.carImages.map((image: string) => {
                   const imagePath: string = `${REACT_APP_API_URL}/${image}`;
                   return (
                     <Stack className="image-box">
@@ -522,7 +515,7 @@ const AddProperty = ({ initialValues, ...props }: any) => {
                 <Button
                   className="next-button"
                   disabled={doDisabledCheck()}
-                  onClick={updatePropertyHandler}
+                  onClick={updateCarHandler}
                 >
                   <Typography className="next-button-text">Save</Typography>
                 </Button>
@@ -530,7 +523,7 @@ const AddProperty = ({ initialValues, ...props }: any) => {
                 <Button
                   className="next-button"
                   disabled={doDisabledCheck()}
-                  onClick={insertPropertyHandler}
+                  onClick={insertCarHandler}
                 >
                   <Typography className="next-button-text">Save</Typography>
                 </Button>
@@ -543,7 +536,7 @@ const AddProperty = ({ initialValues, ...props }: any) => {
   }
 };
 
-AddProperty.defaultProps = {
+AddNewCar.defaultProps = {
   initialValues: {
     carTitle: "",
     carPrice: 0,
@@ -560,4 +553,4 @@ AddProperty.defaultProps = {
   },
 };
 
-export default AddProperty;
+export default AddNewCar;

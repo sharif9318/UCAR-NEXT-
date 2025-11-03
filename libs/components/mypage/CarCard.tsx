@@ -25,11 +25,11 @@ export const CarCard = (props: CarCardProps) => {
   const open = Boolean(anchorEl);
 
   /** HANDLERS **/
-  const pushEditProperty = async (id: string) => {
-    console.log("+pushEditProperty: ", id);
+  const pushEditCar = async (id: string) => {
+    console.log("+pushEditCar: ", id);
     await router.push({
       pathname: "/mypage",
-      query: { category: "addProperty", carId: id },
+      query: { category: "addCar", carId: id },
     });
   };
 
@@ -51,7 +51,7 @@ export const CarCard = (props: CarCardProps) => {
   };
 
   if (device === "mobile") {
-    return <div>MOBILE PROPERTY CARD</div>;
+    return <div>MOBILE CAR CARD</div>;
   } else
     return (
       <Stack className="car-card-box">
@@ -133,7 +133,7 @@ export const CarCard = (props: CarCardProps) => {
           <Stack className="action-box">
             <IconButton
               className="icon-button"
-              onClick={() => pushEditProperty(car._id)}
+              onClick={() => pushEditCar(car._id)}
             >
               <ModeIcon className="buttons" />
             </IconButton>

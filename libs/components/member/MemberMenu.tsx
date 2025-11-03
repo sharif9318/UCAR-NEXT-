@@ -106,17 +106,17 @@ const MemberMenu = (props: MemberMenuProps) => {
             </Typography>
             <List className={"sub-section"}>
               {member?.memberType === "AGENT" && (
-                <ListItem className={category === "properties" ? "focus" : ""}>
+                <ListItem className={category === "cars" ? "focus" : ""}>
                   <Link
                     href={{
                       pathname: "/member",
-                      query: { ...router.query, category: "properties" },
+                      query: { ...router.query, category: "cars" },
                     }}
                     scroll={false}
                     style={{ width: "100%" }}
                   >
                     <div className={"flex-box"}>
-                      {category === "properties" ? (
+                      {category === "cars" ? (
                         <img
                           className={"com-icon"}
                           src={"/img/icons/homeWhite.svg"}
@@ -134,10 +134,10 @@ const MemberMenu = (props: MemberMenuProps) => {
                         variant={"subtitle1"}
                         component={"p"}
                       >
-                        Properties
+                        Cars
                       </Typography>
                       <Typography className="count-title" variant="subtitle1">
-                        {member?.memberProperties}
+                        {member?.memberCars}
                       </Typography>
                     </div>
                   </Link>

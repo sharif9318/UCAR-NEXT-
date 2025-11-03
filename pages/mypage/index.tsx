@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import { NextPage } from "next";
 import { Stack } from "@mui/material";
@@ -40,6 +40,7 @@ const MyPage: NextPage = () => {
   const user = useReactiveVar(userVar);
   const router = useRouter();
   const category: any = router.query?.category ?? "myProfile";
+  const [isLoading, setIsLoading] = React.useState(true);
 
   /** APOLLO REQUESTS **/
 
@@ -49,8 +50,21 @@ const MyPage: NextPage = () => {
 
   /** LIFECYCLES **/
   useEffect(() => {
-    if (!user._id) router.push("/").then();
-  }, [user]);
+    // Add a small delay to allow user data to load from localStorage/sessionStorage
+    const timer = setTimeout(() => {
+      setIsLoading(false);
+    }, 100);
+
+    return () => clearTimeout(timer);
+  }, []);
+
+  useEffect(() => {
+    // Only redirect if we're not loading and user is definitely not authenticated
+    if (!isLoading && (!user._id || user._id === "")) {
+      console.log("User not authenticated, redirecting to homepage");
+      router.push("/").then();
+    }
+  }, [user, isLoading, router]);
 
   /** HANDLERS **/
   const subscribeHandler = async (id: string, refetch: any, query: any) => {

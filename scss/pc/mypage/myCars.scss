@@ -1,6 +1,6 @@
 #pc-wrap {
   #my-page {
-    #my-car-page {
+    #my-property-page {
       width: 100%;
       height: auto;
       display: flex;
@@ -33,7 +33,7 @@
           }
         }
       }
-      .car-list-box {
+      .property-list-box {
         width: 100%;
         height: auto;
         .tab-name-box {
@@ -108,7 +108,7 @@
             margin-right: 138px;
           }
         }
-        .car-card-box {
+        .property-card-box {
           width: 100%;
           height: auto;
           flex-direction: row;

@@ -110,16 +110,18 @@ const MyMenu = () => {
                       </div>
                     </Link>
                   </ListItem>
-                  <ListItem className={pathname === "myCars" ? "focus" : ""}>
+                  <ListItem
+                    className={pathname === "myProperties" ? "focus" : ""}
+                  >
                     <Link
                       href={{
                         pathname: "/mypage",
-                        query: { category: "myCars" },
+                        query: { category: "myProperties" },
                       }}
                       scroll={false}
                     >
                       <div className={"flex-box"}>
-                        {category === "myCars" ? (
+                        {category === "myProperties" ? (
                           <img
                             className={"com-icon"}
                             src={"/img/icons/homeWhite.svg"}
@@ -137,7 +139,7 @@ const MyMenu = () => {
                           variant={"subtitle1"}
                           component={"p"}
                         >
-                          My Cars
+                          My Properties
                         </Typography>
                         <IconButton aria-label="delete" sx={{ ml: "36px" }}>
                           <PortraitIcon style={{ color: "red" }} />
