@@ -104,24 +104,25 @@ const MyMenu = () => {
                         >
                           Add Car
                         </Typography>
-                        <IconButton aria-label="delete" sx={{ ml: "40px" }}>
-                          <PortraitIcon style={{ color: "red" }} />
+                        <IconButton
+                          aria-label="delete"
+                          sx={{ ml: "40px", color: "red" }}
+                        >
+                          🚘
                         </IconButton>
                       </div>
                     </Link>
                   </ListItem>
-                  <ListItem
-                    className={pathname === "myProperties" ? "focus" : ""}
-                  >
+                  <ListItem className={pathname === "myCars" ? "focus" : ""}>
                     <Link
                       href={{
                         pathname: "/mypage",
-                        query: { category: "myProperties" },
+                        query: { category: "myCars" },
                       }}
                       scroll={false}
                     >
                       <div className={"flex-box"}>
-                        {category === "myProperties" ? (
+                        {category === "myCars" ? (
                           <img
                             className={"com-icon"}
                             src={"/img/icons/homeWhite.svg"}
@@ -139,7 +140,7 @@ const MyMenu = () => {
                           variant={"subtitle1"}
                           component={"p"}
                         >
-                          My Properties
+                          My Cars
                         </Typography>
                         <IconButton aria-label="delete" sx={{ ml: "36px" }}>
                           <PortraitIcon style={{ color: "red" }} />

@@ -3,7 +3,7 @@ import { useRouter } from "next/router";
 import { Button, Stack, Typography } from "@mui/material";
 import useDeviceDetect from "../../hooks/useDeviceDetect";
 import { CarLocation, CarType } from "../../enums/car.enum";
-import { REACT_APP_API_URL, carMileage } from "../../config";
+import { REACT_APP_API_URL, carMileage, carYears } from "../../config";
 import { CarInput } from "../../types/car/car.input";
 import axios from "axios";
 import { getJwtToken } from "../../auth";
@@ -16,6 +16,7 @@ const AddNewCar = ({ initialValues, ...props }: any) => {
   const router = useRouter();
   const inputRef = useRef<any>(null);
   const [insertCarData, setInsertCarData] = useState<CarInput>(initialValues);
+  const car360Ref = useRef<any>(null);
   const [carType, setCarType] = useState<CarType[]>(Object.values(CarType));
   const [carLocation, setCarLocation] = useState<CarLocation[]>(
     Object.values(CarLocation)
@@ -42,10 +43,73 @@ const AddNewCar = ({ initialValues, ...props }: any) => {
       carMileage: getCarData?.getCar ? getCarData?.getCar?.carMileage : 0,
       carDesc: getCarData?.getCar ? getCarData?.getCar?.carDesc : "",
       carImages: getCarData?.getCar ? getCarData?.getCar?.carImages : [],
+      car360Images: getCarData?.getCar ? getCarData?.getCar?.car360Images : [],
+      manufacturedAt: getCarData?.getCar
+        ? getCarData?.getCar?.manufacturedAt
+        : undefined,
     });
   }, [getCarLoading, getCarData]);
 
   /** HANDLERS **/
+  async function upload360Images() {
+    try {
+      const formData = new FormData();
+      const selectedFiles = car360Ref.current?.files;
+
+      if (!selectedFiles || selectedFiles.length === 0) return false;
+      if (selectedFiles.length > 5)
+        throw new Error("Cannot upload more than 5 360° images!");
+
+      formData.append(
+        "operations",
+        JSON.stringify({
+          query: `mutation ImagesUploader($files: [Upload!]!, $target: String!) { 
+						imagesUploader(files: $files, target: $target)
+				  }`,
+          variables: {
+            files: [null, null, null, null, null],
+            target: "car",
+          },
+        })
+      );
+      formData.append(
+        "map",
+        JSON.stringify({
+          "0": ["variables.files.0"],
+          "1": ["variables.files.1"],
+          "2": ["variables.files.2"],
+          "3": ["variables.files.3"],
+          "4": ["variables.files.4"],
+        })
+      );
+      for (const key in selectedFiles) {
+        if (/^\d+$/.test(key)) formData.append(`${key}`, selectedFiles[key]);
+      }
+
+      const response = await axios.post(
+        `${process.env.REACT_APP_API_GRAPHQL_URL}`,
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+            "apollo-require-preflight": true,
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      const responseImages = response.data.data.imagesUploader;
+
+      setInsertCarData({
+        ...insertCarData,
+        car360Images: responseImages,
+      });
+    } catch (err: any) {
+      console.log("err: ", err.message);
+      await sweetMixinErrorAlert(err.message);
+    }
+  }
+
   async function uploadImages() {
     try {
       const formData = new FormData();
@@ -108,21 +172,28 @@ const AddNewCar = ({ initialValues, ...props }: any) => {
 
   const doDisabledCheck = () => {
     if (
-      insertCarData.carTitle === "" ||
-      insertCarData.carPrice === 0 || // @ts-ignore
-      insertCarData.carType === "" || // @ts-ignore
-      insertCarData.carLocation === "" || // @ts-ignore
-      insertCarData.carAddress === "" || // @ts-ignore
-      insertCarData.carTradeIn === "" || // @ts-ignore
-      insertCarData.carLease === "" ||
-      insertCarData.carSeats === 0 ||
-      insertCarData.carYear === 0 ||
-      insertCarData.carMileage === 0 ||
-      insertCarData.carDesc === "" ||
+      !insertCarData.carTitle ||
+      insertCarData.carTitle.length < 3 ||
+      insertCarData.carTitle.length > 100 ||
+      !insertCarData.carPrice ||
+      insertCarData.carPrice <= 0 ||
+      !insertCarData.carType ||
+      !insertCarData.carLocation ||
+      !insertCarData.carAddress ||
+      insertCarData.carAddress.length < 3 ||
+      insertCarData.carAddress.length > 100 ||
+      !insertCarData.carSeats ||
+      insertCarData.carSeats < 2 ||
+      !insertCarData.carYear ||
+      insertCarData.carYear < 1900 ||
+      !insertCarData.carMileage ||
+      insertCarData.carMileage < 0 ||
+      !insertCarData.carImages ||
       insertCarData.carImages.length === 0
     ) {
       return true;
     }
+    return false;
   };
 
   const insertCarHandler = useCallback(async () => {}, [insertCarData]);
@@ -305,7 +376,7 @@ const AddNewCar = ({ initialValues, ...props }: any) => {
 
               <Stack className="config-row">
                 <Stack className="price-year-after-price">
-                  <Typography className="title">Rooms</Typography>
+                  <Typography className="title">Seats</Typography>
                   <select
                     className={"select-description"}
                     value={insertCarData.carSeats || "select"}
@@ -320,15 +391,17 @@ const AddNewCar = ({ initialValues, ...props }: any) => {
                     <option disabled={true} selected={true} value={"select"}>
                       Select
                     </option>
-                    {[1, 2, 3, 4, 5].map((seat: number) => (
-                      <option value={`${seat}`}>{seat}</option>
+                    {[2, 3, 4, 5, 6, 7, 8, 9].map((seat: number) => (
+                      <option value={`${seat}`} key={seat}>
+                        {seat}
+                      </option>
                     ))}
                   </select>
                   <div className={"divider"}></div>
                   <img src={"/img/icons/Vector.svg"} className={"arrow-down"} />
                 </Stack>
                 <Stack className="price-year-after-price">
-                  <Typography className="title">Bed</Typography>
+                  <Typography className="title">Year</Typography>
                   <select
                     className={"select-description"}
                     value={insertCarData.carYear || "select"}
@@ -343,15 +416,20 @@ const AddNewCar = ({ initialValues, ...props }: any) => {
                     <option disabled={true} selected={true} value={"select"}>
                       Select
                     </option>
-                    {[1, 2, 3, 4, 5].map((year: number) => (
-                      <option value={`${year}`}>{year}</option>
-                    ))}
+                    {carYears
+                      .slice()
+                      .reverse()
+                      .map((year: string) => (
+                        <option value={year} key={year}>
+                          {year}
+                        </option>
+                      ))}
                   </select>
                   <div className={"divider"}></div>
                   <img src={"/img/icons/Vector.svg"} className={"arrow-down"} />
                 </Stack>
                 <Stack className="price-year-after-price">
-                  <Typography className="title">Square</Typography>
+                  <Typography className="title">Mileage</Typography>
                   <select
                     className={"select-description"}
                     value={insertCarData.carMileage || "select"}
@@ -366,9 +444,13 @@ const AddNewCar = ({ initialValues, ...props }: any) => {
                     <option disabled={true} selected={true} value={"select"}>
                       Select
                     </option>
-                    {carMileage.map((square: number) => {
-                      if (square !== 0) {
-                        return <option value={`${square}`}>{square}</option>;
+                    {carMileage.map((mileage: number) => {
+                      if (mileage !== 0) {
+                        return (
+                          <option value={`${mileage}`} key={mileage}>
+                            {mileage.toLocaleString()} miles
+                          </option>
+                        );
                       }
                     })}
                   </select>
@@ -392,6 +474,29 @@ const AddNewCar = ({ initialValues, ...props }: any) => {
                     })
                   }
                 ></textarea>
+              </Stack>
+
+              <Stack className="config-column">
+                <Typography className="title">
+                  Manufactured Date (Optional)
+                </Typography>
+                <input
+                  type="date"
+                  className="description-input"
+                  value={
+                    insertCarData.manufacturedAt
+                      ? new Date(insertCarData.manufacturedAt)
+                          .toISOString()
+                          .split("T")[0]
+                      : ""
+                  }
+                  onChange={({ target: { value } }) =>
+                    setInsertCarData({
+                      ...insertCarData,
+                      manufacturedAt: value ? new Date(value) : undefined,
+                    })
+                  }
+                />
               </Stack>
             </Stack>
 
@@ -499,14 +604,60 @@ const AddNewCar = ({ initialValues, ...props }: any) => {
                 </Button>
               </Stack>
               <Stack className="gallery-box">
-                {insertCarData?.carImages.map((image: string) => {
-                  const imagePath: string = `${REACT_APP_API_URL}/${image}`;
-                  return (
-                    <Stack className="image-box">
-                      <img src={imagePath} alt="" />
-                    </Stack>
-                  );
-                })}
+                {insertCarData?.carImages.map(
+                  (image: string, index: number) => {
+                    const imagePath: string = `${REACT_APP_API_URL}/${image}`;
+                    return (
+                      <Stack className="image-box" key={index}>
+                        <img src={imagePath} alt={`Car ${index + 1}`} />
+                      </Stack>
+                    );
+                  }
+                )}
+              </Stack>
+            </Stack>
+
+            <Typography className="upload-title">
+              Upload 360° photos (Optional)
+            </Typography>
+            <Stack className="images-box">
+              <Stack className="upload-box">
+                <Typography
+                  className="drag-title"
+                  style={{ marginBottom: "10px" }}
+                >
+                  360° Images
+                </Typography>
+                <Button
+                  className="browse-button"
+                  onClick={() => {
+                    car360Ref.current?.click();
+                  }}
+                >
+                  <Typography className="browse-button-text">
+                    Browse 360° Files
+                  </Typography>
+                  <input
+                    ref={car360Ref}
+                    type="file"
+                    hidden={true}
+                    onChange={upload360Images}
+                    multiple={true}
+                    accept="image/jpg, image/jpeg, image/png"
+                  />
+                </Button>
+              </Stack>
+              <Stack className="gallery-box">
+                {insertCarData?.car360Images?.map(
+                  (image: string, index: number) => {
+                    const imagePath: string = `${REACT_APP_API_URL}/${image}`;
+                    return (
+                      <Stack className="image-box" key={index}>
+                        <img src={imagePath} alt={`360° ${index + 1}`} />
+                      </Stack>
+                    );
+                  }
+                )}
               </Stack>
             </Stack>
 
@@ -550,6 +701,8 @@ AddNewCar.defaultProps = {
     carMileage: 0,
     carDesc: "",
     carImages: [],
+    car360Images: [],
+    manufacturedAt: undefined,
   },
 };
 
