@@ -46,7 +46,6 @@ function createIsomorphicLink() {
           ...getHeaders(),
         },
       }));
-      console.warn("requesting.. ", operation);
       return forward(operation);
     });
 

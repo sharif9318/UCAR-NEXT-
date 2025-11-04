@@ -9,9 +9,10 @@ import { CarUpdate } from "../../types/car/car.update";
 import axios from "axios";
 import { getJwtToken } from "../../auth";
 import { sweetMixinErrorAlert, sweetMixinSuccessAlert } from "../../sweetAlert";
-import { useMutation, useReactiveVar } from "@apollo/client";
+import { useMutation, useReactiveVar, useQuery } from "@apollo/client";
 import { userVar } from "../../../apollo/store";
 import { CREATE_CAR, UPDATE_CAR } from "../../../apollo/user/mutation";
+import { GET_CAR } from "../../../apollo/user/query";
 import Panorama360Modal from "../common/Panorama360Modal";
 
 const AddNewCar = ({ initialValues, ...props }: any) => {
@@ -27,70 +28,122 @@ const AddNewCar = ({ initialValues, ...props }: any) => {
   const token = getJwtToken();
   const user = useReactiveVar(userVar);
   const [show360Modal, setShow360Modal] = useState(false);
+  const [isDragOver, setIsDragOver] = useState(false);
+  const [isDragOver360, setIsDragOver360] = useState(false);
+  const [isUploading, setIsUploading] = useState(false);
+  const [isUploading360, setIsUploading360] = useState(false);
+
+  // Global drag event handlers to prevent default browser behavior
+  useEffect(() => {
+    const handleGlobalDragOver = (e: DragEvent) => {
+      e.preventDefault();
+    };
+
+    const handleGlobalDrop = (e: DragEvent) => {
+      e.preventDefault();
+    };
+
+    // Prevent default drag and drop behavior globally
+    document.addEventListener("dragover", handleGlobalDragOver);
+    document.addEventListener("drop", handleGlobalDrop);
+
+    return () => {
+      document.removeEventListener("dragover", handleGlobalDragOver);
+      document.removeEventListener("drop", handleGlobalDrop);
+    };
+  }, []);
 
   /** APOLLO REQUESTS **/
-  let getCarData: any, getCarLoading: any;
+  const carId = (router.query.carId || router.query.id) as string;
+
+  const {
+    data: getCarData,
+    loading: getCarLoading,
+    error: getCarError,
+  } = useQuery(GET_CAR, {
+    skip: !carId,
+    variables: { input: carId },
+  });
 
   const [createCar] = useMutation(CREATE_CAR);
   const [updateCar] = useMutation(UPDATE_CAR);
 
   /** LIFECYCLES **/
   useEffect(() => {
-    setInsertCarData({
-      ...insertCarData,
-      carTitle: getCarData?.getCar ? getCarData?.getCar?.carTitle : "",
-      carPrice: getCarData?.getCar ? getCarData?.getCar?.carPrice : 0,
-      carType: getCarData?.getCar ? getCarData?.getCar?.carType : "",
-      carLocation: getCarData?.getCar ? getCarData?.getCar?.carLocation : "",
-      carAddress: getCarData?.getCar ? getCarData?.getCar?.carAddress : "",
-      carTradeIn: getCarData?.getCar ? getCarData?.getCar?.carTradeIn : false,
-      carLease: getCarData?.getCar ? getCarData?.getCar?.carLease : false,
-      carSeats: getCarData?.getCar ? getCarData?.getCar?.carSeats : 0,
-      carYear: getCarData?.getCar ? getCarData?.getCar?.carYear : 0,
-      carMileage: getCarData?.getCar ? getCarData?.getCar?.carMileage : 0,
-      carDesc: getCarData?.getCar ? getCarData?.getCar?.carDesc : "",
-      carImages: getCarData?.getCar ? getCarData?.getCar?.carImages : [],
-      car360Images: getCarData?.getCar ? getCarData?.getCar?.car360Images : [],
-      manufacturedAt: getCarData?.getCar
-        ? getCarData?.getCar?.manufacturedAt
-        : undefined,
-    });
+    if (getCarError) {
+      console.error("Car loading error:", getCarError);
+      sweetMixinErrorAlert("Failed to load car data");
+    }
+  }, [getCarError]);
+
+  useEffect(() => {
+    if (getCarData?.getCar && !getCarLoading) {
+      const carData = getCarData.getCar;
+      setInsertCarData({
+        carTitle: carData.carTitle || "",
+        carPrice: carData.carPrice || 0,
+        carType: carData.carType || "",
+        carLocation: carData.carLocation || "",
+        carAddress: carData.carAddress || "",
+        carTradeIn: carData.carTradeIn || false,
+        carLease: carData.carLease || false,
+        carSeats: carData.carSeats || 0,
+        carYear: carData.carYear || 0,
+        carMileage: carData.carMileage || 0,
+        carDesc: carData.carDesc || "",
+        carImages: carData.carImages || [],
+        car360Images: carData.car360Images || [],
+        manufacturedAt: carData.manufacturedAt || undefined,
+      });
+    }
   }, [getCarLoading, getCarData]);
 
   /** HANDLERS **/
   async function upload360Images() {
     try {
+      setIsUploading360(true);
       const formData = new FormData();
       const selectedFiles = car360Ref.current?.files;
 
-      if (!selectedFiles || selectedFiles.length === 0) return false;
-      if (selectedFiles.length > 5)
+      if (!selectedFiles || selectedFiles.length === 0) {
+        setIsUploading360(false);
+        return false;
+      }
+      if (selectedFiles.length > 5) {
+        setIsUploading360(false);
         throw new Error("Cannot upload more than 5 360° images!");
+      }
+
+      const mutationVariables = {
+        files: Array.from(selectedFiles).map(() => null),
+        target: "car360",
+      };
+
+      const mutationQuery = `mutation ImagesUploader($files: [Upload!]!, $target: String!) { 
+						imagesUploader(files: $files, target: $target)
+				  }`;
 
       formData.append(
         "operations",
         JSON.stringify({
-          query: `mutation ImagesUploader($files: [Upload!]!, $target: String!) { 
-						imagesUploader(files: $files, target: $target)
-				  }`,
-          variables: {
-            files: [null, null, null, null, null],
-            target: "car360",
-          },
+          query: mutationQuery,
+          variables: mutationVariables,
         })
       );
-      formData.append(
-        "map",
-        JSON.stringify({
-          "0": ["variables.files.0"],
-          "1": ["variables.files.1"],
-          "2": ["variables.files.2"],
-          "3": ["variables.files.3"],
-          "4": ["variables.files.4"],
-        })
-      );
-      for (const key in selectedFiles) {
-        if (/^\d+$/.test(key)) formData.append(`${key}`, selectedFiles[key]);
+
+      const mapObject: any = {};
+      for (let i = 0; i < selectedFiles.length; i++) {
+        mapObject[i.toString()] = [`variables.files.${i}`];
+      }
+
+      formData.append("map", JSON.stringify(mapObject));
+
+      for (let i = 0; i < selectedFiles.length; i++) {
+        formData.append(i.toString(), selectedFiles[i]);
+      }
+
+      if (!process.env.REACT_APP_API_GRAPHQL_URL) {
+        throw new Error("REACT_APP_API_GRAPHQL_URL is not configured!");
       }
 
       const response = await axios.post(
@@ -105,26 +158,46 @@ const AddNewCar = ({ initialValues, ...props }: any) => {
         }
       );
 
-      const responseImages = response.data.data.imagesUploader;
+      if (response.data.errors) {
+        throw new Error(
+          `GraphQL Error: ${JSON.stringify(response.data.errors)}`
+        );
+      }
 
-      setInsertCarData({
-        ...insertCarData,
+      const responseImages = response.data.data?.imagesUploader;
+
+      if (!responseImages || responseImages.length === 0) {
+        await sweetMixinErrorAlert(
+          "360° upload failed - server returned no images. The backend may not support the 'car360' target."
+        );
+        return;
+      }
+
+      setInsertCarData((prevData) => ({
+        ...prevData,
         car360Images: responseImages,
-      });
+      }));
     } catch (err: any) {
-      console.log("err: ", err.message);
       await sweetMixinErrorAlert(err.message);
+    } finally {
+      setIsUploading360(false);
     }
   }
 
   async function uploadImages() {
     try {
+      setIsUploading(true);
       const formData = new FormData();
       const selectedFiles = inputRef.current?.files;
 
-      if (!selectedFiles || selectedFiles.length === 0) return false;
-      if (selectedFiles.length > 5)
+      if (!selectedFiles || selectedFiles.length === 0) {
+        setIsUploading(false);
+        return false;
+      }
+      if (selectedFiles.length > 5) {
+        setIsUploading(false);
         throw new Error("Cannot upload more than 5 images!");
+      }
 
       formData.append(
         "operations",
@@ -133,23 +206,25 @@ const AddNewCar = ({ initialValues, ...props }: any) => {
 						imagesUploader(files: $files, target: $target)
 				  }`,
           variables: {
-            files: [null, null, null, null, null],
+            files: Array.from(selectedFiles).map(() => null),
             target: "car",
           },
         })
       );
-      formData.append(
-        "map",
-        JSON.stringify({
-          "0": ["variables.files.0"],
-          "1": ["variables.files.1"],
-          "2": ["variables.files.2"],
-          "3": ["variables.files.3"],
-          "4": ["variables.files.4"],
-        })
-      );
-      for (const key in selectedFiles) {
-        if (/^\d+$/.test(key)) formData.append(`${key}`, selectedFiles[key]);
+
+      const mapObject: any = {};
+      for (let i = 0; i < selectedFiles.length; i++) {
+        mapObject[i.toString()] = [`variables.files.${i}`];
+      }
+
+      formData.append("map", JSON.stringify(mapObject));
+
+      for (let i = 0; i < selectedFiles.length; i++) {
+        formData.append(i.toString(), selectedFiles[i]);
+      }
+
+      if (!process.env.REACT_APP_API_GRAPHQL_URL) {
+        throw new Error("REACT_APP_API_GRAPHQL_URL is not configured!");
       }
 
       const response = await axios.post(
@@ -164,43 +239,60 @@ const AddNewCar = ({ initialValues, ...props }: any) => {
         }
       );
 
-      const responseImages = response.data.data.imagesUploader;
+      if (response.data.errors) {
+        throw new Error(
+          `GraphQL Error: ${JSON.stringify(response.data.errors)}`
+        );
+      }
 
-      console.log("+responseImages: ", responseImages);
-      setInsertCarData({
-        ...insertCarData,
+      const responseImages = response.data.data?.imagesUploader;
+
+      if (!responseImages || responseImages.length === 0) {
+        await sweetMixinErrorAlert(
+          "Upload failed - server returned no images."
+        );
+        return;
+      }
+
+      setInsertCarData((prevData) => ({
+        ...prevData,
         carImages: responseImages,
-      });
+      }));
     } catch (err: any) {
-      console.log("err: ", err.message);
       await sweetMixinErrorAlert(err.message);
+    } finally {
+      setIsUploading(false);
     }
   }
 
   const doDisabledCheck = () => {
-    if (
-      !insertCarData.carTitle ||
-      insertCarData.carTitle.length < 3 ||
-      insertCarData.carTitle.length > 100 ||
-      !insertCarData.carPrice ||
-      insertCarData.carPrice <= 0 ||
-      !insertCarData.carType ||
-      !insertCarData.carLocation ||
-      !insertCarData.carAddress ||
-      insertCarData.carAddress.length < 3 ||
-      insertCarData.carAddress.length > 100 ||
-      !insertCarData.carSeats ||
-      insertCarData.carSeats < 2 ||
-      !insertCarData.carYear ||
-      insertCarData.carYear < 1900 ||
-      !insertCarData.carMileage ||
-      insertCarData.carMileage < 0 ||
-      !insertCarData.carImages ||
-      insertCarData.carImages.length === 0
-    ) {
-      return true;
-    }
-    return false;
+    const checks = {
+      carTitle:
+        !insertCarData.carTitle ||
+        insertCarData.carTitle.length < 3 ||
+        insertCarData.carTitle.length > 100,
+      carPrice: !insertCarData.carPrice || insertCarData.carPrice <= 0,
+      carType: !insertCarData.carType,
+      carLocation: !insertCarData.carLocation,
+      carAddress:
+        !insertCarData.carAddress ||
+        insertCarData.carAddress.length < 3 ||
+        insertCarData.carAddress.length > 100,
+      carSeats: !insertCarData.carSeats || insertCarData.carSeats < 2,
+      carYear: !insertCarData.carYear || insertCarData.carYear < 1900,
+      carMileage:
+        insertCarData.carMileage === undefined ||
+        insertCarData.carMileage === null ||
+        insertCarData.carMileage < 0,
+      carImages:
+        !insertCarData.carImages || insertCarData.carImages.length === 0,
+    };
+
+    const failedChecks = Object.entries(checks).filter(
+      ([key, failed]) => failed
+    );
+
+    return failedChecks.length > 0;
   };
 
   const insertCarHandler = useCallback(async () => {
@@ -224,30 +316,21 @@ const AddNewCar = ({ initialValues, ...props }: any) => {
         manufacturedAt: insertCarData.manufacturedAt,
       };
 
-      console.log("Creating car with data:", input);
-
       const result = await createCar({
         variables: { input },
       });
 
       if (result.data?.createCar) {
-        console.log("Car created successfully:", result.data.createCar);
-        // Show success message
         await sweetMixinSuccessAlert("Car created successfully!");
-        // Redirect to car detail or cars list
-        await router.push(`/car/detail?carId=${result.data.createCar._id}`);
+        await router.push(`/car/detail?id=${result.data.createCar._id}`);
       }
     } catch (err: any) {
-      console.error("Error creating car:", err);
       await sweetMixinErrorAlert(err.message || "Failed to create car");
     }
   }, [insertCarData, createCar, router]);
 
   const updateCarHandler = useCallback(async () => {
     try {
-      if (doDisabledCheck()) return;
-
-      const carId = router.query.carId as string;
       if (!carId) {
         throw new Error("Car ID is required for update");
       }
@@ -270,559 +353,783 @@ const AddNewCar = ({ initialValues, ...props }: any) => {
         manufacturedAt: insertCarData.manufacturedAt,
       };
 
-      console.log("Updating car with data:", input);
-
       const result = await updateCar({
         variables: { input },
       });
 
       if (result.data?.updateCar) {
-        console.log("Car updated successfully:", result.data.updateCar);
-        // Show success message
         await sweetMixinSuccessAlert("Car updated successfully!");
-        // Redirect to car detail
-        await router.push(`/car/detail?carId=${result.data.updateCar._id}`);
+        await router.push(`/car/detail?id=${result.data.updateCar._id}`);
+      } else {
+        throw new Error("Update failed - no data returned");
       }
     } catch (err: any) {
-      console.error("Error updating car:", err);
       await sweetMixinErrorAlert(err.message || "Failed to update car");
     }
-  }, [insertCarData, updateCar, router]);
+  }, [insertCarData, updateCar, router, carId]);
 
   if (user?.memberType !== "AGENT") {
     router.back();
   }
 
-  console.log("+insertCarData", insertCarData);
-
   if (device === "mobile") {
     return <div>ADD NEW CAR MOBILE PAGE</div>;
-  } else {
+  }
+
+  // Show loading state while fetching car data for editing
+  if (carId && getCarLoading) {
     return (
       <div id="add-car-page">
         <Stack className="main-title-box">
-          <Typography className="main-title">Add New Car</Typography>
+          <Typography className="main-title">Loading Car Data...</Typography>
           <Typography className="sub-title">
-            We are glad to see you again!
+            Please wait while we fetch the car information.
           </Typography>
         </Stack>
-
-        <div>
-          <Stack className="config">
-            <Stack className="description-box">
-              <Stack className="config-column">
-                <Typography className="title">Title</Typography>
-                <input
-                  type="text"
-                  className="description-input"
-                  placeholder={"Title"}
-                  value={insertCarData.carTitle}
-                  onChange={({ target: { value } }) =>
-                    setInsertCarData({
-                      ...insertCarData,
-                      carTitle: value,
-                    })
-                  }
-                />
-              </Stack>
-
-              <Stack className="config-row">
-                <Stack className="price-year-after-price">
-                  <Typography className="title">Price</Typography>
-                  <input
-                    type="text"
-                    className="description-input"
-                    placeholder={"Price"}
-                    value={insertCarData.carPrice}
-                    onChange={({ target: { value } }) =>
-                      setInsertCarData({
-                        ...insertCarData,
-                        carPrice: parseInt(value),
-                      })
-                    }
-                  />
-                </Stack>
-                <Stack className="price-year-after-price">
-                  <Typography className="title">Select Type</Typography>
-                  <select
-                    className={"select-description"}
-                    defaultValue={insertCarData.carType || "select"}
-                    value={insertCarData.carType || "select"}
-                    onChange={({ target: { value } }) =>
-                      setInsertCarData({
-                        ...insertCarData,
-                        carType: value as CarType,
-                      })
-                    }
-                  >
-                    <>
-                      <option selected={true} disabled={true} value={"select"}>
-                        Select
-                      </option>
-                      {carType.map((type: any) => (
-                        <option value={`${type}`} key={type}>
-                          {type}
-                        </option>
-                      ))}
-                    </>
-                  </select>
-                  <div className={"divider"}></div>
-                  <img src={"/img/icons/Vector.svg"} className={"arrow-down"} />
-                </Stack>
-              </Stack>
-
-              <Stack className="config-row">
-                <Stack className="price-year-after-price">
-                  <Typography className="title">Select Location</Typography>
-                  <select
-                    className={"select-description"}
-                    defaultValue={insertCarData.carLocation || "select"}
-                    value={insertCarData.carLocation || "select"}
-                    onChange={({ target: { value } }) =>
-                      setInsertCarData({
-                        ...insertCarData,
-                        carLocation: value as CarLocation,
-                      })
-                    }
-                  >
-                    <>
-                      <option selected={true} disabled={true} value={"select"}>
-                        Select
-                      </option>
-                      {carLocation.map((location: any) => (
-                        <option value={`${location}`} key={location}>
-                          {location}
-                        </option>
-                      ))}
-                    </>
-                  </select>
-                  <div className={"divider"}></div>
-                  <img src={"/img/icons/Vector.svg"} className={"arrow-down"} />
-                </Stack>
-                <Stack className="price-year-after-price">
-                  <Typography className="title">Address</Typography>
-                  <input
-                    type="text"
-                    className="description-input"
-                    placeholder={"Address"}
-                    value={insertCarData.carAddress}
-                    onChange={({ target: { value } }) =>
-                      setInsertCarData({
-                        ...insertCarData,
-                        carAddress: value,
-                      })
-                    }
-                  />
-                </Stack>
-              </Stack>
-
-              <Stack className="config-row">
-                <Stack className="price-year-after-price">
-                  <Typography className="title">Trade-In</Typography>
-                  <select
-                    className={"select-description"}
-                    value={insertCarData.carTradeIn ? "yes" : "no"}
-                    defaultValue={insertCarData.carTradeIn ? "yes" : "no"}
-                    onChange={({ target: { value } }) =>
-                      setInsertCarData({
-                        ...insertCarData,
-                        carTradeIn: value === "yes",
-                      })
-                    }
-                  >
-                    <option disabled={true} selected={true}>
-                      Select
-                    </option>
-                    <option value={"yes"}>Yes</option>
-                    <option value={"no"}>No</option>
-                  </select>
-                  <div className={"divider"}></div>
-                  <img src={"/img/icons/Vector.svg"} className={"arrow-down"} />
-                </Stack>
-                <Stack className="price-year-after-price">
-                  <Typography className="title">Lease</Typography>
-                  <select
-                    className={"select-description"}
-                    value={insertCarData.carLease ? "yes" : "no"}
-                    defaultValue={insertCarData.carLease ? "yes" : "no"}
-                    onChange={({ target: { value } }) =>
-                      setInsertCarData({
-                        ...insertCarData,
-                        carLease: value === "yes",
-                      })
-                    }
-                  >
-                    <option disabled={true} selected={true}>
-                      Select
-                    </option>
-                    <option value={"yes"}>Yes</option>
-                    <option value={"no"}>No</option>
-                  </select>
-                  <div className={"divider"}></div>
-                  <img src={"/img/icons/Vector.svg"} className={"arrow-down"} />
-                </Stack>
-              </Stack>
-
-              <Stack className="config-row">
-                <Stack className="price-year-after-price">
-                  <Typography className="title">Seats</Typography>
-                  <select
-                    className={"select-description"}
-                    value={insertCarData.carSeats || "select"}
-                    defaultValue={insertCarData.carSeats || "select"}
-                    onChange={({ target: { value } }) =>
-                      setInsertCarData({
-                        ...insertCarData,
-                        carSeats: parseInt(value),
-                      })
-                    }
-                  >
-                    <option disabled={true} selected={true} value={"select"}>
-                      Select
-                    </option>
-                    {[2, 3, 4, 5, 6, 7, 8, 9].map((seat: number) => (
-                      <option value={`${seat}`} key={seat}>
-                        {seat}
-                      </option>
-                    ))}
-                  </select>
-                  <div className={"divider"}></div>
-                  <img src={"/img/icons/Vector.svg"} className={"arrow-down"} />
-                </Stack>
-                <Stack className="price-year-after-price">
-                  <Typography className="title">Year</Typography>
-                  <select
-                    className={"select-description"}
-                    value={insertCarData.carYear || "select"}
-                    defaultValue={insertCarData.carYear || "select"}
-                    onChange={({ target: { value } }) =>
-                      setInsertCarData({
-                        ...insertCarData,
-                        carYear: parseInt(value),
-                      })
-                    }
-                  >
-                    <option disabled={true} selected={true} value={"select"}>
-                      Select
-                    </option>
-                    {carYears
-                      .slice()
-                      .reverse()
-                      .map((year: string) => (
-                        <option value={year} key={year}>
-                          {year}
-                        </option>
-                      ))}
-                  </select>
-                  <div className={"divider"}></div>
-                  <img src={"/img/icons/Vector.svg"} className={"arrow-down"} />
-                </Stack>
-                <Stack className="price-year-after-price">
-                  <Typography className="title">Mileage</Typography>
-                  <select
-                    className={"select-description"}
-                    value={insertCarData.carMileage || "select"}
-                    defaultValue={insertCarData.carMileage || "select"}
-                    onChange={({ target: { value } }) =>
-                      setInsertCarData({
-                        ...insertCarData,
-                        carMileage: parseInt(value),
-                      })
-                    }
-                  >
-                    <option disabled={true} selected={true} value={"select"}>
-                      Select
-                    </option>
-                    {carMileage.map((mileage: number) => {
-                      if (mileage !== 0) {
-                        return (
-                          <option value={`${mileage}`} key={mileage}>
-                            {mileage.toLocaleString()} miles
-                          </option>
-                        );
-                      }
-                    })}
-                  </select>
-                  <div className={"divider"}></div>
-                  <img src={"/img/icons/Vector.svg"} className={"arrow-down"} />
-                </Stack>
-              </Stack>
-
-              <Typography className="car-title">Car Description</Typography>
-              <Stack className="config-column">
-                <Typography className="title">Description</Typography>
-                <textarea
-                  name=""
-                  id=""
-                  className="description-text"
-                  value={insertCarData.carDesc || ""}
-                  onChange={({ target: { value } }) =>
-                    setInsertCarData({
-                      ...insertCarData,
-                      carDesc: value,
-                    })
-                  }
-                ></textarea>
-              </Stack>
-
-              <Stack className="config-column">
-                <Typography className="title">
-                  Manufactured Date (Optional)
-                </Typography>
-                <input
-                  type="date"
-                  className="description-input"
-                  value={
-                    insertCarData.manufacturedAt
-                      ? new Date(insertCarData.manufacturedAt)
-                          .toISOString()
-                          .split("T")[0]
-                      : ""
-                  }
-                  onChange={({ target: { value } }) =>
-                    setInsertCarData({
-                      ...insertCarData,
-                      manufacturedAt: value ? new Date(value) : undefined,
-                    })
-                  }
-                />
-              </Stack>
-            </Stack>
-
-            <Typography className="upload-title">
-              Upload photos of your car
-            </Typography>
-            <Stack className="images-box">
-              <Stack className="upload-box">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="121"
-                  height="120"
-                  viewBox="0 0 121 120"
-                  fill="none"
-                >
-                  <g clipPath="url(#clip0_7037_5336)">
-                    <path
-                      d="M68.9453 52.0141H52.9703C52.4133 52.0681 51.8511 52.005 51.32 51.8289C50.7888 51.6528 50.3004 51.3675 49.886 50.9914C49.4716 50.6153 49.1405 50.1567 48.9139 49.645C48.6874 49.1333 48.5703 48.5799 48.5703 48.0203C48.5703 47.4607 48.6874 46.9073 48.9139 46.3956C49.1405 45.884 49.4716 45.4253 49.886 45.0492C50.3004 44.6731 50.7888 44.3878 51.32 44.2117C51.8511 44.0356 52.4133 43.9725 52.9703 44.0266H68.9828C69.5397 43.9725 70.1019 44.0356 70.633 44.2117C71.1642 44.3878 71.6527 44.6731 72.067 45.0492C72.4814 45.4253 72.8125 45.884 73.0391 46.3956C73.2657 46.9073 73.3827 47.4607 73.3827 48.0203C73.3827 48.5799 73.2657 49.1333 73.0391 49.645C72.8125 50.1567 72.4814 50.6153 72.067 50.9914C71.6527 51.3675 71.1642 51.6528 70.633 51.8289C70.1019 52.005 69.5397 52.0681 68.9828 52.0141H68.9453Z"
-                      fill="#DDDDDD"
-                    />
-                    <path
-                      d="M72.4361 65.0288L63.6236 57.0413C62.8704 56.3994 61.9132 56.0469 60.9236 56.0469C59.934 56.0469 58.9768 56.3994 58.2236 57.0413L49.4111 65.0288C48.6807 65.7585 48.2597 66.7415 48.2355 67.7736C48.2113 68.8057 48.5859 69.8074 49.2813 70.5704C49.9767 71.3335 50.9394 71.7991 51.9693 71.8705C52.9992 71.9419 54.017 71.6136 54.8111 70.9538L56.9111 69.0413V88.0163C57.0074 89.0088 57.4697 89.9298 58.208 90.6C58.9464 91.2701 59.9077 91.6414 60.9048 91.6414C61.9019 91.6414 62.8633 91.2701 63.6016 90.6C64.34 89.9298 64.8023 89.0088 64.8986 88.0163V69.0413L66.9986 70.9538C67.3823 71.3372 67.8398 71.6387 68.3434 71.8403C68.8469 72.0418 69.3861 72.1392 69.9284 72.1265C70.4706 72.1138 71.0046 71.9913 71.4982 71.7664C71.9918 71.5415 72.4346 71.2188 72.8 70.8179C73.1653 70.417 73.4456 69.9463 73.6239 69.434C73.8022 68.9217 73.8748 68.3786 73.8373 67.8375C73.7997 67.2965 73.6529 66.7686 73.4056 66.2858C73.1584 65.8031 72.8158 65.3755 72.3986 65.0288H72.4361Z"
-                      fill="#DDDDDD"
-                    />
-                    <path
-                      d="M100.975 120.003C100.418 120.057 99.8558 119.994 99.3247 119.818C98.7935 119.642 98.3051 119.357 97.8907 118.98C97.4763 118.604 97.1452 118.146 96.9186 117.634C96.6921 117.122 96.575 116.569 96.575 116.009C96.575 115.45 96.6921 114.896 96.9186 114.385C97.1452 113.873 97.4763 113.414 97.8907 113.038C98.3051 112.662 98.7935 112.377 99.3247 112.201C99.8558 112.025 100.418 111.962 100.975 112.016C104.158 112.016 107.21 110.751 109.46 108.501C111.711 106.25 112.975 103.198 112.975 100.016V19.9906C112.975 16.808 111.711 13.7558 109.46 11.5053C107.21 9.25491 104.158 7.99063 100.975 7.99063H36.9624C36.4055 8.04466 35.8433 7.98159 35.3122 7.80547C34.781 7.62935 34.2926 7.34408 33.8782 6.96797C33.4638 6.59186 33.1327 6.13324 32.9061 5.62156C32.6796 5.10989 32.5625 4.55648 32.5625 3.99688C32.5625 3.43728 32.6796 2.88386 32.9061 2.37219C33.1327 1.86051 33.4638 1.40189 33.8782 1.02578C34.2926 0.649674 34.781 0.364397 35.3122 0.188277C35.8433 0.0121578 36.4055 -0.05091 36.9624 0.00312538H100.975C106.273 0.0130374 111.351 2.12204 115.097 5.86828C118.844 9.61451 120.953 14.6927 120.962 19.9906V100.016C120.953 105.314 118.844 110.392 115.097 114.138C111.351 117.884 106.273 119.993 100.975 120.003Z"
-                      fill="#DDDDDD"
-                    />
-                    <path
-                      d="M84.9609 120.003H20.9484C15.6505 119.993 10.5723 117.884 6.82609 114.138C3.07985 110.392 0.97085 105.314 0.960938 100.016L0.960938 19.9906C0.97085 14.6927 3.07985 9.61451 6.82609 5.86828C10.5723 2.12204 15.6505 0.0130374 20.9484 0.00312538C21.5054 -0.05091 22.0676 0.0121578 22.5987 0.188277C23.1299 0.364397 23.6183 0.649674 24.0327 1.02578C24.4471 1.40189 24.7782 1.86051 25.0047 2.37219C25.2313 2.88386 25.3484 3.43728 25.3484 3.99688C25.3484 4.55648 25.2313 5.10989 25.0047 5.62156C24.7782 6.13324 24.4471 6.59186 24.0327 6.96797C23.6183 7.34408 23.1299 7.62935 22.5987 7.80547C22.0676 7.98159 21.5054 8.04466 20.9484 7.99063C17.7658 7.99063 14.7136 9.25491 12.4632 11.5053C10.2127 13.7558 8.94844 16.808 8.94844 19.9906V100.016C8.94844 103.198 10.2127 106.25 12.4632 108.501C14.7136 110.751 17.7658 112.016 20.9484 112.016H84.9609C85.5179 111.962 86.08 112.025 86.6112 112.201C87.1424 112.377 87.6308 112.662 88.0452 113.038C88.4595 113.414 88.7907 113.873 89.0172 114.385C89.2438 114.896 89.3609 115.45 89.3609 116.009C89.3609 116.569 89.2438 117.122 89.0172 117.634C88.7907 118.146 88.4595 118.604 88.0452 118.98C87.6308 119.357 87.1424 119.642 86.6112 119.818C86.08 119.994 85.5179 120.057 84.9609 120.003Z"
-                      fill="#DDDDDD"
-                    />
-                    <path
-                      d="M28.9704 24.0031H20.9454C19.9529 23.9068 19.0319 23.4445 18.3617 22.7062C17.6916 21.9679 17.3203 21.0065 17.3203 20.0094C17.3203 19.0123 17.6916 18.0509 18.3617 17.3126C19.0319 16.5743 19.9529 16.1119 20.9454 16.0156H28.9704C29.9628 16.1119 30.8839 16.5743 31.554 17.3126C32.2242 18.0509 32.5954 19.0123 32.5954 20.0094C32.5954 21.0065 32.2242 21.9679 31.554 22.7062C30.8839 23.4445 29.9628 23.9068 28.9704 24.0031Z"
-                      fill="#DDDDDD"
-                    />
-                    <path
-                      d="M76.9736 24.0016C76.4485 24.0065 75.9275 23.9074 75.4409 23.7098C74.9543 23.5123 74.5117 23.2203 74.1386 22.8507C73.7655 22.481 73.4693 22.0412 73.2672 21.5564C73.0651 21.0717 72.9611 20.5517 72.9611 20.0266C72.9537 19.2314 73.1827 18.452 73.619 17.7872C74.0554 17.1224 74.6794 16.6023 75.4119 16.2929C76.1444 15.9834 76.9524 15.8986 77.7332 16.0491C78.514 16.1997 79.2324 16.5789 79.7973 17.1385C80.3623 17.6981 80.7482 18.413 80.906 19.1924C81.0639 19.9717 80.9867 20.7804 80.6841 21.5158C80.3816 22.2512 79.8673 22.8801 79.2067 23.3226C78.546 23.7652 77.7688 24.0015 76.9736 24.0016Z"
-                      fill="#DDDDDD"
-                    />
-                    <path
-                      d="M88.9736 24.0016C88.4485 24.0065 87.9275 23.9074 87.4409 23.7098C86.9543 23.5123 86.5117 23.2203 86.1386 22.8507C85.7655 22.481 85.4693 22.0412 85.2672 21.5564C85.0651 21.0717 84.9611 20.5517 84.9611 20.0266C84.9537 19.2314 85.1827 18.452 85.619 17.7872C86.0554 17.1224 86.6794 16.6023 87.4119 16.2929C88.1444 15.9834 88.9524 15.8986 89.7332 16.0491C90.514 16.1997 91.2324 16.5789 91.7974 17.1385C92.3623 17.6981 92.7482 18.413 92.9061 19.1924C93.0639 19.9717 92.9867 20.7804 92.6841 21.5158C92.3816 22.2512 91.8673 22.8801 91.2067 23.3226C90.5461 23.7652 89.7688 24.0015 88.9736 24.0016Z"
-                      fill="#DDDDDD"
-                    />
-                    <path
-                      d="M100.974 24.0016C100.448 24.0065 99.9275 23.9074 99.4409 23.7098C98.9543 23.5123 98.5117 23.2203 98.1386 22.8507C97.7655 22.481 97.4693 22.0412 97.2672 21.5564C97.0651 21.0717 96.9611 20.5517 96.9611 20.0266C96.9537 19.2314 97.1827 18.452 97.619 17.7872C98.0554 17.1224 98.6794 16.6023 99.4119 16.2929C100.144 15.9834 100.952 15.8986 101.733 16.0491C102.514 16.1997 103.232 16.5789 103.797 17.1385C104.362 17.6981 104.748 18.413 104.906 19.1924C105.064 19.9717 104.987 20.7804 104.684 21.5158C104.382 22.2512 103.867 22.8801 103.207 23.3226C102.546 23.7652 101.769 24.0015 100.974 24.0016Z"
-                      fill="#DDDDDD"
-                    />
-                  </g>
-                  <defs>
-                    <clipPath id="clip0_7037_5336">
-                      <rect
-                        width="120"
-                        height="120"
-                        fill="white"
-                        transform="translate(0.960938)"
-                      />
-                    </clipPath>
-                  </defs>
-                </svg>
-                <Stack className="text-box">
-                  <Typography className="drag-title">
-                    Drag and drop images here
-                  </Typography>
-                  <Typography className="format-title">
-                    Photos must be JPEG, JPG, PNG, or AVIF format and least
-                    2048x768
-                  </Typography>
-                </Stack>
-                <Button
-                  className="browse-button"
-                  onClick={() => {
-                    inputRef.current?.click();
-                  }}
-                >
-                  <Typography className="browse-button-text">
-                    Browse Files
-                  </Typography>
-                  <input
-                    ref={inputRef}
-                    type="file"
-                    hidden={true}
-                    onChange={uploadImages}
-                    multiple={true}
-                    accept="image/jpeg, image/jpg, image/png, image/avif"
-                  />
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="16"
-                    height="16"
-                    viewBox="0 0 16 16"
-                    fill="none"
-                  >
-                    <g clipPath="url(#clip0_7309_3249)">
-                      <path
-                        d="M15.5556 0H5.7778C5.53214 0 5.33334 0.198792 5.33334 0.444458C5.33334 0.690125 5.53214 0.888917 5.7778 0.888917H14.4827L0.130219 15.2413C-0.0434062 15.415 -0.0434062 15.6962 0.130219 15.8698C0.21701 15.9566 0.33076 16 0.444469 16C0.558177 16 0.671885 15.9566 0.758719 15.8698L15.1111 1.51737V10.2222C15.1111 10.4679 15.3099 10.6667 15.5556 10.6667C15.8013 10.6667 16.0001 10.4679 16.0001 10.2222V0.444458C16 0.198792 15.8012 0 15.5556 0Z"
-                        fill="#181A20"
-                      />
-                    </g>
-                    <defs>
-                      <clipPath id="clip0_7309_3249">
-                        <rect width="16" height="16" fill="white" />
-                      </clipPath>
-                    </defs>
-                  </svg>
-                </Button>
-              </Stack>
-              <Stack className="gallery-box">
-                {insertCarData?.carImages.map(
-                  (image: string, index: number) => {
-                    const imagePath: string = `${REACT_APP_API_URL}/${image}`;
-                    return (
-                      <Stack className="image-box" key={index}>
-                        <img src={imagePath} alt={`Car ${index + 1}`} />
-                      </Stack>
-                    );
-                  }
-                )}
-              </Stack>
-            </Stack>
-
-            <Typography className="upload-title">
-              Upload 360° photos (Optional)
-            </Typography>
-            <Stack className="images-box">
-              <Stack className="upload-box">
-                <Typography
-                  className="drag-title"
-                  style={{ marginBottom: "10px" }}
-                >
-                  360° Images
-                </Typography>
-                <Stack direction="row" spacing={2}>
-                  <Button
-                    className="browse-button"
-                    onClick={() => {
-                      car360Ref.current?.click();
-                    }}
-                  >
-                    <Typography className="browse-button-text">
-                      Browse 360° Files
-                    </Typography>
-                    <input
-                      ref={car360Ref}
-                      type="file"
-                      hidden={true}
-                      onChange={upload360Images}
-                      multiple={true}
-                      accept="image/jpeg, image/jpg, image/png, image/avif"
-                    />
-                  </Button>
-                  {insertCarData?.car360Images &&
-                    insertCarData.car360Images.length > 0 && (
-                      <Button
-                        variant="outlined"
-                        onClick={() => setShow360Modal(true)}
-                        sx={{
-                          borderColor: "#181A20",
-                          color: "#181A20",
-                          "&:hover": {
-                            borderColor: "#181A20",
-                            backgroundColor: "rgba(24, 26, 32, 0.04)",
-                          },
-                        }}
-                      >
-                        <Typography style={{ fontSize: "14px" }}>
-                          Preview 360° View
-                        </Typography>
-                      </Button>
-                    )}
-                </Stack>
-              </Stack>
-              <Stack className="gallery-box">
-                {insertCarData?.car360Images?.map(
-                  (image: string, index: number) => {
-                    const imagePath: string = `${REACT_APP_API_URL}/${image}`;
-                    return (
-                      <Stack
-                        className="image-box"
-                        key={index}
-                        sx={{ position: "relative" }}
-                      >
-                        <img src={imagePath} alt={`360° ${index + 1}`} />
-                        {/* 360° indicator */}
-                        <Box
-                          sx={{
-                            position: "absolute",
-                            top: 8,
-                            left: 8,
-                            backgroundColor: "rgba(0,0,0,0.7)",
-                            color: "white",
-                            padding: "4px 8px",
-                            borderRadius: "4px",
-                            fontSize: "10px",
-                            fontWeight: "bold",
-                          }}
-                        >
-                          360°
-                        </Box>
-                      </Stack>
-                    );
-                  }
-                )}
-              </Stack>
-            </Stack>
-
-            <Stack className="buttons-row">
-              {router.query.carId ? (
-                <Button
-                  className="next-button"
-                  disabled={doDisabledCheck()}
-                  onClick={updateCarHandler}
-                >
-                  <Typography className="next-button-text">Save</Typography>
-                </Button>
-              ) : (
-                <Button
-                  className="next-button"
-                  disabled={doDisabledCheck()}
-                  onClick={insertCarHandler}
-                >
-                  <Typography className="next-button-text">Save</Typography>
-                </Button>
-              )}
-            </Stack>
-          </Stack>
-        </div>
-
-        {/* 360° Image Viewer Modal */}
-        <Panorama360Modal
-          open={show360Modal}
-          onClose={() => setShow360Modal(false)}
-          images={insertCarData?.car360Images || []}
-        />
       </div>
     );
   }
+
+  return (
+    <div id="add-car-page">
+      <Stack className="main-title-box">
+        <Typography className="main-title">
+          {carId ? "Edit Car" : "Add New Car"}
+        </Typography>
+        <Typography className="sub-title">
+          We are glad to see you again!
+        </Typography>
+      </Stack>
+
+      <div>
+        <Stack className="config">
+          <Stack className="description-box">
+            <Stack className="config-column">
+              <Typography className="title">Title</Typography>
+              <input
+                type="text"
+                className="description-input"
+                placeholder={"Title"}
+                value={insertCarData.carTitle}
+                onChange={({ target: { value } }) =>
+                  setInsertCarData((prevData) => ({
+                    ...prevData,
+                    carTitle: value,
+                  }))
+                }
+              />
+            </Stack>
+
+            <Stack className="config-row">
+              <Stack className="price-year-after-price">
+                <Typography className="title">Price</Typography>
+                <input
+                  type="text"
+                  className="description-input"
+                  placeholder={"Price"}
+                  value={insertCarData.carPrice}
+                  onChange={({ target: { value } }) =>
+                    setInsertCarData((prevData) => ({
+                      ...prevData,
+                      carPrice: parseInt(value) || 0,
+                    }))
+                  }
+                />
+              </Stack>
+              <Stack className="price-year-after-price">
+                <Typography className="title">Select Type</Typography>
+                <select
+                  className={"select-description"}
+                  value={insertCarData.carType || "select"}
+                  onChange={({ target: { value } }) => {
+                    if (value !== "select") {
+                      setInsertCarData((prevData) => ({
+                        ...prevData,
+                        carType: value as CarType,
+                      }));
+                    }
+                  }}
+                >
+                  <>
+                    <option disabled={true} value={"select"}>
+                      Select
+                    </option>
+                    {carType.map((type: any) => (
+                      <option value={`${type}`} key={type}>
+                        {type}
+                      </option>
+                    ))}
+                  </>
+                </select>
+                <div className={"divider"}></div>
+                <img src={"/img/icons/Vector.svg"} className={"arrow-down"} />
+              </Stack>
+            </Stack>
+
+            <Stack className="config-row">
+              <Stack className="price-year-after-price">
+                <Typography className="title">Select Location</Typography>
+                <select
+                  className={"select-description"}
+                  value={insertCarData.carLocation || "select"}
+                  onChange={({ target: { value } }) => {
+                    if (value !== "select") {
+                      setInsertCarData((prevData) => ({
+                        ...prevData,
+                        carLocation: value as CarLocation,
+                      }));
+                    }
+                  }}
+                >
+                  <>
+                    <option disabled={true} value={"select"}>
+                      Select
+                    </option>
+                    {carLocation.map((location: any) => (
+                      <option value={`${location}`} key={location}>
+                        {location}
+                      </option>
+                    ))}
+                  </>
+                </select>
+                <div className={"divider"}></div>
+                <img src={"/img/icons/Vector.svg"} className={"arrow-down"} />
+              </Stack>
+              <Stack className="price-year-after-price">
+                <Typography className="title">Address</Typography>
+                <input
+                  type="text"
+                  className="description-input"
+                  placeholder={"Address"}
+                  value={insertCarData.carAddress}
+                  onChange={({ target: { value } }) =>
+                    setInsertCarData((prevData) => ({
+                      ...prevData,
+                      carAddress: value,
+                    }))
+                  }
+                />
+              </Stack>
+            </Stack>
+
+            <Stack className="config-row">
+              <Stack className="price-year-after-price">
+                <Typography className="title">Trade-In</Typography>
+                <select
+                  className={"select-description"}
+                  value={insertCarData.carTradeIn ? "yes" : "no"}
+                  onChange={({ target: { value } }) =>
+                    setInsertCarData((prevData) => ({
+                      ...prevData,
+                      carTradeIn: value === "yes",
+                    }))
+                  }
+                >
+                  <option disabled={true}>Select</option>
+                  <option value={"yes"}>Yes</option>
+                  <option value={"no"}>No</option>
+                </select>
+                <div className={"divider"}></div>
+                <img src={"/img/icons/Vector.svg"} className={"arrow-down"} />
+              </Stack>
+              <Stack className="price-year-after-price">
+                <Typography className="title">Lease</Typography>
+                <select
+                  className={"select-description"}
+                  value={insertCarData.carLease ? "yes" : "no"}
+                  onChange={({ target: { value } }) =>
+                    setInsertCarData((prevData) => ({
+                      ...prevData,
+                      carLease: value === "yes",
+                    }))
+                  }
+                >
+                  <option disabled={true}>Select</option>
+                  <option value={"yes"}>Yes</option>
+                  <option value={"no"}>No</option>
+                </select>
+                <div className={"divider"}></div>
+                <img src={"/img/icons/Vector.svg"} className={"arrow-down"} />
+              </Stack>
+            </Stack>
+
+            <Stack className="config-row">
+              <Stack className="price-year-after-price">
+                <Typography className="title">Seats</Typography>
+                <select
+                  className={"select-description"}
+                  value={insertCarData.carSeats || "select"}
+                  onChange={({ target: { value } }) =>
+                    setInsertCarData((prevData) => ({
+                      ...prevData,
+                      carSeats: parseInt(value),
+                    }))
+                  }
+                >
+                  <option disabled={true} value={"select"}>
+                    Select
+                  </option>
+                  {[2, 3, 4, 5, 6, 7, 8, 9].map((seat: number) => (
+                    <option value={`${seat}`} key={seat}>
+                      {seat}
+                    </option>
+                  ))}
+                </select>
+                <div className={"divider"}></div>
+                <img src={"/img/icons/Vector.svg"} className={"arrow-down"} />
+              </Stack>
+              <Stack className="price-year-after-price">
+                <Typography className="title">Year</Typography>
+                <select
+                  className={"select-description"}
+                  value={insertCarData.carYear || "select"}
+                  onChange={({ target: { value } }) =>
+                    setInsertCarData((prevData) => ({
+                      ...prevData,
+                      carYear: parseInt(value),
+                    }))
+                  }
+                >
+                  <option disabled={true} value={"select"}>
+                    Select
+                  </option>
+                  {carYears
+                    .slice()
+                    .reverse()
+                    .map((year: string) => (
+                      <option value={year} key={year}>
+                        {year}
+                      </option>
+                    ))}
+                </select>
+                <div className={"divider"}></div>
+                <img src={"/img/icons/Vector.svg"} className={"arrow-down"} />
+              </Stack>
+              <Stack className="price-year-after-price">
+                <Typography className="title">Mileage</Typography>
+                <select
+                  className={"select-description"}
+                  value={insertCarData.carMileage || "select"}
+                  onChange={({ target: { value } }) =>
+                    setInsertCarData((prevData) => ({
+                      ...prevData,
+                      carMileage: parseInt(value),
+                    }))
+                  }
+                >
+                  <option disabled={true} value={"select"}>
+                    Select
+                  </option>
+                  {carMileage.map((mileage: number) => {
+                    if (mileage !== 0) {
+                      return (
+                        <option value={`${mileage}`} key={mileage}>
+                          {mileage.toLocaleString()} miles
+                        </option>
+                      );
+                    }
+                  })}
+                </select>
+                <div className={"divider"}></div>
+                <img src={"/img/icons/Vector.svg"} className={"arrow-down"} />
+              </Stack>
+            </Stack>
+
+            <Typography className="car-title">Car Description</Typography>
+            <Stack className="config-column">
+              <Typography className="title">Description</Typography>
+              <textarea
+                name=""
+                id=""
+                className="description-text"
+                value={insertCarData.carDesc || ""}
+                onChange={({ target: { value } }) =>
+                  setInsertCarData((prevData) => ({
+                    ...prevData,
+                    carDesc: value,
+                  }))
+                }
+              ></textarea>
+            </Stack>
+
+            <Stack className="config-column">
+              <Typography className="title">
+                Manufactured Date (Optional)
+              </Typography>
+              <input
+                type="date"
+                className="description-input"
+                value={
+                  insertCarData.manufacturedAt
+                    ? new Date(insertCarData.manufacturedAt)
+                        .toISOString()
+                        .split("T")[0]
+                    : ""
+                }
+                onChange={({ target: { value } }) =>
+                  setInsertCarData((prevData) => ({
+                    ...prevData,
+                    manufacturedAt: value ? new Date(value) : undefined,
+                  }))
+                }
+              />
+            </Stack>
+          </Stack>
+
+          <Typography className="upload-title">
+            Upload photos of your car
+          </Typography>
+          <Stack className="images-box">
+            <Stack
+              className={`upload-box ${isDragOver ? "drag-over" : ""}`}
+              onDragOver={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                if (!isDragOver) {
+                  setIsDragOver(true);
+                }
+              }}
+              onDragEnter={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                setIsDragOver(true);
+              }}
+              onDragLeave={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                // Only set to false if we're leaving the upload box entirely
+                const rect = e.currentTarget.getBoundingClientRect();
+                const x = e.clientX;
+                const y = e.clientY;
+
+                if (
+                  x < rect.left ||
+                  x > rect.right ||
+                  y < rect.top ||
+                  y > rect.bottom
+                ) {
+                  setIsDragOver(false);
+                }
+              }}
+              onDrop={async (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                setIsDragOver(false);
+
+                try {
+                  const files = Array.from(e.dataTransfer.files);
+
+                  if (files.length === 0) {
+                    await sweetMixinErrorAlert("No files were dropped!");
+                    return;
+                  }
+
+                  const validFiles = files.filter((file) => {
+                    return (
+                      file.type === "image/jpeg" ||
+                      file.type === "image/jpg" ||
+                      file.type === "image/png" ||
+                      file.type === "image/avif"
+                    );
+                  });
+
+                  const invalidFiles = files.filter((file) => {
+                    return !(
+                      file.type === "image/jpeg" ||
+                      file.type === "image/jpg" ||
+                      file.type === "image/png" ||
+                      file.type === "image/avif"
+                    );
+                  });
+
+                  if (invalidFiles.length > 0) {
+                    await sweetMixinErrorAlert(
+                      `${invalidFiles.length} file(s) rejected. Only JPEG, JPG, PNG, or AVIF files are allowed!`
+                    );
+                  }
+
+                  if (validFiles.length === 0) {
+                    return;
+                  }
+
+                  if (validFiles.length > 5) {
+                    await sweetMixinErrorAlert(
+                      "Cannot upload more than 5 images at once!"
+                    );
+                    return;
+                  }
+
+                  // Check file sizes
+                  const maxSize = 10 * 1024 * 1024; // 10MB
+                  const oversizedFiles = validFiles.filter(
+                    (file) => file.size > maxSize
+                  );
+
+                  if (oversizedFiles.length > 0) {
+                    await sweetMixinErrorAlert(
+                      `${oversizedFiles.length} file(s) are too large. Maximum file size is 10MB.`
+                    );
+                    return;
+                  }
+
+                  // Set files to input ref to maintain consistency
+                  if (inputRef.current) {
+                    const dataTransfer = new DataTransfer();
+                    validFiles.forEach((file) => dataTransfer.items.add(file));
+                    inputRef.current.files = dataTransfer.files;
+                    await uploadImages();
+                  }
+                } catch (error: any) {
+                  await sweetMixinErrorAlert(
+                    "Error processing dropped files: " + error.message
+                  );
+                }
+              }}
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="121"
+                height="120"
+                viewBox="0 0 121 120"
+                fill="none"
+              >
+                <g clipPath="url(#clip0_7037_5336)">
+                  <path
+                    d="M68.9453 52.0141H52.9703C52.4133 52.0681 51.8511 52.005 51.32 51.8289C50.7888 51.6528 50.3004 51.3675 49.886 50.9914C49.4716 50.6153 49.1405 50.1567 48.9139 49.645C48.6874 49.1333 48.5703 48.5799 48.5703 48.0203C48.5703 47.4607 48.6874 46.9073 48.9139 46.3956C49.1405 45.884 49.4716 45.4253 49.886 45.0492C50.3004 44.6731 50.7888 44.3878 51.32 44.2117C51.8511 44.0356 52.4133 43.9725 52.9703 44.0266H68.9828C69.5397 43.9725 70.1019 44.0356 70.633 44.2117C71.1642 44.3878 71.6527 44.6731 72.067 45.0492C72.4814 45.4253 72.8125 45.884 73.0391 46.3956C73.2657 46.9073 73.3827 47.4607 73.3827 48.0203C73.3827 48.5799 73.2657 49.1333 73.0391 49.645C72.8125 50.1567 72.4814 50.6153 72.067 50.9914C71.6527 51.3675 71.1642 51.6528 70.633 51.8289C70.1019 52.005 69.5397 52.0681 68.9828 52.0141H68.9453Z"
+                    fill="#DDDDDD"
+                  />
+                  <path
+                    d="M72.4361 65.0288L63.6236 57.0413C62.8704 56.3994 61.9132 56.0469 60.9236 56.0469C59.934 56.0469 58.9768 56.3994 58.2236 57.0413L49.4111 65.0288C48.6807 65.7585 48.2597 66.7415 48.2355 67.7736C48.2113 68.8057 48.5859 69.8074 49.2813 70.5704C49.9767 71.3335 50.9394 71.7991 51.9693 71.8705C52.9992 71.9419 54.017 71.6136 54.8111 70.9538L56.9111 69.0413V88.0163C57.0074 89.0088 57.4697 89.9298 58.208 90.6C58.9464 91.2701 59.9077 91.6414 60.9048 91.6414C61.9019 91.6414 62.8633 91.2701 63.6016 90.6C64.34 89.9298 64.8023 89.0088 64.8986 88.0163V69.0413L66.9986 70.9538C67.3823 71.3372 67.8398 71.6387 68.3434 71.8403C68.8469 72.0418 69.3861 72.1392 69.9284 72.1265C70.4706 72.1138 71.0046 71.9913 71.4982 71.7664C71.9918 71.5415 72.4346 71.2188 72.8 70.8179C73.1653 70.417 73.4456 69.9463 73.6239 69.434C73.8022 68.9217 73.8748 68.3786 73.8373 67.8375C73.7997 67.2965 73.6529 66.7686 73.4056 66.2858C73.1584 65.8031 72.8158 65.3755 72.3986 65.0288H72.4361Z"
+                    fill="#DDDDDD"
+                  />
+                  <path
+                    d="M100.975 120.003C100.418 120.057 99.8558 119.994 99.3247 119.818C98.7935 119.642 98.3051 119.357 97.8907 118.98C97.4763 118.604 97.1452 118.146 96.9186 117.634C96.6921 117.122 96.575 116.569 96.575 116.009C96.575 115.45 96.6921 114.896 96.9186 114.385C97.1452 113.873 97.4763 113.414 97.8907 113.038C98.3051 112.662 98.7935 112.377 99.3247 112.201C99.8558 112.025 100.418 111.962 100.975 112.016C104.158 112.016 107.21 110.751 109.46 108.501C111.711 106.25 112.975 103.198 112.975 100.016V19.9906C112.975 16.808 111.711 13.7558 109.46 11.5053C107.21 9.25491 104.158 7.99063 100.975 7.99063H36.9624C36.4055 8.04466 35.8433 7.98159 35.3122 7.80547C34.781 7.62935 34.2926 7.34408 33.8782 6.96797C33.4638 6.59186 33.1327 6.13324 32.9061 5.62156C32.6796 5.10989 32.5625 4.55648 32.5625 3.99688C32.5625 3.43728 32.6796 2.88386 32.9061 2.37219C33.1327 1.86051 33.4638 1.40189 33.8782 1.02578C34.2926 0.649674 34.781 0.364397 35.3122 0.188277C35.8433 0.0121578 36.4055 -0.05091 36.9624 0.00312538H100.975C106.273 0.0130374 111.351 2.12204 115.097 5.86828C118.844 9.61451 120.953 14.6927 120.962 19.9906V100.016C120.953 105.314 118.844 110.392 115.097 114.138C111.351 117.884 106.273 119.993 100.975 120.003Z"
+                    fill="#DDDDDD"
+                  />
+                  <path
+                    d="M84.9609 120.003H20.9484C15.6505 119.993 10.5723 117.884 6.82609 114.138C3.07985 110.392 0.97085 105.314 0.960938 100.016L0.960938 19.9906C0.97085 14.6927 3.07985 9.61451 6.82609 5.86828C10.5723 2.12204 15.6505 0.0130374 20.9484 0.00312538C21.5054 -0.05091 22.0676 0.0121578 22.5987 0.188277C23.1299 0.364397 23.6183 0.649674 24.0327 1.02578C24.4471 1.40189 24.7782 1.86051 25.0047 2.37219C25.2313 2.88386 25.3484 3.43728 25.3484 3.99688C25.3484 4.55648 25.2313 5.10989 25.0047 5.62156C24.7782 6.13324 24.4471 6.59186 24.0327 6.96797C23.6183 7.34408 23.1299 7.62935 22.5987 7.80547C22.0676 7.98159 21.5054 8.04466 20.9484 7.99063C17.7658 7.99063 14.7136 9.25491 12.4632 11.5053C10.2127 13.7558 8.94844 16.808 8.94844 19.9906V100.016C8.94844 103.198 10.2127 106.25 12.4632 108.501C14.7136 110.751 17.7658 112.016 20.9484 112.016H84.9609C85.5179 111.962 86.08 112.025 86.6112 112.201C87.1424 112.377 87.6308 112.662 88.0452 113.038C88.4595 113.414 88.7907 113.873 89.0172 114.385C89.2438 114.896 89.3609 115.45 89.3609 116.009C89.3609 116.569 89.2438 117.122 89.0172 117.634C88.7907 118.146 88.4595 118.604 88.0452 118.98C87.6308 119.357 87.1424 119.642 86.6112 119.818C86.08 119.994 85.5179 120.057 84.9609 120.003Z"
+                    fill="#DDDDDD"
+                  />
+                  <path
+                    d="M28.9704 24.0031H20.9454C19.9529 23.9068 19.0319 23.4445 18.3617 22.7062C17.6916 21.9679 17.3203 21.0065 17.3203 20.0094C17.3203 19.0123 17.6916 18.0509 18.3617 17.3126C19.0319 16.5743 19.9529 16.1119 20.9454 16.0156H28.9704C29.9628 16.1119 30.8839 16.5743 31.554 17.3126C32.2242 18.0509 32.5954 19.0123 32.5954 20.0094C32.5954 21.0065 32.2242 21.9679 31.554 22.7062C30.8839 23.4445 29.9628 23.9068 28.9704 24.0031Z"
+                    fill="#DDDDDD"
+                  />
+                  <path
+                    d="M76.9736 24.0016C76.4485 24.0065 75.9275 23.9074 75.4409 23.7098C74.9543 23.5123 74.5117 23.2203 74.1386 22.8507C73.7655 22.481 73.4693 22.0412 73.2672 21.5564C73.0651 21.0717 72.9611 20.5517 72.9611 20.0266C72.9537 19.2314 73.1827 18.452 73.619 17.7872C74.0554 17.1224 74.6794 16.6023 75.4119 16.2929C76.1444 15.9834 76.9524 15.8986 77.7332 16.0491C78.514 16.1997 79.2324 16.5789 79.7973 17.1385C80.3623 17.6981 80.7482 18.413 80.906 19.1924C81.0639 19.9717 80.9867 20.7804 80.6841 21.5158C80.3816 22.2512 79.8673 22.8801 79.2067 23.3226C78.546 23.7652 77.7688 24.0015 76.9736 24.0016Z"
+                    fill="#DDDDDD"
+                  />
+                  <path
+                    d="M88.9736 24.0016C88.4485 24.0065 87.9275 23.9074 87.4409 23.7098C86.9543 23.5123 86.5117 23.2203 86.1386 22.8507C85.7655 22.481 85.4693 22.0412 85.2672 21.5564C85.0651 21.0717 84.9611 20.5517 84.9611 20.0266C84.9537 19.2314 85.1827 18.452 85.619 17.7872C86.0554 17.1224 86.6794 16.6023 87.4119 16.2929C88.1444 15.9834 88.9524 15.8986 89.7332 16.0491C90.514 16.1997 91.2324 16.5789 91.7974 17.1385C92.3623 17.6981 92.7482 18.413 92.9061 19.1924C93.0639 19.9717 92.9867 20.7804 92.6841 21.5158C92.3816 22.2512 91.8673 22.8801 91.2067 23.3226C90.5461 23.7652 89.7688 24.0015 88.9736 24.0016Z"
+                    fill="#DDDDDD"
+                  />
+                  <path
+                    d="M100.974 24.0016C100.448 24.0065 99.9275 23.9074 99.4409 23.7098C98.9543 23.5123 98.5117 23.2203 98.1386 22.8507C97.7655 22.481 97.4693 22.0412 97.2672 21.5564C97.0651 21.0717 96.9611 20.5517 96.9611 20.0266C96.9537 19.2314 97.1827 18.452 97.619 17.7872C98.0554 17.1224 98.6794 16.6023 99.4119 16.2929C100.144 15.9834 100.952 15.8986 101.733 16.0491C102.514 16.1997 103.232 16.5789 103.797 17.1385C104.362 17.6981 104.748 18.413 104.906 19.1924C105.064 19.9717 104.987 20.7804 104.684 21.5158C104.382 22.2512 103.867 22.8801 103.207 23.3226C102.546 23.7652 101.769 24.0015 100.974 24.0016Z"
+                    fill="#DDDDDD"
+                  />
+                </g>
+                <defs>
+                  <clipPath id="clip0_7037_5336">
+                    <rect
+                      width="120"
+                      height="120"
+                      fill="white"
+                      transform="translate(0.960938)"
+                    />
+                  </clipPath>
+                </defs>
+              </svg>
+              <Stack className="text-box">
+                <Typography className="drag-title">
+                  {isUploading
+                    ? "Uploading..."
+                    : isDragOver
+                    ? "Drop files here!"
+                    : "Drag and drop images here"}
+                </Typography>
+                <Typography className="format-title">
+                  Photos must be JPEG, JPG, PNG, or AVIF format
+                </Typography>
+              </Stack>
+              <Button
+                className="browse-button"
+                disabled={isUploading}
+                onClick={() => {
+                  inputRef.current?.click();
+                }}
+              >
+                <Typography className="browse-button-text">
+                  {isUploading ? "Uploading..." : "Browse Files"}
+                </Typography>
+                <input
+                  ref={inputRef}
+                  type="file"
+                  hidden={true}
+                  onChange={uploadImages}
+                  multiple={true}
+                  accept="image/jpeg, image/jpg, image/png, image/avif"
+                />
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="16"
+                  height="16"
+                  viewBox="0 0 16 16"
+                  fill="none"
+                >
+                  <g clipPath="url(#clip0_7309_3249)">
+                    <path
+                      d="M15.5556 0H5.7778C5.53214 0 5.33334 0.198792 5.33334 0.444458C5.33334 0.690125 5.53214 0.888917 5.7778 0.888917H14.4827L0.130219 15.2413C-0.0434062 15.415 -0.0434062 15.6962 0.130219 15.8698C0.21701 15.9566 0.33076 16 0.444469 16C0.558177 16 0.671885 15.9566 0.758719 15.8698L15.1111 1.51737V10.2222C15.1111 10.4679 15.3099 10.6667 15.5556 10.6667C15.8013 10.6667 16.0001 10.4679 16.0001 10.2222V0.444458C16 0.198792 15.8012 0 15.5556 0Z"
+                      fill="#181A20"
+                    />
+                  </g>
+                  <defs>
+                    <clipPath id="clip0_7309_3249">
+                      <rect width="16" height="16" fill="white" />
+                    </clipPath>
+                  </defs>
+                </svg>
+              </Button>
+            </Stack>
+            <Stack className="gallery-box">
+              {insertCarData?.carImages?.length > 0 ? (
+                insertCarData.carImages.map((image: string, index: number) => {
+                  const imagePath: string = `${REACT_APP_API_URL}/${image}`;
+                  return (
+                    <Stack className="image-box" key={index}>
+                      <img src={imagePath} alt={`Car ${index + 1}`} />
+                    </Stack>
+                  );
+                })
+              ) : (
+                <Typography>No images uploaded yet</Typography>
+              )}
+            </Stack>
+          </Stack>
+
+          <Typography className="upload-title">
+            Upload 360° photos (Optional)
+          </Typography>
+          <Stack className="images-box">
+            <Stack
+              className={`upload-box ${isDragOver360 ? "drag-over" : ""}`}
+              onDragOver={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                if (!isDragOver360) {
+                  setIsDragOver360(true);
+                }
+              }}
+              onDragEnter={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                setIsDragOver360(true);
+              }}
+              onDragLeave={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                // Only set to false if we're leaving the upload box entirely
+                const rect = e.currentTarget.getBoundingClientRect();
+                const x = e.clientX;
+                const y = e.clientY;
+
+                if (
+                  x < rect.left ||
+                  x > rect.right ||
+                  y < rect.top ||
+                  y > rect.bottom
+                ) {
+                  setIsDragOver360(false);
+                }
+              }}
+              onDrop={async (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                setIsDragOver360(false);
+
+                try {
+                  const files = Array.from(e.dataTransfer.files);
+
+                  if (files.length === 0) {
+                    await sweetMixinErrorAlert("No files were dropped!");
+                    return;
+                  }
+
+                  const validFiles = files.filter((file) => {
+                    return (
+                      file.type === "image/jpeg" ||
+                      file.type === "image/jpg" ||
+                      file.type === "image/png" ||
+                      file.type === "image/avif"
+                    );
+                  });
+
+                  const invalidFiles = files.filter((file) => {
+                    return !(
+                      file.type === "image/jpeg" ||
+                      file.type === "image/jpg" ||
+                      file.type === "image/png" ||
+                      file.type === "image/avif"
+                    );
+                  });
+
+                  if (invalidFiles.length > 0) {
+                    await sweetMixinErrorAlert(
+                      `${invalidFiles.length} file(s) rejected. Only JPEG, JPG, PNG, or AVIF files are allowed for 360° images!`
+                    );
+                  }
+
+                  if (validFiles.length === 0) {
+                    return;
+                  }
+
+                  if (validFiles.length > 5) {
+                    await sweetMixinErrorAlert(
+                      "Cannot upload more than 5 360° images at once!"
+                    );
+                    return;
+                  }
+
+                  // Check file sizes
+                  const maxSize = 10 * 1024 * 1024; // 10MB
+                  const oversizedFiles = validFiles.filter(
+                    (file) => file.size > maxSize
+                  );
+
+                  if (oversizedFiles.length > 0) {
+                    await sweetMixinErrorAlert(
+                      `${oversizedFiles.length} 360° file(s) are too large. Maximum file size is 10MB.`
+                    );
+                    return;
+                  }
+
+                  // Set files to 360° input ref to maintain consistency
+                  if (car360Ref.current) {
+                    const dataTransfer = new DataTransfer();
+                    validFiles.forEach((file) => dataTransfer.items.add(file));
+                    car360Ref.current.files = dataTransfer.files;
+                    await upload360Images();
+                  }
+                } catch (error: any) {
+                  await sweetMixinErrorAlert(
+                    "Error processing dropped 360° files: " + error.message
+                  );
+                }
+              }}
+            >
+              <Typography
+                className="drag-title"
+                style={{ marginBottom: "10px" }}
+              >
+                {isUploading360
+                  ? "Uploading 360°..."
+                  : isDragOver360
+                  ? "Drop 360° files here!"
+                  : "360° Images"}
+              </Typography>
+              <Stack direction="row" spacing={2}>
+                <Button
+                  className="browse-button"
+                  disabled={isUploading360}
+                  onClick={() => {
+                    car360Ref.current?.click();
+                  }}
+                >
+                  <Typography className="browse-button-text">
+                    {isUploading360 ? "Uploading..." : "Browse 360° Files"}
+                  </Typography>
+                  <input
+                    ref={car360Ref}
+                    type="file"
+                    hidden={true}
+                    onChange={upload360Images}
+                    multiple={true}
+                    accept="image/jpeg, image/jpg, image/png, image/avif"
+                  />
+                </Button>
+                {insertCarData?.car360Images &&
+                  insertCarData.car360Images.length > 0 && (
+                    <Button
+                      variant="outlined"
+                      onClick={() => setShow360Modal(true)}
+                      sx={{
+                        borderColor: "#181A20",
+                        color: "#181A20",
+                        "&:hover": {
+                          borderColor: "#181A20",
+                          backgroundColor: "rgba(24, 26, 32, 0.04)",
+                        },
+                      }}
+                    >
+                      <Typography style={{ fontSize: "14px" }}>
+                        Preview 360° View
+                      </Typography>
+                    </Button>
+                  )}
+              </Stack>
+            </Stack>
+            <Stack className="gallery-box">
+              {insertCarData?.car360Images?.map(
+                (image: string, index: number) => {
+                  const imagePath: string = `${REACT_APP_API_URL}/${image}`;
+                  return (
+                    <Stack
+                      className="image-box"
+                      key={index}
+                      sx={{ position: "relative" }}
+                    >
+                      <img src={imagePath} alt={`360° ${index + 1}`} />
+                      {/* 360° indicator */}
+                      <Box
+                        sx={{
+                          position: "absolute",
+                          top: 8,
+                          left: 8,
+                          backgroundColor: "rgba(0,0,0,0.7)",
+                          color: "white",
+                          padding: "4px 8px",
+                          borderRadius: "4px",
+                          fontSize: "10px",
+                          fontWeight: "bold",
+                        }}
+                      >
+                        360°
+                      </Box>
+                    </Stack>
+                  );
+                }
+              )}
+            </Stack>
+          </Stack>
+
+          <Stack className="buttons-row">
+            {carId ? (
+              <Button
+                className="next-button"
+                disabled={doDisabledCheck()}
+                onClick={updateCarHandler}
+              >
+                <Typography className="next-button-text">Update Car</Typography>
+              </Button>
+            ) : (
+              <Button
+                className="next-button"
+                disabled={doDisabledCheck()}
+                onClick={insertCarHandler}
+              >
+                <Typography className="next-button-text">Create Car</Typography>
+              </Button>
+            )}
+          </Stack>
+        </Stack>
+      </div>
+
+      {/* 360° Image Viewer Modal */}
+      <Panorama360Modal
+        open={show360Modal}
+        onClose={() => setShow360Modal(false)}
+        images={insertCarData?.car360Images || []}
+      />
+    </div>
+  );
 };
 
 AddNewCar.defaultProps = {

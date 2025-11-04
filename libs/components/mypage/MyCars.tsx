@@ -3,13 +3,16 @@ import { NextPage } from "next";
 import { Pagination, Stack, Typography } from "@mui/material";
 import useDeviceDetect from "../../hooks/useDeviceDetect";
 import { CarCard } from "./CarCard";
-import { useReactiveVar } from "@apollo/client";
+import { useMutation, useQuery, useReactiveVar } from "@apollo/client";
 import { Car } from "../../types/car/car";
 import { AgentCarsInquiry } from "../../types/car/car.input";
 import { T } from "../../types/common";
 import { CarStatus } from "../../enums/car.enum";
 import { userVar } from "../../../apollo/store";
 import { useRouter } from "next/router";
+import { UPDATE_CAR } from "../../../apollo/user/mutation";
+import { GET_AGENT_CARS } from "../../../apollo/user/query";
+import { sweetConfirmAlert, sweetErrorHandling } from "../../sweetAlert";
 
 const MyCars: NextPage = ({ initialInput, ...props }: any) => {
   const device = useDeviceDetect();
@@ -21,6 +24,22 @@ const MyCars: NextPage = ({ initialInput, ...props }: any) => {
   const router = useRouter();
 
   /** APOLLO REQUESTS **/
+  const [updateCar] = useMutation(UPDATE_CAR);
+
+  const {
+    loading: getAgentCarsLoading,
+    data: getAgentCarsData,
+    error: getAgentCarsError,
+    refetch: getAgentCarsRefetch,
+  } = useQuery(GET_AGENT_CARS, {
+    fetchPolicy: "network-only",
+    variables: { input: searchFilter },
+    notifyOnNetworkStatusChange: true,
+    onCompleted: (data: T) => {
+      setAgentProperties(data?.getAgentCars?.list);
+      setTotal(data?.getAgentCars?.metaCounter[0]?.total ?? 0);
+    },
+  });
 
   /** HANDLERS **/
   const paginationHandler = (e: T, value: number) => {
@@ -31,9 +50,40 @@ const MyCars: NextPage = ({ initialInput, ...props }: any) => {
     setSearchFilter({ ...searchFilter, search: { carStatus: value } });
   };
 
-  const deleteCarHandler = async (id: string) => {};
+  const deleteCarHandler = async (id: string) => {
+    try {
+      if (await sweetConfirmAlert("Are you sure to delete this car?")) {
+        await updateCar({
+          variables: {
+            input: {
+              _id: id,
+              carStatus: "DELETE",
+            },
+          },
+        });
+      }
+    } catch (err: any) {
+      await sweetErrorHandling(err);
+    }
+  };
 
-  const updateCarHandler = async (status: CarStatus, id: string) => {};
+  const updateCarHandler = async (status: string, id: string) => {
+    try {
+      if (await sweetConfirmAlert(`Are you sure change to ${status} status?`)) {
+        await updateCar({
+          variables: {
+            input: {
+              _id: id,
+              carStatus: status,
+            },
+          },
+        });
+        await getAgentCarsRefetch({ input: searchFilter });
+      }
+    } catch (err: any) {
+      await sweetErrorHandling(err);
+    }
+  };
 
   if (user?.memberType !== "AGENT") {
     router.back();

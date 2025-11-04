@@ -241,6 +241,18 @@
             gap: 30px;
             border-radius: 12px;
             border: 1px dashed #eb6753;
+            transition: all 0.3s ease;
+
+            &:hover {
+              border-color: #d32f2f;
+              background-color: rgba(235, 103, 83, 0.05);
+            }
+
+            &.drag-over {
+              border-color: #2196f3;
+              background-color: rgba(33, 150, 243, 0.1);
+              border-style: solid;
+            }
             .text-box {
               width: 100%;
               height: auto;

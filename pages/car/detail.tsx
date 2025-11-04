@@ -442,7 +442,7 @@ const CarDetail: NextPage = ({ initialComment, ...props }: any) => {
                       src={
                         slideImage
                           ? `${REACT_APP_API_URL}/${slideImage}`
-                          : "/img/cars/default.png"
+                          : "/img/car/bigImage.png"
                       }
                       alt={"main-image"}
                     />
@@ -711,7 +711,7 @@ const CarDetail: NextPage = ({ initialComment, ...props }: any) => {
                     </Stack>
                   </Stack>
                 </Stack>
-                <Stack className={"floor-plans-config"}>
+                <Stack className={"interior-config"}>
                   <Typography className={"title"}>
                     360° Interior View
                   </Typography>
@@ -733,7 +733,7 @@ const CarDetail: NextPage = ({ initialComment, ...props }: any) => {
                       </Stack>
                     ) : (
                       <Stack alignItems="center" spacing={2}>
-                        <img src={"/img/cars/interior.png"} alt={"interior"} />
+                        <img src={"/img/car/floorPlan.png"} alt={"interior"} />
                         <Typography variant="body2" color="text.secondary">
                           No 360° images available for this vehicle
                         </Typography>
@@ -875,7 +875,7 @@ const CarDetail: NextPage = ({ initialComment, ...props }: any) => {
               <Stack className={"right-config"}>
                 <Stack className={"info-box"}>
                   <Typography className={"main-title"}>
-                    Contact Dealer
+                    Get More Information
                   </Typography>
                   <Stack className={"image-info"}>
                     <img
