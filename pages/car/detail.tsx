@@ -14,6 +14,7 @@ import { Swiper, SwiperSlide } from "swiper/react";
 import SwiperCore, { Autoplay, Navigation, Pagination } from "swiper";
 import CarBigCard from "../../libs/components/common/CarBigCard";
 import Car360Viewer from "../../libs/components/car/Car360Viewer";
+import Panorama360Modal from "../../libs/components/common/Panorama360Modal";
 import FavoriteIcon from "@mui/icons-material/Favorite";
 import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
 import WestIcon from "@mui/icons-material/West";
@@ -72,6 +73,7 @@ const CarDetail: NextPage = ({ initialComment, ...props }: any) => {
     commentContent: "",
     commentRefId: "",
   });
+  const [show360Modal, setShow360Modal] = useState(false);
 
   /** APOLLO REQUESTS **/
 
@@ -712,25 +714,84 @@ const CarDetail: NextPage = ({ initialComment, ...props }: any) => {
                   </Stack>
                 </Stack>
                 <Stack className={"interior-config"}>
-                  <Typography className={"title"}>
-                    360° Interior View
-                  </Typography>
-                  <Stack className={"image-box"}>
+                  <Stack
+                    direction="row"
+                    justifyContent="space-between"
+                    alignItems="center"
+                    sx={{ marginBottom: 2 }}
+                  >
+                    <Typography className={"title"}>
+                      360° Panorama View
+                    </Typography>
+                    {car?.car360Images && car.car360Images.length > 0 && (
+                      <Car360Viewer
+                        car360Images={car.car360Images}
+                        buttonText="Experience Interior 360°"
+                      />
+                    )}
+                  </Stack>
+                  <Stack className={"image-box"} sx={{ position: "relative" }}>
                     {car?.car360Images && car.car360Images.length > 0 ? (
-                      <Stack direction="row" spacing={2} alignItems="center">
-                        <Car360Viewer
-                          car360Images={car.car360Images}
-                          buttonText="Experience Interior 360°"
-                        />
-                        <Car360Viewer
-                          car360Images={car.car360Images}
-                          variant="thumbnail"
-                        />
-                        <Typography variant="body2" color="text.secondary">
+                      <>
+                        <Box
+                          onClick={() => setShow360Modal(true)}
+                          sx={{
+                            width: "100%",
+                            height: "400px", // Set a fixed height for better control
+                            position: "relative",
+                            borderRadius: "12px",
+                            overflow: "hidden",
+                            cursor: "pointer",
+                          }}
+                        >
+                          <img
+                            src={`${REACT_APP_API_URL}/${car.car360Images[0]}`}
+                            alt="360° Preview"
+                            style={{
+                              width: "100%",
+                              height: "100%",
+                              objectFit: "cover",
+                            }}
+                          />
+                          <Box
+                            sx={{
+                              position: "absolute",
+                              top: "50%",
+                              left: "50%",
+                              transform: "translate(-50%, -50%)",
+                              backgroundColor: "rgba(0,0,0,0.8)",
+                              color: "white",
+                              borderRadius: "50%",
+                              width: "80px",
+                              height: "80px",
+                              display: "flex",
+                              alignItems: "center",
+                              justifyContent: "center",
+                              fontSize: "16px",
+                              fontWeight: "bold",
+                            }}
+                          >
+                            360°
+                          </Box>
+                        </Box>
+                        <Typography
+                          variant="body2"
+                          color="text.secondary"
+                          sx={{
+                            position: "absolute",
+                            bottom: 8,
+                            right: 8,
+                            backgroundColor: "rgba(0,0,0,0.7)",
+                            color: "white",
+                            padding: "4px 8px",
+                            borderRadius: "4px",
+                            fontSize: "12px",
+                          }}
+                        >
                           {car.car360Images.length} 360° image
                           {car.car360Images.length > 1 ? "s" : ""} available
                         </Typography>
-                      </Stack>
+                      </>
                     ) : (
                       <Stack alignItems="center" spacing={2}>
                         <img src={"/img/car/floorPlan.png"} alt={"interior"} />
@@ -1031,6 +1092,13 @@ const CarDetail: NextPage = ({ initialComment, ...props }: any) => {
             )}
           </Stack>
         </div>
+
+        {/* 360° Image Viewer Modal */}
+        <Panorama360Modal
+          open={show360Modal}
+          onClose={() => setShow360Modal(false)}
+          images={car?.car360Images || []}
+        />
       </div>
     );
   }

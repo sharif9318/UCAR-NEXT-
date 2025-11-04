@@ -75,7 +75,7 @@ import Car360Viewer from "../components/car/Car360Viewer";
 // Simple button
 <Car360Viewer
   car360Images={carData.car360Images}
-  buttonText="Experience Interior 360°"
+  buttonText="Experience 360° view"
 />
 
 // Thumbnail variant
