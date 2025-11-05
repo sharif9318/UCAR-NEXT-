@@ -70,32 +70,22 @@ const CarList: NextPage = ({ initialInput, ...props }: any) => {
     variables: { input: searchFilter },
     notifyOnNetworkStatusChange: true,
     onCompleted: (data: T) => {
-      console.log("🚗 Cars Query Response:", data);
-      console.log("🔍 Search Filter:", searchFilter);
-      console.log("📊 Cars List:", data?.getCars?.list);
-      console.log("📈 Meta Counter:", data?.getCars?.metaCounter);
       setCars(data?.getCars?.list || []);
       setTotal(data?.getCars?.metaCounter?.[0]?.total || 0);
-    },
-    onError: (error) => {
-      console.error("❌ Cars Query Error:", error);
     },
   });
 
   /** LIFECYCLES **/
   useEffect(() => {
-    console.log("🔄 Router Query:", router.query);
     if (router.query.input) {
       try {
         const inputObj = JSON.parse(router?.query?.input as string);
-        console.log("📥 Parsed Input from Router:", inputObj);
         setSearchFilter(inputObj);
         setCurrentPage(inputObj.page === undefined ? 1 : inputObj.page);
       } catch (err) {
         console.error("Failed to parse router query input:", err);
       }
     } else {
-      console.log("🎯 Using Default Search Filter:", searchFilter);
       setCurrentPage(searchFilter.page === undefined ? 1 : searchFilter.page);
     }
   }, [router, searchFilter.page]);
@@ -323,11 +313,11 @@ CarList.defaultProps = {
     search: {
       mileageRange: {
         start: 0,
-        end: 500000,
+        end: 1000000,
       },
       pricesRange: {
         start: 0,
-        end: 200000,
+        end: 2000000,
       },
     },
   },
