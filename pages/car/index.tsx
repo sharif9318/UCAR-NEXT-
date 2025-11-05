@@ -69,13 +69,17 @@ const CarList: NextPage = ({ initialInput, ...props }: any) => {
     fetchPolicy: "network-only",
     variables: { input: searchFilter },
     notifyOnNetworkStatusChange: true,
-    onCompleted: (data: T) => {
-      setCars(data?.getCars?.list || []);
-      setTotal(data?.getCars?.metaCounter?.[0]?.total || 0);
-    },
   });
 
   /** LIFECYCLES **/
+  // Update cars and total when data changes
+  useEffect(() => {
+    if (getCarsData) {
+      setCars(getCarsData?.getCars?.list || []);
+      setTotal(getCarsData?.getCars?.metaCounter?.[0]?.total || 0);
+    }
+  }, [getCarsData]);
+
   useEffect(() => {
     if (router.query.input) {
       try {

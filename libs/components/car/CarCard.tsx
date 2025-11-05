@@ -129,7 +129,7 @@ const CarCard = memo((props: CarCardType) => {
               <Typography>{car.carSeats} seat</Typography>
             </Stack>
             <Stack className="option">
-              <img src="/img/icons/expand.svg" alt="" />{" "}
+              <img src="/img/icons/mileage.svg" alt="" />{" "}
               <Typography>{car.carMileage} km</Typography>
             </Stack>
           </Stack>

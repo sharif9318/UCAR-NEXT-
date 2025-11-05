@@ -100,8 +100,34 @@ function createApolloClient() {
   return new ApolloClient({
     ssrMode: typeof window === "undefined",
     link: createIsomorphicLink(),
-    cache: new InMemoryCache(),
-    resolvers: {},
+    cache: new InMemoryCache({
+      typePolicies: {
+        Query: {
+          fields: {
+            getCars: {
+              merge(existing, incoming) {
+                return incoming;
+              },
+            },
+            getAgents: {
+              merge(existing, incoming) {
+                return incoming;
+              },
+            },
+          },
+        },
+      },
+    }),
+    defaultOptions: {
+      watchQuery: {
+        fetchPolicy: "network-only",
+        errorPolicy: "ignore",
+      },
+      query: {
+        fetchPolicy: "network-only",
+        errorPolicy: "all",
+      },
+    },
   });
 }
 
