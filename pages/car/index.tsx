@@ -271,13 +271,15 @@ const CarList: NextPage = ({ initialInput, ...props }: any) => {
                     <p>No Cars found!</p>
                   </div>
                 ) : (
-                  cars.map((car: Car) => (
-                    <CarCard
-                      car={car}
-                      likeCarHandler={likeCarHandler}
-                      key={car?._id}
-                    />
-                  ))
+                  <>
+                    {cars.map((car: Car) => (
+                      <CarCard
+                        car={car}
+                        likeCarHandler={likeCarHandler}
+                        key={car?._id}
+                      />
+                    ))}
+                  </>
                 )}
               </Stack>
               <Stack className="pagination-config">

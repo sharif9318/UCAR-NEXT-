@@ -61,12 +61,23 @@ const CarCard = memo((props: CarCardType) => {
               pathname: "/car/detail",
               query: { id: car?._id },
             }}
+            style={{
+              display: "block",
+              width: "100%",
+              height: "100%",
+              textDecoration: "none",
+            }}
           >
             <img
               src={imagePath}
               alt={car?.carTitle || "Car image"}
               loading="lazy"
-              style={{ width: "100%", height: "100%", objectFit: "cover" }}
+              style={{
+                width: "100%",
+                height: "100%",
+                objectFit: "cover",
+                display: "block",
+              }}
             />
           </Link>
           {isTopCar && (
@@ -75,7 +86,7 @@ const CarCard = memo((props: CarCardType) => {
               <Typography>TOP</Typography>
             </Box>
           )}
-          {car?.car360Images && car.car360Images.length > 0 && (
+          {car?.car360Images?.length ? (
             <Box
               component={"div"}
               className={"car360-badge"}
@@ -83,20 +94,21 @@ const CarCard = memo((props: CarCardType) => {
                 position: "absolute",
                 top: 10,
                 left: 10,
-                backgroundColor: "rgba(0,0,0,0.8)",
+                backgroundColor: "rgba(235, 103, 83, 0.95)",
                 color: "white",
-                padding: "4px 8px",
-                borderRadius: "4px",
-                fontSize: "10px",
+                padding: "6px 10px",
+                borderRadius: "6px",
+                fontSize: "11px",
                 fontWeight: "bold",
                 zIndex: 2,
+                boxShadow: "0 2px 8px rgba(0, 0, 0, 0.3)",
               }}
             >
-              <Typography sx={{ fontSize: "10px", fontWeight: "bold" }}>
+              <Typography sx={{ fontSize: "11px", fontWeight: "bold" }}>
                 360° ({car.car360Images.length})
               </Typography>
             </Box>
-          )}
+          ) : null}
           <Box component={"div"} className={"price-box"}>
             <Typography>${formatterStr(car?.carPrice)}</Typography>
           </Box>
@@ -126,7 +138,7 @@ const CarCard = memo((props: CarCardType) => {
             </Stack>
             <Stack className="option">
               <img src="/img/icons/seat.svg" alt="" />{" "}
-              <Typography>{car.carSeats} seat</Typography>
+              <Typography>{car.carSeats} seats</Typography>
             </Stack>
             <Stack className="option">
               <img src="/img/icons/mileage.svg" alt="" />{" "}

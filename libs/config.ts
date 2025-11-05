@@ -12,6 +12,7 @@ for (let i = 1970; i <= thisYear; i++) {
 
 export const carMileage = [
   0, 10000, 25000, 50000, 75000, 100000, 150000, 200000, 300000, 500000,
+  1000000,
 ];
 
 export const Messages = {

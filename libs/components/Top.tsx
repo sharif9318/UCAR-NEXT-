@@ -80,23 +80,11 @@ const Top = ({ trendingCar }: TopProps) => {
 
   useEffect(() => {
     if (videoRef.current) {
-      videoRef.current
-        .play()
-        .catch((err: any) => console.log("Video autoplay failed:", err));
-    }
-  }, [trendingCar]);
-
-  useEffect(() => {
-    console.log("Top component - trendingCar changed:", trendingCar);
-    if (videoRef.current) {
-      const videoSrc = getVideoSource();
-      console.log("Attempting to load video:", videoSrc);
-
       const videoElement = videoRef.current;
 
       const handleCanPlay = () => {
-        videoElement.play().catch((err: any) => {
-          console.log("Video autoplay failed:", err);
+        videoElement.play().catch(() => {
+          // Video autoplay blocked by browser - expected behavior
         });
       };
 

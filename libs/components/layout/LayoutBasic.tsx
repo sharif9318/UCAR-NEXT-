@@ -32,7 +32,7 @@ const withLayoutBasic = (Component: any) => {
         case "/car":
           title = "Car Search";
           desc = "We are glad to see you again!";
-          bgImage = "/img/banner/properties.png";
+          bgImage = "/img/banner/header1.svg";
           break;
         case "/agent":
           title = "Agents";

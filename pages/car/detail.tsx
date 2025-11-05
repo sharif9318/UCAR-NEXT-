@@ -41,7 +41,12 @@ import "swiper/css/pagination";
 import { GET_CAR, GET_CARS, GET_COMMENTS } from "../../apollo/user/query";
 import { Direction, Message } from "../../libs/enums/common.enum";
 import { T } from "../../libs/types/common";
-import { CREATE_COMMENT, LIKE_TARGET_CAR } from "../../apollo/user/mutation";
+import {
+  CREATE_COMMENT,
+  LIKE_TARGET_CAR,
+  UPDATE_COMMENT,
+  REMOVE_COMMENT,
+} from "../../apollo/user/mutation";
 import {
   sweetErrorHandling,
   sweetMixinErrorAlert,
@@ -79,6 +84,8 @@ const CarDetail: NextPage = ({ initialComment, ...props }: any) => {
 
   const [likeTargetCar] = useMutation(LIKE_TARGET_CAR);
   const [createComment] = useMutation(CREATE_COMMENT);
+  const [updateComment] = useMutation(UPDATE_COMMENT);
+  const [removeComment] = useMutation(REMOVE_COMMENT);
 
   const {
     loading: getCarLoading,
@@ -126,37 +133,41 @@ const CarDetail: NextPage = ({ initialComment, ...props }: any) => {
     error: getCommentsError,
     refetch: getCommentsRefetch,
   } = useQuery(GET_COMMENTS, {
-    fetchPolicy: "cache-and-network",
+    fetchPolicy: "network-only",
     variables: { input: commentInquiry },
     skip: !commentInquiry?.search.commentRefId,
     notifyOnNetworkStatusChange: true,
     onCompleted: (data: T) => {
-      if (data?.getComments?.list) setCarComments(data?.getComments?.list);
+      if (data?.getComments?.list) {
+        setCarComments(data?.getComments?.list);
+      }
       setCommentTotal(data?.getComments?.metaCounter[0]?.total ?? 0);
     },
   });
 
   /** LIFECYCLES **/
-
   useEffect(() => {
     if (router.query.id) {
-      setCarId(router.query.id as string);
-      setCommentInquiry({
-        ...commentInquiry,
+      const carIdFromQuery = router.query.id as string;
+      setCarId(carIdFromQuery);
+
+      setCommentInquiry((prev) => ({
+        ...prev,
         search: {
-          commentRefId: router.query.id as string,
+          commentRefId: carIdFromQuery,
         },
-      });
-      setInsertCommentData({
-        ...insertCommentData,
-        commentRefId: router.query.id as string,
-      });
+      }));
+
+      setInsertCommentData((prev) => ({
+        ...prev,
+        commentRefId: carIdFromQuery,
+      }));
     }
-  }, [router]);
+  }, [router.query.id]);
 
   useEffect(() => {
     if (commentInquiry.search.commentRefId) {
-      getCommentsRefetch({ input: commentInquiry });
+      getCommentsRefetch({ input: commentInquiry }).then();
     }
   }, [commentInquiry]);
 
@@ -188,6 +199,7 @@ const CarDetail: NextPage = ({ initialComment, ...props }: any) => {
       await likeTargetCar({
         variables: { input: id },
       });
+
       await getCarRefetch({ input: id });
       await getCarsRefetch({
         input: {
@@ -203,7 +215,6 @@ const CarDetail: NextPage = ({ initialComment, ...props }: any) => {
 
       await sweetTopSmallSuccessAlert("success", 800);
     } catch (err: any) {
-      console.log("ERROR, LikeCarHandler:", err.message);
       sweetMixinErrorAlert(err.message).then();
     }
   };
@@ -219,27 +230,119 @@ const CarDetail: NextPage = ({ initialComment, ...props }: any) => {
   const createCommentHandler = async () => {
     try {
       if (!user._id) throw new Error(Message.NOT_AUTHENTICATED);
-      await createComment({ variables: { input: insertCommentData } });
+
+      if (!insertCommentData.commentRefId) {
+        throw new Error("Car ID is missing. Please refresh the page.");
+      }
+
+      if (!insertCommentData.commentContent.trim()) {
+        throw new Error("Review content cannot be empty.");
+      }
+
+      await createComment({
+        variables: {
+          input: insertCommentData,
+        },
+      });
 
       setInsertCommentData({ ...insertCommentData, commentContent: "" });
 
       await getCommentsRefetch({ input: commentInquiry });
+      await sweetTopSmallSuccessAlert("success", 800);
     } catch (err: any) {
-      await sweetErrorHandling(err);
+      sweetErrorHandling(err).then();
+    }
+  };
+
+  const updateCommentHandler = async (
+    commentId: string,
+    newContent: string
+  ) => {
+    // Clean and normalize the content
+    let cleanContent = newContent.trim();
+
+    try {
+      if (!user._id) throw new Error(Message.NOT_AUTHENTICATED);
+
+      if (!cleanContent) {
+        throw new Error("Review content cannot be empty.");
+      }
+
+      // Check length
+      if (cleanContent.length < 5) {
+        throw new Error("Review must be at least 5 characters long.");
+      }
+
+      // Remove surrounding quotes if present
+      if (
+        (cleanContent.startsWith('"') && cleanContent.endsWith('"')) ||
+        (cleanContent.startsWith('"') && cleanContent.endsWith('"'))
+      ) {
+        cleanContent = cleanContent.slice(1, -1);
+      }
+
+      // More aggressive normalization for special characters
+      cleanContent = cleanContent
+        .replace(/['']/g, "'") // All types of single quotes
+        .replace(/["\"\"]/g, '"') // All types of double quotes
+        .replace(/[—–-]/g, "-") // All types of dashes
+        .replace(/…/g, "...") // Ellipsis
+        .replace(/\u00A0/g, " ") // Non-breaking space
+        .replace(/[•‣⁃]/g, "-") // Bullets
+        .replace(/[\u0080-\u009F]/g, "") // Control characters
+        .trim();
+
+      // Final normalization
+      try {
+        cleanContent = cleanContent.normalize("NFC");
+      } catch (e) {
+        console.warn("Unicode normalization failed, using as-is");
+      }
+
+      // Backend validation: max 100 characters (from comment.update.ts)
+      const MAX_LENGTH = 100;
+      if (cleanContent.length > MAX_LENGTH) {
+        throw new Error(
+          `Review must be ${MAX_LENGTH} characters or less. Currently ${cleanContent.length} characters.`
+        );
+      }
+
+      await updateComment({
+        variables: {
+          input: {
+            _id: commentId,
+            commentContent: cleanContent,
+          },
+        },
+      });
+
+      await getCommentsRefetch({ input: commentInquiry });
+      await sweetTopSmallSuccessAlert("Review updated successfully", 800);
+    } catch (err: any) {
+      sweetErrorHandling(err).then();
+    }
+  };
+
+  const deleteCommentHandler = async (commentId: string) => {
+    try {
+      if (!user._id) throw new Error(Message.NOT_AUTHENTICATED);
+
+      await removeComment({
+        variables: {
+          commentId: commentId,
+        },
+      });
+
+      await getCommentsRefetch({ input: commentInquiry });
+      await sweetTopSmallSuccessAlert("Review deleted successfully", 800);
+    } catch (err: any) {
+      sweetErrorHandling(err).then();
     }
   };
 
   if (getCarLoading) {
     return (
-      <Stack
-        sx={{
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-          width: "100%",
-          height: "1080px",
-        }}
-      >
+      <Stack className={"loading-container"}>
         <CircularProgress size={"4rem"} />
       </Stack>
     );
@@ -420,19 +523,7 @@ const CarDetail: NextPage = ({ initialComment, ...props }: any) => {
                   {car?.carImages &&
                   car.carImages.length > 0 &&
                   isVideoFile(car.carImages[0]) ? (
-                    <video
-                      autoPlay
-                      muted
-                      loop
-                      playsInline
-                      controls
-                      style={{
-                        width: "100%",
-                        height: "100%",
-                        objectFit: "cover",
-                        borderRadius: "12px",
-                      }}
-                    >
+                    <video autoPlay muted loop playsInline controls>
                       <source
                         src={`${REACT_APP_API_URL}/${car.carImages[0]}`}
                         type="video/mp4"
@@ -457,20 +548,12 @@ const CarDetail: NextPage = ({ initialComment, ...props }: any) => {
 
                     return (
                       <Stack
-                        className={"sub-img-box"}
+                        className={`sub-img-box ${isVideo ? "video-box" : ""}`}
                         onClick={() => !isVideo && changeImageHandler(subImg)}
                         key={subImg}
-                        style={{ cursor: isVideo ? "default" : "pointer" }}
                       >
                         {isVideo ? (
-                          <video
-                            style={{
-                              width: "100%",
-                              height: "100%",
-                              objectFit: "cover",
-                              borderRadius: "12px",
-                            }}
-                          >
+                          <video>
                             <source src={imagePath} type="video/mp4" />
                           </video>
                         ) : (
@@ -486,31 +569,12 @@ const CarDetail: NextPage = ({ initialComment, ...props }: any) => {
                     car.car360Images.map((img360: string, index: number) => {
                       const imagePath: string = `${REACT_APP_API_URL}/${img360}`;
                       return (
-                        <Stack
-                          className={"sub-img-box"}
-                          key={`360-${index}`}
-                          sx={{ position: "relative", cursor: "pointer" }}
-                        >
+                        <Stack className={"sub-img-box"} key={`360-${index}`}>
                           <Car360Viewer
                             car360Images={[img360]}
                             variant="thumbnail"
                           />
-                          <Box
-                            sx={{
-                              position: "absolute",
-                              bottom: 4,
-                              left: 4,
-                              backgroundColor: "rgba(0,0,0,0.8)",
-                              color: "white",
-                              padding: "2px 6px",
-                              borderRadius: "3px",
-                              fontSize: "8px",
-                              fontWeight: "bold",
-                              zIndex: 2,
-                            }}
-                          >
-                            360°
-                          </Box>
+                          <Box className={"badge-360"}>360°</Box>
                         </Stack>
                       );
                     })}
@@ -718,10 +782,9 @@ const CarDetail: NextPage = ({ initialComment, ...props }: any) => {
                     direction="row"
                     justifyContent="space-between"
                     alignItems="center"
-                    sx={{ marginBottom: 2 }}
                   >
                     <Typography className={"title"}>
-                      360° Panorama View
+                      Click image for 360° Panorama View
                     </Typography>
                     {car?.car360Images && car.car360Images.length > 0 && (
                       <Car360Viewer
@@ -730,63 +793,23 @@ const CarDetail: NextPage = ({ initialComment, ...props }: any) => {
                       />
                     )}
                   </Stack>
-                  <Stack className={"image-box"} sx={{ position: "relative" }}>
+                  <Stack className={"image-box"}>
                     {car?.car360Images && car.car360Images.length > 0 ? (
                       <>
                         <Box
+                          className={"panorama-preview"}
                           onClick={() => setShow360Modal(true)}
-                          sx={{
-                            width: "100%",
-                            height: "400px", // Set a fixed height for better control
-                            position: "relative",
-                            borderRadius: "12px",
-                            overflow: "hidden",
-                            cursor: "pointer",
-                          }}
                         >
                           <img
                             src={`${REACT_APP_API_URL}/${car.car360Images[0]}`}
                             alt="360° Preview"
-                            style={{
-                              width: "100%",
-                              height: "100%",
-                              objectFit: "cover",
-                            }}
                           />
-                          <Box
-                            sx={{
-                              position: "absolute",
-                              top: "50%",
-                              left: "50%",
-                              transform: "translate(-50%, -50%)",
-                              backgroundColor: "rgba(0,0,0,0.8)",
-                              color: "white",
-                              borderRadius: "50%",
-                              width: "80px",
-                              height: "80px",
-                              display: "flex",
-                              alignItems: "center",
-                              justifyContent: "center",
-                              fontSize: "16px",
-                              fontWeight: "bold",
-                            }}
-                          >
-                            360°
-                          </Box>
+                          <Box className={"badge-360-large"}>360°</Box>
                         </Box>
                         <Typography
                           variant="body2"
                           color="text.secondary"
-                          sx={{
-                            position: "absolute",
-                            bottom: 8,
-                            right: 8,
-                            backgroundColor: "rgba(0,0,0,0.7)",
-                            color: "white",
-                            padding: "4px 8px",
-                            borderRadius: "4px",
-                            fontSize: "12px",
-                          }}
+                          className={"panorama-count"}
                         >
                           {car.car360Images.length} 360° image
                           {car.car360Images.length > 1 ? "s" : ""} available
@@ -811,7 +834,6 @@ const CarDetail: NextPage = ({ initialComment, ...props }: any) => {
                       src="https://www.google.com/maps/emyear?pb=!1m18!1m12!1m3!1d25867.098915951767!2d128.68632810247993!3d35.86402299180927!2m3!1f0!2f0!3f0!3km!1i1024!2i768!4f13.1!3m3!1km!1s0x35660bba427bf179%3A0x1fc02da732b9072f!2sGeumhogangbyeon-ro%2C%20Dong-gu%2C%20Daegu!5e0!3km!1suz!2skr!4v1695537640704!5km!1suz!2skr"
                       width="100%"
                       height="100%"
-                      style={{ border: 0 }}
                       allowFullScreen={true}
                       loading="lazy"
                       referrerPolicy="no-referrer-when-downgrade"
@@ -853,17 +875,51 @@ const CarDetail: NextPage = ({ initialComment, ...props }: any) => {
                     </Stack>
                     <Stack className={"review-list"}>
                       {carComments?.map((comment: Comment) => {
-                        return <Review comment={comment} key={comment?._id} />;
+                        return (
+                          <Review
+                            comment={comment}
+                            key={comment?._id}
+                            onEdit={updateCommentHandler}
+                            onDelete={deleteCommentHandler}
+                          />
+                        );
                       })}
-                      <Box component={"div"} className={"pagination-box"}>
-                        <MuiPagination
-                          page={commentInquiry.page}
-                          count={Math.ceil(commentTotal / commentInquiry.limit)}
-                          onChange={commentPaginationChangeHandler}
-                          shape="circular"
-                          color="primary"
-                        />
-                      </Box>
+                      {Math.ceil(commentTotal / commentInquiry.limit) > 1 && (
+                        <Box component={"div"} className={"pagination-box"}>
+                          <Stack
+                            direction="row"
+                            spacing={1}
+                            alignItems="center"
+                          >
+                            {Array.from(
+                              {
+                                length: Math.ceil(
+                                  commentTotal / commentInquiry.limit
+                                ),
+                              },
+                              (_, i) => i + 1
+                            ).map((pageNum) => (
+                              <Button
+                                key={pageNum}
+                                variant={
+                                  commentInquiry.page === pageNum
+                                    ? "contained"
+                                    : "text"
+                                }
+                                color="primary"
+                                onClick={() =>
+                                  commentPaginationChangeHandler(
+                                    null as any,
+                                    pageNum
+                                  )
+                                }
+                              >
+                                {pageNum}
+                              </Button>
+                            ))}
+                          </Stack>
+                        </Box>
+                      )}
                     </Stack>
                   </Stack>
                 )}
@@ -874,10 +930,12 @@ const CarDetail: NextPage = ({ initialComment, ...props }: any) => {
                   <Typography className={"review-title"}>Review</Typography>
                   <textarea
                     onChange={({ target: { value } }: any) => {
-                      setInsertCommentData({
-                        ...insertCommentData,
-                        commentContent: value,
-                      });
+                      if (value.length <= 100) {
+                        setInsertCommentData({
+                          ...insertCommentData,
+                          commentContent: value,
+                        });
+                      }
                     }}
                     onKeyDown={(
                       e: React.KeyboardEvent<HTMLTextAreaElement>
@@ -886,6 +944,7 @@ const CarDetail: NextPage = ({ initialComment, ...props }: any) => {
                         e.preventDefault();
                         if (
                           insertCommentData.commentContent.trim() !== "" &&
+                          insertCommentData.commentContent.length <= 100 &&
                           user?._id
                         ) {
                           createCommentHandler();
@@ -893,8 +952,12 @@ const CarDetail: NextPage = ({ initialComment, ...props }: any) => {
                       }
                     }}
                     value={insertCommentData.commentContent}
-                    placeholder="Write your review here..."
+                    placeholder="Write your review here... (max 100 characters)"
+                    maxLength={100}
                   ></textarea>
+                  <Typography variant="caption" className={"character-counter"}>
+                    {insertCommentData.commentContent.length}/100 characters
+                  </Typography>
                   <Box className={"submit-btn"} component={"div"}>
                     <Button
                       className={"submit-review"}

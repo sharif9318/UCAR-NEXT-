@@ -5,6 +5,14 @@
     background: #1c1e23;
     min-height: 100vh;
 
+    .loading-container {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      width: 100%;
+      height: 1080px;
+    }
+
     .container {
       max-width: 1200px;
       margin: 0 auto;
@@ -265,6 +273,10 @@
                 position: relative;
                 transition: all 0.2s ease;
 
+                &.video-box {
+                  cursor: default;
+                }
+
                 &:hover {
                   transform: scale(1.05);
                 }
@@ -275,6 +287,19 @@
                   height: 100%;
                   object-fit: cover;
                   border-radius: 12px;
+                }
+
+                .badge-360 {
+                  position: absolute;
+                  bottom: 4px;
+                  left: 4px;
+                  background-color: rgba(0, 0, 0, 0.8);
+                  color: white;
+                  padding: 2px 6px;
+                  border-radius: 3px;
+                  font-size: 8px;
+                  font-weight: bold;
+                  z-index: 2;
                 }
               }
             }
@@ -469,6 +494,50 @@
                 border: 1px solid #444;
                 background: #2a2d33;
                 border-radius: 12px;
+                position: relative;
+
+                .panorama-preview {
+                  width: 100%;
+                  height: 400px;
+                  position: relative;
+                  border-radius: 12px;
+                  overflow: hidden;
+                  cursor: pointer;
+
+                  img {
+                    width: 100%;
+                    height: 100%;
+                    object-fit: cover;
+                  }
+
+                  .badge-360-large {
+                    position: absolute;
+                    top: 50%;
+                    left: 50%;
+                    transform: translate(-50%, -50%);
+                    background-color: rgba(0, 0, 0, 0.8);
+                    color: white;
+                    border-radius: 50%;
+                    width: 80px;
+                    height: 80px;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    font-size: 16px;
+                    font-weight: bold;
+                  }
+                }
+
+                .panorama-count {
+                  position: absolute;
+                  bottom: 8px;
+                  right: 8px;
+                  background-color: rgba(0, 0, 0, 0.7);
+                  color: white;
+                  padding: 4px 8px;
+                  border-radius: 4px;
+                  font-size: 12px;
+                }
 
                 img {
                   width: 100%;
@@ -695,6 +764,35 @@
                   padding-top: 24px;
                   border-top: 1px solid #444;
                   width: 100%;
+
+                  .MuiButton-root {
+                    min-width: 40px;
+                    width: 40px;
+                    height: 40px;
+                    border-radius: 50%;
+                    padding: 0;
+                    font-size: 14px;
+                    color: #fff;
+                    border: 1px solid #444;
+                    background-color: transparent;
+                    font-weight: 400;
+
+                    &.MuiButton-contained {
+                      background-color: #eb6753;
+                      border: none;
+                      font-weight: 600;
+
+                      &:hover {
+                        background-color: #d35743;
+                        border: none;
+                      }
+                    }
+
+                    &.MuiButton-text:hover {
+                      background-color: rgba(235, 103, 83, 0.1);
+                      border: 1px solid #eb6753;
+                    }
+                  }
                 }
               }
             }
@@ -748,6 +846,12 @@
                   border: 1px solid #eb6753;
                   outline: none;
                 }
+              }
+
+              .character-counter {
+                margin-top: 0.5rem;
+                display: block;
+                text-align: right;
               }
 
               .submit-btn {

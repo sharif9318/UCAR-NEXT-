@@ -304,6 +304,15 @@ export const UPDATE_COMMENT = gql`
   }
 `;
 
+export const REMOVE_COMMENT = gql`
+  mutation RemoveComment($commentId: String!) {
+    removeComment(commentId: $commentId) {
+      _id
+      commentStatus
+    }
+  }
+`;
+
 /**************************
  *         FOLLOW        *
  *************************/
