@@ -60,6 +60,11 @@ const withLayoutBasic = (Component: any) => {
         bgImage = "";
 
       switch (router.pathname) {
+        case "/":
+          title = t("Home");
+          desc = t("We are glad to see you again!");
+          bgImage = "/img/banner/header1.svg";
+          break;
         case "/car":
           title = t("Car Search");
           desc = t("We are glad to see you again!");

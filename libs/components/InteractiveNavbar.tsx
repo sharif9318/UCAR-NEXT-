@@ -1,5 +1,13 @@
 import { useReactiveVar } from "@apollo/client";
-import { Box, Link, Button, Stack } from "@mui/material";
+import {
+  Box,
+  Link,
+  Button,
+  Stack,
+  Menu,
+  MenuItem,
+  MenuProps,
+} from "@mui/material";
 import { userVar } from "../../apollo/store";
 import { useEffect, useState, useContext } from "react";
 import { getJwtToken, updateUserInfo } from "../auth";
@@ -16,6 +24,7 @@ import Brightness4Icon from "@mui/icons-material/Brightness4";
 import { useRouter } from "next/router";
 import { sweetConfirmAlert, sweetTopSmallSuccessAlert } from "./../sweetAlert";
 import { ThemeModeContext, ThemeMode } from "../../pages/_app";
+import { styled, alpha } from "@mui/material/styles";
 
 const InteractiveNavbar = () => {
   const user = useReactiveVar(userVar);
@@ -24,10 +33,54 @@ const InteractiveNavbar = () => {
   const router = useRouter();
   const { mode, setMode } = useContext(ThemeModeContext);
 
+  // language state
+  const [lang, setLang] = useState<string | null>(
+    (typeof window !== "undefined" &&
+      (localStorage.getItem("locale") || router.locale)) ||
+      "en"
+  );
+  const [langAnchor, setLangAnchor] = useState<null | HTMLElement>(null);
+  const langOpen = Boolean(langAnchor);
+
   useEffect(() => {
     const jwt = getJwtToken();
     if (jwt) updateUserInfo(jwt);
   }, []);
+
+  const StyledMenu = styled((props: MenuProps) => (
+    <Menu
+      elevation={0}
+      anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
+      transformOrigin={{ vertical: "top", horizontal: "right" }}
+      {...props}
+    />
+  ))(({ theme }) => ({
+    "& .MuiPaper-root": {
+      borderRadius: 6,
+      marginTop: theme.spacing(0.5),
+      minWidth: 140,
+      maxWidth: 180,
+      color:
+        theme.palette.mode === "light"
+          ? "rgb(55, 65, 81)"
+          : theme.palette.grey[300],
+      boxShadow:
+        "rgb(255, 255, 255) 0px 0px 0px 0px, rgba(0, 0, 0, 0.05) 0px 0px 0px 1px, rgba(0, 0, 0, 0.1) 0px 10px 15px -3px, rgba(0, 0, 0, 0.05) 0px 4px 6px -2px",
+      "& .MuiMenu-list": { padding: "4px 0" },
+      "& .MuiMenuItem-root": {
+        padding: "8px 12px",
+        fontSize: "14px",
+        minHeight: "unset",
+        "&:active": {
+          backgroundColor: alpha(
+            theme.palette.primary.main,
+            theme.palette.action.selectedOpacity
+          ),
+        },
+        "&:hover": { backgroundColor: "rgba(226, 12, 12, 0.08)" },
+      },
+    },
+  }));
 
   const toggleNavbar = () => {
     setIsExpanded(!isExpanded);
@@ -81,6 +134,22 @@ const InteractiveNavbar = () => {
     router.push("/account/join");
   };
 
+  const openLangMenu = (e: React.MouseEvent<HTMLElement>) => {
+    setLangAnchor(e.currentTarget as HTMLElement);
+  };
+  const closeLangMenu = () => setLangAnchor(null);
+  const chooseLang = async (code: "en" | "kr" | "ru") => {
+    try {
+      setLang(code);
+      if (typeof window !== "undefined") localStorage.setItem("locale", code);
+      setLangAnchor(null);
+      await router.push(router.asPath, router.asPath, { locale: code });
+    } catch {}
+  };
+
+  const currentLangLabel =
+    lang === "kr" ? t("Korean") : lang === "ru" ? t("Russian") : t("English");
+
   return (
     <Box
       component={"div"}
@@ -108,20 +177,6 @@ const InteractiveNavbar = () => {
             </span>
           </div>
         </Link>
-
-        {/* Global Theme Toggle */}
-        <div className="menu-item" onClick={() => setMode(nextMode())}>
-          <span className="icon">
-            <Brightness4Icon sx={{ fontSize: 28 }} />
-          </span>
-          <span className="label">
-            {mode === "light"
-              ? "Light"
-              : mode === "elevatedDark"
-              ? "Elevated"
-              : "Dark"}
-          </span>
-        </div>
 
         <Link href={"/car"}>
           <div className="menu-item">
@@ -169,6 +224,62 @@ const InteractiveNavbar = () => {
             <span className="label">{t("CS")}</span>
           </div>
         </Link>
+
+        {/* Theme toggle */}
+        <div className="menu-item" onClick={() => setMode(nextMode())}>
+          <span className="icon">
+            <Brightness4Icon sx={{ fontSize: 28 }} />
+          </span>
+          <span className="label">
+            {mode === "light"
+              ? "Light"
+              : mode === "elevatedDark"
+              ? "Elevated"
+              : "Dark"}
+          </span>
+        </div>
+
+        {/* Language selector (lan-box) */}
+        <div className="menu-item" onClick={openLangMenu}>
+          <span className="icon">
+            <img
+              src={`/img/flag/lang${lang || "en"}.png`}
+              alt="flag"
+              style={{ width: 24, height: 17, borderRadius: 2 }}
+            />
+          </span>
+          <span className="label">{currentLangLabel}</span>
+        </div>
+        <StyledMenu
+          anchorEl={langAnchor}
+          open={langOpen}
+          onClose={closeLangMenu}
+        >
+          <MenuItem disableRipple onClick={() => chooseLang("en")}>
+            <img
+              className="img-flag"
+              src={"/img/flag/langen.png"}
+              alt="usaFlag"
+            />
+            {t("English")}
+          </MenuItem>
+          <MenuItem disableRipple onClick={() => chooseLang("kr")}>
+            <img
+              className="img-flag"
+              src={"/img/flag/langkr.png"}
+              alt="koreanFlag"
+            />
+            {t("Korean")}
+          </MenuItem>
+          <MenuItem disableRipple onClick={() => chooseLang("ru")}>
+            <img
+              className="img-flag"
+              src={"/img/flag/langru.png"}
+              alt="russiaFlag"
+            />
+            {t("Russian")}
+          </MenuItem>
+        </StyledMenu>
 
         {/* Authentication  */}
         <Stack className="auth-section" sx={{ mt: "auto", pt: 2 }}>

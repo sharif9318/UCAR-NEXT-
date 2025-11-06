@@ -53,6 +53,7 @@ import {
   sweetTopSmallSuccessAlert,
 } from "../../libs/sweetAlert";
 import { useTranslation } from "react-i18next";
+import withLayoutBasic from "../../libs/components/layout/LayoutBasic";
 
 SwiperCore.use([Autoplay, Navigation, Pagination]);
 
@@ -1192,4 +1193,4 @@ CarDetail.defaultProps = {
   },
 };
 
-export default withLayoutFull(CarDetail);
+export default withLayoutBasic(CarDetail);

@@ -976,21 +976,24 @@ body {
 
   // Top navigation container inside the hero
   .nav-container {
-    // align visually with InteractiveNavbar toggle and stick to top
+    // aligned with InteractiveNavbar (1rem from top)
     position: absolute;
-    top: 0;
+    top: 16px;
     left: 50%;
     transform: translateX(-50%);
     z-index: 2;
+
     width: 1300px;
     max-width: 95vw;
-    margin: 0; // remove vertical offset
-    padding-right: 96px; // default: collapsed sidebar (70px) + 16px padding
+    padding-right: 96px; // default: collapsed sidebar (70px) + 16px gutter
 
     display: flex;
     flex-direction: row;
     align-items: center;
     justify-content: space-between;
+
+    // remove any residual margins from previous rules
+    margin: 0;
 
     .logo-box {
       img {

@@ -1,7 +1,7 @@
 import { NextPage } from "next";
 import { useState } from "react";
 import useDeviceDetect from "../libs/hooks/useDeviceDetect";
-import withLayoutMain from "../libs/components/layout/LayoutHome";
+import withLayoutBasic from "../libs/components/layout/LayoutBasic";
 import CommunityBoards from "../libs/components/homepage/CommunityBoards";
 import PopularCars from "../libs/components/homepage/PopularCars";
 import TopAgents from "../libs/components/homepage/TopAgents";
@@ -12,6 +12,7 @@ import { Stack } from "@mui/material";
 import Advertisement from "../libs/components/homepage/Advertisement";
 import { serverSideTranslations } from "next-i18next/serverSideTranslations";
 import { Car } from "../libs/types/car/car";
+import withI18n from "../libs/i18n/withI18n";
 
 export const getStaticProps = async ({ locale }: any) => ({
   props: {
@@ -55,4 +56,4 @@ const Home: NextPage = (props: any) => {
   }
 };
 
-export default withLayoutMain(Home);
+export default withI18n()(withLayoutBasic(Home));
