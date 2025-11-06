@@ -13,6 +13,7 @@ export interface CarUpdate {
   carSeats?: number;
   carImages?: string[];
   car360Images?: string[];
+  carVideos?: string[];
   carDesc?: string;
   carTradeIn?: boolean;
   carLease?: boolean;

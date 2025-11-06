@@ -48,13 +48,8 @@ const TrendCars = (props: TrendCarsProps) => {
       setTrendCars(cars);
 
       if (onCarsLoaded && cars?.length > 0) {
-        const carsWithVideo = cars.filter((car: Car) =>
-          car.carImages?.some(
-            (img) =>
-              img.includes(".mp4") ||
-              img.includes(".webm") ||
-              img.includes(".mov")
-          )
+        const carsWithVideo = cars.filter(
+          (car: Car) => car.carVideos && car.carVideos.length > 0
         );
 
         if (carsWithVideo.length > 0) {
@@ -140,7 +135,7 @@ const TrendCars = (props: TrendCarsProps) => {
     );
   } else {
     return (
-      <Stack className={"trend-properties"}>
+      <Stack className={"trend-cars"}>
         <Stack className={"container"}>
           <Stack className={"info-box"}>
             <Box component={"div"} className={"left"}>

@@ -73,18 +73,21 @@ const PopularCars = (props: PopularCarsProps) => {
   } else {
     return (
       <Stack
-        className={"popular-properties"}
+        className={"popular-cars"}
         sx={(theme) => ({
+          background: `radial-gradient(120% 120% at 0% 0%, rgba(229,9,20,0.06) 0%, rgba(16,18,24,0) 40%), ${theme.palette.background.paper}`,
           backgroundSize: "cover !important",
           backgroundPosition: "center",
           backgroundRepeat: "no-repeat",
           border: `1px solid ${
             theme.palette.mode === "light"
-              ? "rgba(0,0,0,0.06)"
+              ? "rgba(229, 9, 20, 0.12)"
               : "rgba(229, 9, 20, 0.12)"
           }`,
           borderRadius: "16px",
+          boxShadow: `0 0 0 1px rgba(229, 9, 20, 0.04) inset, 0 10px 30px rgba(0,0,0,0.45)`,
           transition: "all 0.3s ease",
+          "--accent": theme.palette.primary.main,
           "&:hover": {
             borderColor: theme.palette.primary.main,
             boxShadow:
@@ -102,6 +105,11 @@ const PopularCars = (props: PopularCarsProps) => {
               <p>{t("popular.desc")}</p>
             </Box>
             <Box component={"div"} className={"right"}>
+              <Stack className={"pagination-box"}>
+                <WestIcon className={"swiper-popular-prev"} />
+                <div className={"swiper-popular-pagination"}></div>
+                <EastIcon className={"swiper-popular-next"} />
+              </Stack>
               <div className={"more-box"}>
                 <Link href={"/car"}>
                   <p>
@@ -148,11 +156,6 @@ const PopularCars = (props: PopularCarsProps) => {
                 );
               })}
             </Swiper>
-          </Stack>
-          <Stack className={"pagination-box"}>
-            <WestIcon className={"swiper-popular-prev"} />
-            <div className={"swiper-popular-pagination"}></div>
-            <EastIcon className={"swiper-popular-next"} />
           </Stack>
         </Stack>
       </Stack>

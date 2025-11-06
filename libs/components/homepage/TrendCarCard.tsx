@@ -23,13 +23,10 @@ const TrendCarCard = (props: TrendCarCardProps) => {
   const videoRef = useRef<HTMLVideoElement>(null);
   const [isVideoLoaded, setIsVideoLoaded] = useState(false);
 
-  // Find video file in carImages
-  const videoFile = car.carImages?.find(
-    (img) =>
-      img.includes(".mp4") || img.includes(".webm") || img.includes(".mov")
-  );
+  // Check for video in carVideos field
+  const videoFile = car.carVideos?.[0];
 
-  // Fallback to first image if no video
+  // Use video if available, otherwise use first image
   const mediaFile = videoFile || car.carImages?.[0];
   const isVideo = videoFile ? true : false;
 

@@ -128,6 +128,16 @@
   "mypage.writeArticleSubtitle": "Делитесь своими идеями!",
   "mypage.onSale": "В продаже",
   "mypage.onSold": "Продано",
+  "mypage.listingTitle": "Название объявления",
+  "mypage.datePublished": "Дата публикации",
+  "mypage.status": "Статус",
+  "mypage.view": "Просмотры",
+  "mypage.action": "Действия",
+  "mypage.confirmDeleteCar": "Вы уверены, что хотите удалить этот автомобиль?",
+  "mypage.confirmChangeStatus": "Вы уверены, что хотите изменить статус на {{status}}?",
+
+  "status.sold": "Продан",
+  "status.active": "Активен",
 
   "mypage.addCarTitle": "Добавить авто",
   "mypage.editCarTitle": "Редактировать авто",

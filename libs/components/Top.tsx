@@ -52,11 +52,8 @@ const Top = ({ trendingCar }: TopProps) => {
 
   // Determine video source - use car video if exists, otherwise default
   const getVideoSource = () => {
-    if (trendingCar?.carImages && trendingCar.carImages.length > 0) {
-      const firstMedia = trendingCar.carImages[0];
-      if (firstMedia.includes(".mp4") || firstMedia.includes(".webm")) {
-        return `${REACT_APP_API_URL}/${firstMedia}`;
-      }
+    if (trendingCar?.carVideos && trendingCar.carVideos.length > 0) {
+      return `${REACT_APP_API_URL}/${trendingCar.carVideos[0]}`;
     }
     return "/img/video/default-car.mp4";
   };

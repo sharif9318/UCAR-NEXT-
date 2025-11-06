@@ -135,7 +135,7 @@ export const CarCard = (props: CarCardProps) => {
             {car.carViews.toLocaleString()}
           </Typography>
         </Stack>
-        {!memberPage && (
+        {!memberPage && car.carStatus === CarStatus.ACTIVE && (
           <Stack className="action-box">
             <IconButton
               className="icon-button"

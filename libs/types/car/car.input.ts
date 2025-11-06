@@ -12,6 +12,7 @@ export interface CarInput {
   carSeats: number;
   carImages: string[];
   car360Images?: string[];
+  carVideos?: string[];
   carDesc?: string;
   carTradeIn?: boolean;
   carLease?: boolean;

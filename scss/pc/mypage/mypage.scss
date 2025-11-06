@@ -1,11 +1,12 @@
 #pc-wrap {
   #my-page {
+    // Theme-aware page background (fallbacks to current theme)
     background: radial-gradient(
         100% 100% at 0% 0%,
         rgba(229, 9, 20, 0.06) 0%,
         rgba(16, 18, 24, 0) 40%
       ),
-      #0b0c10;
+      var(--bg-default);
     .container {
       .my-page {
         position: relative;
@@ -21,7 +22,7 @@
           margin: 100px 0 200px 0;
           border-radius: 16px;
           border: 1px solid rgba(229, 9, 20, 0.15);
-          background: #0f1115;
+          background: var(--bg-paper);
           box-shadow: 0 0 0 1px rgba(229, 9, 20, 0.06) inset,
             0 10px 30px rgba(0, 0, 0, 0.45);
           .left-config {
@@ -30,7 +31,7 @@
             width: 266px;
             height: 700px;
             border-radius: 16px;
-            background: #0f1115;
+            background: var(--bg-paper);
             border: 1px solid rgba(229, 9, 20, 0.15);
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.45);
             margin: 180px 20px 40px 20px;
@@ -131,10 +132,16 @@
                       flex-direction: row;
                       justify-content: flex-end;
                       margin-left: 11px;
+                      // Ensure icons use currentColor and adapt to theme
+                      svg,
+                      img {
+                        filter: none;
+                        color: var(--text-primary);
+                      }
                     }
                     p {
                       font-size: 14px;
-                      color: #cfd3dc;
+                      color: var(--text-primary);
                     }
                   }
                 }
@@ -145,7 +152,7 @@
                 }
                 .sub-title {
                   margin-left: 12px;
-                  color: #ffffff;
+                  color: var(--text-primary);
                   font-family: $font;
                   font-size: 14px;
                   font-style: normal;
@@ -173,7 +180,7 @@
                 height: 413px;
                 margin-bottom: 7px;
                 border-radius: 16px;
-                background: #0f1115;
+                background: var(--bg-paper);
                 box-shadow: 0 0 0 1px rgba(229, 9, 20, 0.12) inset,
                   0 10px 30px rgba(0, 0, 0, 0.45);
                 .top {

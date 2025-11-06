@@ -100,6 +100,7 @@ export const GET_CAR = gql`
       carComments
       carImages
       car360Images
+      carVideos
       carDesc
       carTradeIn
       carLease
@@ -159,6 +160,7 @@ export const GET_CARS = gql`
         carRank
         carImages
         car360Images
+        carVideos
         carDesc
         carTradeIn
         carLease
@@ -221,6 +223,7 @@ export const GET_AGENT_CARS = gql`
         carLikes
         carImages
         car360Images
+        carVideos
         carDesc
         carTradeIn
         carLease
@@ -258,6 +261,7 @@ export const GET_FAVORITES = gql`
         carRank
         carImages
         car360Images
+        carVideos
         carDesc
         carTradeIn
         carLease
@@ -322,6 +326,7 @@ export const GET_VISITED = gql`
         carRank
         carImages
         car360Images
+        carVideos
         carDesc
         carTradeIn
         carLease

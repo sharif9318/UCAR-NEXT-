@@ -145,9 +145,11 @@ const MyCars: NextPage = ({ initialInput, ...props }: any) => {
                 {t("mypage.status")}
               </Typography>
               <Typography className="title-text">{t("mypage.view")}</Typography>
-              <Typography className="title-text">
-                {t("mypage.action")}
-              </Typography>
+              {searchFilter.search.carStatus === CarStatus.ACTIVE && (
+                <Typography className="title-text">
+                  {t("mypage.action")}
+                </Typography>
+              )}
             </Stack>
 
             {agentProperties?.length === 0 ? (

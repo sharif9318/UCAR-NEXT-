@@ -54,6 +54,7 @@ export const UPDATE_CAR_BY_ADMIN = gql`
       carLikes
       carImages
       car360Images
+      carVideos
       carDesc
       carTradeIn
       carLease
@@ -84,6 +85,7 @@ export const REMOVE_CAR_BY_ADMIN = gql`
       carLikes
       carImages
       car360Images
+      carVideos
       carDesc
       carTradeIn
       carLease

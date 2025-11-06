@@ -1,6 +1,13 @@
-import React from "react";
+import React, { useContext } from "react";
 import { useRouter } from "next/router";
-import { Stack, Typography, Box, List, ListItem } from "@mui/material";
+import {
+  Stack,
+  Typography,
+  Box,
+  List,
+  ListItem,
+  useTheme,
+} from "@mui/material";
 import useDeviceDetect from "../../hooks/useDeviceDetect";
 import Link from "next/link";
 import { useReactiveVar } from "@apollo/client";
@@ -11,6 +18,7 @@ import { REACT_APP_API_URL } from "../../config";
 import { logOut } from "../../auth";
 import { sweetConfirmAlert, sweetMixinErrorAlert } from "../../sweetAlert";
 import { useTranslation } from "react-i18next";
+import { ThemeModeContext } from "../../../pages/_app";
 
 const MyMenu = () => {
   const { t } = useTranslation("common");
@@ -19,6 +27,9 @@ const MyMenu = () => {
   const pathname = router.query.category ?? "myProfile";
   const category: any = router.query?.category ?? "myProfile";
   const user = useReactiveVar(userVar);
+  const theme = useTheme();
+  const { mode } = useContext(ThemeModeContext);
+  const isDarkMode = mode === "dark" || mode === "elevatedDark";
 
   /** HANDLERS **/
   const logoutHandler = async () => {
@@ -90,19 +101,23 @@ const MyMenu = () => {
                       scroll={false}
                     >
                       <div className={"flex-box"}>
-                        {category === "addCar" ? (
-                          <img
-                            className={"com-icon"}
-                            src={"/img/icons/whiteTab.svg"}
-                            alt={"com-icon"}
-                          />
-                        ) : (
-                          <img
-                            className={"com-icon"}
-                            src={"/img/icons/newTab.svg"}
-                            alt={"com_icon"}
-                          />
-                        )}
+                        <img
+                          className={"com-icon"}
+                          src={
+                            category === "addCar"
+                              ? "/img/icons/whiteTab.svg"
+                              : "/img/icons/newTab.svg"
+                          }
+                          alt={"com-icon"}
+                          style={{
+                            filter:
+                              category === "addCar"
+                                ? "none"
+                                : isDarkMode
+                                ? "invert(1)"
+                                : "none",
+                          }}
+                        />
                         <Typography
                           className={"sub-title"}
                           variant={"subtitle1"}
@@ -113,9 +128,7 @@ const MyMenu = () => {
                         <IconButton
                           aria-label="delete"
                           sx={{ ml: "40px", color: "red" }}
-                        >
-                          🚘
-                        </IconButton>
+                        ></IconButton>
                       </div>
                     </Link>
                   </ListItem>
@@ -128,19 +141,19 @@ const MyMenu = () => {
                       scroll={false}
                     >
                       <div className={"flex-box"}>
-                        {category === "myCars" ? (
-                          <img
-                            className={"com-icon"}
-                            src={"/img/icons/homeWhite.svg"}
-                            alt={"com-icon"}
-                          />
-                        ) : (
-                          <img
-                            className={"com-icon"}
-                            src={"/img/icons/home.svg"}
-                            alt={"com-icon"}
-                          />
-                        )}
+                        <Typography
+                          className={"sub-title"}
+                          variant={"subtitle1"}
+                          component={"span"}
+                          sx={{
+                            fontSize: "16px",
+                            marginRight: "8px",
+                            filter:
+                              category === "myCars" ? "none" : "grayscale(1)",
+                          }}
+                        >
+                          🚗
+                        </Typography>
                         <Typography
                           className={"sub-title"}
                           variant={"subtitle1"}
@@ -148,9 +161,10 @@ const MyMenu = () => {
                         >
                           {t("mypage.myCars")}
                         </Typography>
-                        <IconButton aria-label="delete" sx={{ ml: "36px" }}>
-                          <PortraitIcon style={{ color: "red" }} />
-                        </IconButton>
+                        <IconButton
+                          aria-label="delete"
+                          sx={{ ml: "36px" }}
+                        ></IconButton>
                       </div>
                     </Link>
                   </ListItem>
@@ -165,20 +179,23 @@ const MyMenu = () => {
                   scroll={false}
                 >
                   <div className={"flex-box"}>
-                    {category === "myFavorites" ? (
-                      <img
-                        className={"com-icon"}
-                        src={"/img/icons/likeWhite.svg"}
-                        alt={"com-icon"}
-                      />
-                    ) : (
-                      <img
-                        className={"com-icon"}
-                        src={"/img/icons/like.svg"}
-                        alt={"com-icon"}
-                      />
-                    )}
-
+                    <img
+                      className={"com-icon"}
+                      src={
+                        category === "myFavorites"
+                          ? "/img/icons/likeWhite.svg"
+                          : "/img/icons/like.svg"
+                      }
+                      alt={"com-icon"}
+                      style={{
+                        filter:
+                          category === "myFavorites"
+                            ? "none"
+                            : isDarkMode
+                            ? "invert(1)"
+                            : "none",
+                      }}
+                    />
                     <Typography
                       className={"sub-title"}
                       variant={"subtitle1"}
@@ -200,20 +217,23 @@ const MyMenu = () => {
                   scroll={false}
                 >
                   <div className={"flex-box"}>
-                    {category === "recentlyVisited" ? (
-                      <img
-                        className={"com-icon"}
-                        src={"/img/icons/searchWhite.svg"}
-                        alt={"com-icon"}
-                      />
-                    ) : (
-                      <img
-                        className={"com-icon"}
-                        src={"/img/icons/search.svg"}
-                        alt={"com-icon"}
-                      />
-                    )}
-
+                    <img
+                      className={"com-icon"}
+                      src={
+                        category === "recentlyVisited"
+                          ? "/img/icons/searchWhite.svg"
+                          : "/img/icons/search.svg"
+                      }
+                      alt={"com-icon"}
+                      style={{
+                        filter:
+                          category === "recentlyVisited"
+                            ? "none"
+                            : isDarkMode
+                            ? "invert(1)"
+                            : "none",
+                      }}
+                    />
                     <Typography
                       className={"sub-title"}
                       variant={"subtitle1"}
@@ -235,7 +255,13 @@ const MyMenu = () => {
                   <div className={"flex-box"}>
                     <svg
                       className={"com-icon"}
-                      fill={category === "followers" ? "white" : "black"}
+                      fill={
+                        category === "followers"
+                          ? "white"
+                          : isDarkMode
+                          ? "white"
+                          : "black"
+                      }
                       height="16px"
                       width="16px"
                       version="1.1"
@@ -286,7 +312,13 @@ const MyMenu = () => {
                   <div className={"flex-box"}>
                     <svg
                       className={"com-icon"}
-                      fill={category === "followings" ? "white" : "black"}
+                      fill={
+                        category === "followings"
+                          ? "white"
+                          : isDarkMode
+                          ? "white"
+                          : "black"
+                      }
                       height="16px"
                       width="16px"
                       version="1.1"
@@ -344,20 +376,23 @@ const MyMenu = () => {
                     scroll={false}
                   >
                     <div className={"flex-box"}>
-                      {category === "myArticles" ? (
-                        <img
-                          className={"com-icon"}
-                          src={"/img/icons/discoveryWhite.svg"}
-                          alt={"com-icon"}
-                        />
-                      ) : (
-                        <img
-                          className={"com-icon"}
-                          src={"/img/icons/discovery.svg"}
-                          alt={"com-icon"}
-                        />
-                      )}
-
+                      <img
+                        className={"com-icon"}
+                        src={
+                          category === "myArticles"
+                            ? "/img/icons/discoveryWhite.svg"
+                            : "/img/icons/discovery.svg"
+                        }
+                        alt={"com-icon"}
+                        style={{
+                          filter:
+                            category === "myArticles"
+                              ? "none"
+                              : isDarkMode
+                              ? "invert(1)"
+                              : "none",
+                        }}
+                      />
                       <Typography
                         className={"sub-title"}
                         variant={"subtitle1"}
@@ -379,19 +414,23 @@ const MyMenu = () => {
                     scroll={false}
                   >
                     <div className={"flex-box"}>
-                      {category === "writeArticle" ? (
-                        <img
-                          className={"com-icon"}
-                          src={"/img/icons/whiteTab.svg"}
-                          alt={"com-icon"}
-                        />
-                      ) : (
-                        <img
-                          className={"com-icon"}
-                          src={"/img/icons/newTab.svg"}
-                          alt={"com_icon"}
-                        />
-                      )}
+                      <img
+                        className={"com-icon"}
+                        src={
+                          category === "writeArticle"
+                            ? "/img/icons/whiteTab.svg"
+                            : "/img/icons/newTab.svg"
+                        }
+                        alt={"com-icon"}
+                        style={{
+                          filter:
+                            category === "writeArticle"
+                              ? "none"
+                              : isDarkMode
+                              ? "invert(1)"
+                              : "none",
+                        }}
+                      />
                       <Typography
                         className={"sub-title"}
                         variant={"subtitle1"}
@@ -419,19 +458,23 @@ const MyMenu = () => {
                   scroll={false}
                 >
                   <div className={"flex-box"}>
-                    {category === "myProfile" ? (
-                      <img
-                        className={"com-icon"}
-                        src={"/img/icons/userWhite.svg"}
-                        alt={"com-icon"}
-                      />
-                    ) : (
-                      <img
-                        className={"com-icon"}
-                        src={"/img/icons/user.svg"}
-                        alt={"com-icon"}
-                      />
-                    )}
+                    <img
+                      className={"com-icon"}
+                      src={
+                        category === "myProfile"
+                          ? "/img/icons/userWhite.svg"
+                          : "/img/icons/user.svg"
+                      }
+                      alt={"com-icon"}
+                      style={{
+                        filter:
+                          category === "myProfile"
+                            ? "none"
+                            : isDarkMode
+                            ? "invert(1)"
+                            : "none",
+                      }}
+                    />
                     <Typography
                       className={"sub-title"}
                       variant={"subtitle1"}
@@ -448,6 +491,9 @@ const MyMenu = () => {
                     className={"com-icon"}
                     src={"/img/icons/logout.svg"}
                     alt={"com-icon"}
+                    style={{
+                      filter: isDarkMode ? "invert(1)" : "none",
+                    }}
                   />
                   <Typography
                     className={"sub-title"}

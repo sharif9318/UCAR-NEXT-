@@ -139,6 +139,7 @@ export const CREATE_CAR = gql`
       carLikes
       carImages
       car360Images
+      carVideos
       carDesc
       carTradeIn
       carLease
@@ -169,6 +170,7 @@ export const UPDATE_CAR = gql`
       carLikes
       carImages
       car360Images
+      carVideos
       carDesc
       carTradeIn
       carLease
@@ -199,6 +201,7 @@ export const LIKE_TARGET_CAR = gql`
       carLikes
       carImages
       car360Images
+      carVideos
       carDesc
       carTradeIn
       carLease

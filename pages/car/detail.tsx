@@ -177,12 +177,8 @@ const CarDetail: NextPage = (props: any) => {
 
   useEffect(() => {
     if (car?.carImages && car.carImages.length > 0) {
-      // Check if first image is a video
-      const firstMedia = car.carImages[0];
-      const isVideo = firstMedia.match(/\.(mp4|webm|ogg|mov)$/i);
-      if (!isVideo) {
-        setSlideImage(firstMedia);
-      }
+      // Set first image as slide image (videos are now separate)
+      setSlideImage(car.carImages[0]);
     }
   }, [car]);
 
@@ -526,12 +522,10 @@ const CarDetail: NextPage = (props: any) => {
               </Stack>
               <Stack className={"images"}>
                 <Stack className={"main-image"}>
-                  {car?.carImages &&
-                  car.carImages.length > 0 &&
-                  isVideoFile(car.carImages[0]) ? (
+                  {car?.carVideos && car.carVideos.length > 0 ? (
                     <video autoPlay muted loop playsInline controls>
                       <source
-                        src={`${REACT_APP_API_URL}/${car.carImages[0]}`}
+                        src={`${REACT_APP_API_URL}/${car.carVideos[0]}`}
                         type="video/mp4"
                       />
                       Your browser does not support the video tag.
@@ -548,23 +542,31 @@ const CarDetail: NextPage = (props: any) => {
                   )}
                 </Stack>
                 <Stack className={"sub-images"}>
+                  {car?.carVideos &&
+                    car.carVideos.length > 0 &&
+                    car.carVideos.map((video: string, index: number) => {
+                      const videoPath: string = `${REACT_APP_API_URL}/${video}`;
+                      return (
+                        <Stack
+                          className="sub-img-box video-box"
+                          key={`video-${index}`}
+                        >
+                          <video>
+                            <source src={videoPath} type="video/mp4" />
+                          </video>
+                        </Stack>
+                      );
+                    })}
                   {car?.carImages.map((subImg: string, index: number) => {
                     const imagePath: string = `${REACT_APP_API_URL}/${subImg}`;
-                    const isVideo = isVideoFile(subImg);
 
                     return (
                       <Stack
-                        className={`sub-img-box ${isVideo ? "video-box" : ""}`}
-                        onClick={() => !isVideo && changeImageHandler(subImg)}
+                        className="sub-img-box"
+                        onClick={() => changeImageHandler(subImg)}
                         key={subImg}
                       >
-                        {isVideo ? (
-                          <video>
-                            <source src={imagePath} type="video/mp4" />
-                          </video>
-                        ) : (
-                          <img src={imagePath} alt={"sub-image"} />
-                        )}
+                        {<img src={imagePath} alt={"sub-image"} />}
                       </Stack>
                     );
                   })}

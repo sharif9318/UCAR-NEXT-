@@ -47,13 +47,8 @@ const TopCars = (props: TopCarsProps) => {
       setTopCars(data?.getCars?.list);
 
       if (onCarsLoaded && topCars?.length > 0) {
-        const carsWithVideo = topCars.filter((car: Car) =>
-          car.carImages?.some(
-            (img) =>
-              img.includes(".mp4") ||
-              img.includes(".webm") ||
-              img.includes(".mov")
-          )
+        const carsWithVideo = topCars.filter(
+          (car: Car) => car.carVideos && car.carVideos.length > 0
         );
 
         if (carsWithVideo.length > 0) {
@@ -101,7 +96,7 @@ const TopCars = (props: TopCarsProps) => {
 
   if (device === "mobile") {
     return (
-      <Stack className={"top-properties"}>
+      <Stack className={"top-cars"}>
         <Stack className={"container"}>
           <Stack className={"info-box"}>
             <span>{t("top.titleMobile")}</span>
@@ -137,7 +132,7 @@ const TopCars = (props: TopCarsProps) => {
     );
   } else {
     return (
-      <Stack className={"top-properties"}>
+      <Stack className={"top-cars"}>
         <Stack className={"container"}>
           <Stack className={"info-box"}>
             <Box component={"div"} className={"left"}>
