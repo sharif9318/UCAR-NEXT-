@@ -294,6 +294,13 @@ body {
           margin: 270px auto;
           display: flex;
           flex-direction: column;
+          opacity: 1;
+          transition: opacity 0.3s ease-in-out;
+
+          &.hidden {
+            opacity: 0;
+            pointer-events: none;
+          }
         }
         .search-box {
           position: relative;

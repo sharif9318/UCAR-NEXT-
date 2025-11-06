@@ -23,6 +23,7 @@ const AddNewCar = ({ initialValues, ...props }: any) => {
   const inputRef = useRef<any>(null);
   const [insertCarData, setInsertCarData] = useState<CarInput>(initialValues);
   const car360Ref = useRef<any>(null);
+  const videoRef = useRef<any>(null);
   const [carType, setCarType] = useState<CarType[]>(Object.values(CarType));
   const [carLocation, setCarLocation] = useState<CarLocation[]>(
     Object.values(CarLocation)
@@ -32,8 +33,10 @@ const AddNewCar = ({ initialValues, ...props }: any) => {
   const [show360Modal, setShow360Modal] = useState(false);
   const [isDragOver, setIsDragOver] = useState(false);
   const [isDragOver360, setIsDragOver360] = useState(false);
+  const [isDragOverVideo, setIsDragOverVideo] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
   const [isUploading360, setIsUploading360] = useState(false);
+  const [isUploadingVideo, setIsUploadingVideo] = useState(false);
 
   // Global drag event handlers to prevent default browser behavior
   useEffect(() => {
@@ -95,6 +98,7 @@ const AddNewCar = ({ initialValues, ...props }: any) => {
         carDesc: carData.carDesc || "",
         carImages: carData.carImages || [],
         car360Images: carData.car360Images || [],
+        carVideos: carData.carVideos || [],
         manufacturedAt: carData.manufacturedAt || undefined,
       });
     }
@@ -279,6 +283,98 @@ const AddNewCar = ({ initialValues, ...props }: any) => {
     }));
   }, []);
 
+  // Upload videos
+  async function uploadVideos() {
+    try {
+      setIsUploadingVideo(true);
+      const formData = new FormData();
+      const selectedFiles = videoRef.current?.files;
+
+      if (!selectedFiles || selectedFiles.length === 0) {
+        setIsUploadingVideo(false);
+        return false;
+      }
+      if (selectedFiles.length > 5) {
+        setIsUploadingVideo(false);
+        throw new Error(t("mypage.uploadVideo.limit"));
+      }
+
+      const mutationVariables = {
+        files: Array.from(selectedFiles).map(() => null),
+        target: "car-video",
+      };
+
+      const mutationQuery = `mutation VideosUploader($files: [Upload!]!, $target: String!) { 
+						imagesUploader(files: $files, target: $target)
+				  }`;
+
+      formData.append(
+        "operations",
+        JSON.stringify({
+          query: mutationQuery,
+          variables: mutationVariables,
+        })
+      );
+
+      const mapObject: any = {};
+      for (let i = 0; i < selectedFiles.length; i++) {
+        mapObject[i.toString()] = [`variables.files.${i}`];
+      }
+
+      formData.append("map", JSON.stringify(mapObject));
+
+      for (let i = 0; i < selectedFiles.length; i++) {
+        formData.append(i.toString(), selectedFiles[i]);
+      }
+
+      if (!process.env.REACT_APP_API_GRAPHQL_URL) {
+        throw new Error("REACT_APP_API_GRAPHQL_URL is not configured!");
+      }
+
+      const response = await axios.post(
+        `${process.env.REACT_APP_API_GRAPHQL_URL}`,
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+            "apollo-require-preflight": true,
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      if (response.data.errors) {
+        throw new Error(
+          `GraphQL Error: ${JSON.stringify(response.data.errors)}`
+        );
+      }
+
+      const responseVideos = response.data.data?.imagesUploader;
+
+      if (!responseVideos || responseVideos.length === 0) {
+        await sweetMixinErrorAlert(t("mypage.uploadVideo.noServerVideos"));
+        return;
+      }
+
+      setInsertCarData((prevData) => ({
+        ...prevData,
+        carVideos: responseVideos,
+      }));
+    } catch (err: any) {
+      await sweetMixinErrorAlert(err.message);
+    } finally {
+      setIsUploadingVideo(false);
+    }
+  }
+
+  // Remove a video
+  const removeCarVideo = useCallback((index: number) => {
+    setInsertCarData((prev) => ({
+      ...prev,
+      carVideos: (prev.carVideos || []).filter((_, i) => i !== index),
+    }));
+  }, []);
+
   const doDisabledCheck = () => {
     const checks = {
       carTitle:
@@ -327,6 +423,7 @@ const AddNewCar = ({ initialValues, ...props }: any) => {
         carDesc: insertCarData.carDesc || "",
         carImages: insertCarData.carImages,
         car360Images: insertCarData.car360Images || [],
+        carVideos: insertCarData.carVideos || [],
         manufacturedAt: insertCarData.manufacturedAt,
       };
 
@@ -364,6 +461,7 @@ const AddNewCar = ({ initialValues, ...props }: any) => {
         carDesc: insertCarData.carDesc || "",
         carImages: insertCarData.carImages,
         car360Images: insertCarData.car360Images || [],
+        carVideos: insertCarData.carVideos || [],
         manufacturedAt: insertCarData.manufacturedAt,
       };
 
@@ -773,7 +871,7 @@ const AddNewCar = ({ initialValues, ...props }: any) => {
                     src={
                       insertCarData.carImages && insertCarData.carImages[0]
                         ? `${REACT_APP_API_URL}/${insertCarData.carImages[0]}`
-                        : "/img/car/defaultCar.png"
+                        : "/img/car/bigImage.png"
                     }
                     alt="Preview"
                   />
@@ -1277,6 +1375,265 @@ const AddNewCar = ({ initialValues, ...props }: any) => {
             </Stack>
           </Stack>
 
+          <Typography className="upload-title">
+            {t("mypage.uploadVideo.title")}
+          </Typography>
+          <Stack className="images-box">
+            <Stack
+              className={`upload-box ${isDragOverVideo ? "drag-over" : ""}`}
+              onDragOver={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                if (!isDragOverVideo) {
+                  setIsDragOverVideo(true);
+                }
+              }}
+              onDragEnter={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                setIsDragOverVideo(true);
+              }}
+              onDragLeave={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                const rect = e.currentTarget.getBoundingClientRect();
+                const x = e.clientX;
+                const y = e.clientY;
+
+                if (
+                  x < rect.left ||
+                  x > rect.right ||
+                  y < rect.top ||
+                  y > rect.bottom
+                ) {
+                  setIsDragOverVideo(false);
+                }
+              }}
+              onDrop={async (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                setIsDragOverVideo(false);
+
+                try {
+                  const files = Array.from(e.dataTransfer.files);
+
+                  if (files.length === 0) {
+                    await sweetMixinErrorAlert(
+                      t("mypage.uploadVideo.noFilesDropped")
+                    );
+                    return;
+                  }
+
+                  const validFiles = files.filter((file) => {
+                    return (
+                      file.type === "video/mp4" ||
+                      file.type === "video/webm" ||
+                      file.type === "video/quicktime" ||
+                      file.type === "video/ogg" ||
+                      file.type === "video/x-matroska" ||
+                      file.type === "video/3gpp"
+                    );
+                  });
+
+                  const invalidFiles = files.filter((file) => {
+                    return !(
+                      file.type === "video/mp4" ||
+                      file.type === "video/webm" ||
+                      file.type === "video/quicktime" ||
+                      file.type === "video/ogg" ||
+                      file.type === "video/x-matroska" ||
+                      file.type === "video/3gpp"
+                    );
+                  });
+
+                  if (invalidFiles.length > 0) {
+                    await sweetMixinErrorAlert(
+                      t("mypage.uploadVideo.invalidTypes", {
+                        count: invalidFiles.length,
+                      })
+                    );
+                  }
+
+                  if (validFiles.length === 0) {
+                    return;
+                  }
+
+                  if (validFiles.length > 5) {
+                    await sweetMixinErrorAlert(t("mypage.uploadVideo.limit"));
+                    return;
+                  }
+
+                  // Check file sizes (200MB max per video - backend configurable)
+                  const maxSize = 200 * 1024 * 1024;
+                  const oversizedFiles = validFiles.filter(
+                    (file) => file.size > maxSize
+                  );
+
+                  if (oversizedFiles.length > 0) {
+                    await sweetMixinErrorAlert(
+                      t("mypage.uploadVideo.maxSize", {
+                        count: oversizedFiles.length,
+                      })
+                    );
+                    return;
+                  }
+
+                  if (videoRef.current) {
+                    const dataTransfer = new DataTransfer();
+                    validFiles.forEach((file) => dataTransfer.items.add(file));
+                    videoRef.current.files = dataTransfer.files;
+                    await uploadVideos();
+                  }
+                } catch (error: any) {
+                  await sweetMixinErrorAlert(
+                    t("mypage.uploadVideo.dropError", {
+                      message: error.message,
+                    })
+                  );
+                }
+              }}
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="121"
+                height="120"
+                viewBox="0 0 121 120"
+                fill="none"
+              >
+                <g clipPath="url(#clip0_video)">
+                  <path
+                    d="M100.975 120.003C100.418 120.057 99.8558 119.994 99.3247 119.818C98.7935 119.642 98.3051 119.357 97.8907 118.98C97.4763 118.604 97.1452 118.146 96.9186 117.634C96.6921 117.122 96.575 116.569 96.575 116.009C96.575 115.45 96.6921 114.896 96.9186 114.385C97.1452 113.873 97.4763 113.414 97.8907 113.038C98.3051 112.662 98.7935 112.377 99.3247 112.201C99.8558 112.025 100.418 111.962 100.975 112.016C104.158 112.016 107.21 110.751 109.46 108.501C111.711 106.25 112.975 103.198 112.975 100.016V19.9906C112.975 16.808 111.711 13.7558 109.46 11.5053C107.21 9.25491 104.158 7.99063 100.975 7.99063H36.9624C36.4055 8.04466 35.8433 7.98159 35.3122 7.80547C34.781 7.62935 34.2926 7.34408 33.8782 6.96797C33.4638 6.59186 33.1327 6.13324 32.9061 5.62156C32.6796 5.10989 32.5625 4.55648 32.5625 3.99688C32.5625 3.43728 32.6796 2.88386 32.9061 2.37219C33.1327 1.86051 33.4638 1.40189 33.8782 1.02578C34.2926 0.649674 34.781 0.364397 35.3122 0.188277C35.8433 0.0121578 36.4055 -0.05091 36.9624 0.00312538H100.975C106.273 0.0130374 111.351 2.12204 115.097 5.86828C118.844 9.61451 120.953 14.6927 120.962 19.9906V100.016C120.953 105.314 118.844 110.392 115.097 114.138C111.351 117.884 106.273 119.993 100.975 120.003Z"
+                    fill="#DDDDDD"
+                  />
+                  <path d="M75 45L50 60L75 75V45Z" fill="#DDDDDD" />
+                  <circle
+                    cx="60"
+                    cy="60"
+                    r="25"
+                    stroke="#DDDDDD"
+                    strokeWidth="3"
+                    fill="none"
+                  />
+                </g>
+                <defs>
+                  <clipPath id="clip0_video">
+                    <rect
+                      width="120"
+                      height="120"
+                      fill="white"
+                      transform="translate(0.960938)"
+                    />
+                  </clipPath>
+                </defs>
+              </svg>
+              <Stack className="text-box">
+                <Typography className="drag-title">
+                  {isUploadingVideo
+                    ? t("mypage.uploadVideo.uploading")
+                    : isDragOverVideo
+                    ? t("mypage.uploadVideo.dragTitleOver")
+                    : t("mypage.uploadVideo.dragTitleDefault")}
+                </Typography>
+                <Typography className="format-title">
+                  {t("mypage.uploadVideo.formatTitle")}
+                </Typography>
+              </Stack>
+              <Button
+                className="browse-button"
+                disabled={isUploadingVideo}
+                onClick={() => {
+                  videoRef.current?.click();
+                }}
+              >
+                <Typography className="browse-button-text">
+                  {isUploadingVideo
+                    ? t("mypage.uploadVideo.uploading")
+                    : t("mypage.uploadVideo.browse")}
+                </Typography>
+                <input
+                  ref={videoRef}
+                  type="file"
+                  hidden={true}
+                  onChange={uploadVideos}
+                  multiple={true}
+                  accept="video/mp4, video/webm, video/quicktime, video/ogg, video/x-matroska, video/3gpp, .mp4, .webm, .mov, .ogg, .mkv, .3gp"
+                />
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="16"
+                  height="16"
+                  viewBox="0 0 16 16"
+                  fill="none"
+                >
+                  <g clipPath="url(#clip0_7309_3249)">
+                    <path
+                      d="M15.5556 0H5.7778C5.53214 0 5.33334 0.198792 5.33334 0.444458C5.33334 0.690125 5.53214 0.888917 5.7778 0.888917H14.4827L0.130219 15.2413C-0.0434062 15.415 -0.0434062 15.6962 0.130219 15.8698C0.21701 15.9566 0.33076 16 0.444469 16C0.558177 16 0.671885 15.9566 0.758719 15.8698L15.1111 1.51737V10.2222C15.1111 10.4679 15.3099 10.6667 15.5556 10.6667C15.8013 10.6667 16.0001 10.4679 16.0001 10.2222V0.444458C16 0.198792 15.8012 0 15.5556 0Z"
+                      fill="#181A20"
+                    />
+                  </g>
+                  <defs>
+                    <clipPath id="clip0_7309_3249">
+                      <rect width="16" height="16" fill="white" />
+                    </clipPath>
+                  </defs>
+                </svg>
+              </Button>
+            </Stack>
+            <Stack className="gallery-box">
+              {(insertCarData?.carVideos || []).length > 0 ? (
+                (insertCarData.carVideos || []).map(
+                  (video: string, index: number) => {
+                    const videoPath: string = `${REACT_APP_API_URL}/${video}`;
+                    return (
+                      <Stack
+                        className="image-box video-box"
+                        key={index}
+                        sx={{ position: "relative" }}
+                      >
+                        <video
+                          src={videoPath}
+                          controls
+                          style={{
+                            width: "100%",
+                            height: "100%",
+                            objectFit: "cover",
+                          }}
+                        />
+                        <Box
+                          sx={{
+                            position: "absolute",
+                            top: 8,
+                            left: 8,
+                            backgroundColor: "rgba(0,0,0,0.7)",
+                            color: "white",
+                            padding: "4px 8px",
+                            borderRadius: "4px",
+                            fontSize: "10px",
+                            fontWeight: "bold",
+                          }}
+                        >
+                          VIDEO
+                        </Box>
+                        <button
+                          type="button"
+                          aria-label="Remove video"
+                          className="remove-btn"
+                          onClick={() => removeCarVideo(index)}
+                        >
+                          ×
+                        </button>
+                      </Stack>
+                    );
+                  }
+                )
+              ) : (
+                <Typography className="empty-text">
+                  {t("mypage.uploadVideo.empty")}
+                </Typography>
+              )}
+            </Stack>
+          </Stack>
+
           <Stack className="buttons-row">
             {carId ? (
               <Button
@@ -1328,6 +1685,7 @@ AddNewCar.defaultProps = {
     carDesc: "",
     carImages: [],
     car360Images: [],
+    carVideos: [],
     manufacturedAt: undefined,
   },
 };

@@ -425,7 +425,10 @@ const Top = ({ trendingCar }: TopProps) => {
               </div>
             </Box>
           </Stack>
-          <Box className={"motto-box"} sx={{ pointerEvents: "auto" }}>
+          <Box
+            className={`motto-box ${showCarInfo ? "hidden" : ""}`}
+            sx={{ pointerEvents: "auto" }}
+          >
             <Typography
               variant="h1"
               sx={{

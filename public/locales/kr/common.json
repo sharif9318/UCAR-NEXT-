@@ -193,6 +193,20 @@
   "mypage.upload360.preview": "360° 보기 미리보기",
   "mypage.upload360.noServerImages": "360° 업로드 실패 - 서버에서 이미지가 반환되지 않았습니다. 백엔드가 'car360' 타겟을 지원하지 않을 수 있습니다.",
 
+  "mypage.uploadVideo.title": "차량 동영상 업로드 (선택)",
+  "mypage.uploadVideo.noFilesDropped": "동영상 파일이 드롭되지 않았습니다!",
+  "mypage.uploadVideo.invalidTypes": "{{count}}개의 파일이 거절되었습니다. MP4, WebM, MOV, OGG, MKV 형식만 허용됩니다!",
+  "mypage.uploadVideo.limit": "한 번에 5개 이상의 동영상을 업로드할 수 없습니다!",
+  "mypage.uploadVideo.maxSize": "{{count}}개의 동영상 파일 크기가 너무 큽니다. 최대 200MB까지 가능합니다.",
+  "mypage.uploadVideo.dropError": "드롭된 동영상 파일 처리 중 오류: {{message}}",
+  "mypage.uploadVideo.formatTitle": "동영상은 MP4, WebM, MOV, OGG, MKV 형식이어야 합니다 (각 최대 200MB)",
+  "mypage.uploadVideo.browse": "동영상 파일 선택",
+  "mypage.uploadVideo.empty": "아직 업로드된 동영상이 없습니다",
+  "mypage.uploadVideo.noServerVideos": "동영상 업로드 실패 - 서버에서 동영상이 반환되지 않았습니다.",
+  "mypage.uploadVideo.dragTitleOver": "여기에 동영상 파일을 놓으세요!",
+  "mypage.uploadVideo.dragTitleDefault": "동영상을 드래그 앤 드롭하세요",
+  "mypage.uploadVideo.uploading": "동영상 업로드 중...",
+
   "mypage.actions.updateCar": "차량 수정",
   "mypage.actions.createCar": "차량 등록",
 

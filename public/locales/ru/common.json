@@ -192,6 +192,20 @@
   "mypage.upload360.preview": "Предпросмотр 360°",
   "mypage.upload360.noServerImages": "Сбой 360° загрузки — сервер не вернул изображения. Бэкенд может не поддерживать цель 'car360'.",
 
+  "mypage.uploadVideo.title": "Загрузите видео автомобиля (опционально)",
+  "mypage.uploadVideo.noFilesDropped": "Видеофайлы не были перетащены!",
+  "mypage.uploadVideo.invalidTypes": "Отклонено файлов: {{count}}. Допустимы только MP4, WebM, MOV, OGG или MKV!",
+  "mypage.uploadVideo.limit": "Нельзя загружать более 5 видео за один раз!",
+  "mypage.uploadVideo.maxSize": "Слишком большие видеофайлы: {{count}}. Максимальный размер — 200 МБ.",
+  "mypage.uploadVideo.dropError": "Ошибка при обработке видеофайлов: {{message}}",
+  "mypage.uploadVideo.formatTitle": "Видео должны быть в формате MP4, WebM, MOV, OGG или MKV (макс. 200 МБ каждое)",
+  "mypage.uploadVideo.browse": "Выбрать видеофайлы",
+  "mypage.uploadVideo.empty": "Видео еще не загружены",
+  "mypage.uploadVideo.noServerVideos": "Сбой загрузки видео — сервер не вернул видео.",
+  "mypage.uploadVideo.dragTitleOver": "Перетащите видеофайлы сюда!",
+  "mypage.uploadVideo.dragTitleDefault": "Перетащите видео сюда",
+  "mypage.uploadVideo.uploading": "Загрузка видео...",
+
   "mypage.actions.updateCar": "Обновить авто",
   "mypage.actions.createCar": "Создать авто",
 

@@ -193,6 +193,20 @@
   "mypage.upload360.preview": "Preview 360° View",
   "mypage.upload360.noServerImages": "360° upload failed - server returned no images. The backend may not support the 'car360' target.",
 
+  "mypage.uploadVideo.title": "Upload videos of your car (Optional)",
+  "mypage.uploadVideo.noFilesDropped": "No video files were dropped!",
+  "mypage.uploadVideo.invalidTypes": "{{count}} file(s) rejected. Only MP4, WebM, MOV, OGG, or MKV files are allowed!",
+  "mypage.uploadVideo.limit": "Cannot upload more than 5 videos at once!",
+  "mypage.uploadVideo.maxSize": "{{count}} video file(s) are too large. Maximum file size is 200MB.",
+  "mypage.uploadVideo.dropError": "Error processing dropped video files: {{message}}",
+  "mypage.uploadVideo.formatTitle": "Videos must be MP4, WebM, MOV, OGG, or MKV format (max 200MB each)",
+  "mypage.uploadVideo.browse": "Browse Video Files",
+  "mypage.uploadVideo.empty": "No videos uploaded yet",
+  "mypage.uploadVideo.noServerVideos": "Video upload failed - server returned no videos.",
+  "mypage.uploadVideo.dragTitleOver": "Drop video files here!",
+  "mypage.uploadVideo.dragTitleDefault": "Drag and drop videos here",
+  "mypage.uploadVideo.uploading": "Uploading videos...",
+
   "mypage.actions.updateCar": "Update Car",
   "mypage.actions.createCar": "Create Car",
 
