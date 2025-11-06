@@ -42,7 +42,8 @@
 }
 
 body {
-  background-color: #1c1e23;
+  background-color: var(--bg-default);
+  color: var(--text-primary);
   -ms-overflow-style: none;
   scrollbar-width: none;
   overflow-y: scroll;
@@ -548,6 +549,14 @@ body {
         }
       }
 
+      // Ensure labels on standalone menu items (e.g., Theme toggle) are visible when expanded
+      > .menu-item {
+        .label {
+          opacity: 1;
+          visibility: visible;
+        }
+      }
+
       .auth-section {
         .label {
           opacity: 1;
@@ -565,7 +574,8 @@ body {
     margin-bottom: 2rem;
 
     &:hover {
-      background: rgba(243, 239, 239, 0.1);
+      // subtle red-tinted hover works on both dark and light themes
+      background: rgba(229, 9, 20, 0.08);
     }
 
     .hamburger {
@@ -579,7 +589,7 @@ body {
       span {
         display: block;
         height: 3px;
-        background: #f7f5f5ed;
+        background: var(--text-primary);
         border-radius: 3px;
         transition: all 0.3s ease;
       }
@@ -601,7 +611,7 @@ body {
         padding: 12px 16px;
         border-radius: 8px;
         transition: all 0.3s ease;
-        color: white;
+        color: var(--text-primary);
         font-family: $font;
         font-size: 15px;
         font-weight: 600;
@@ -610,7 +620,7 @@ body {
 
         &:hover {
           background: #e20c0ced;
-          color: white;
+          color: #ffffff;
           transform: translateX(5px);
         }
 
@@ -628,10 +638,43 @@ body {
       }
     }
 
+    // Style standalone menu items (e.g., Theme toggle) same as link items
+    > .menu-item {
+      display: flex;
+      align-items: center;
+      padding: 12px 16px;
+      border-radius: 8px;
+      transition: all 0.3s ease;
+      color: var(--text-primary);
+      font-family: $font;
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      white-space: nowrap;
+
+      &:hover {
+        background: #e20c0ced;
+        color: #ffffff;
+        transform: translateX(5px);
+      }
+
+      .icon {
+        min-width: 24px;
+        font-size: 1.2rem;
+        margin-right: 12px;
+      }
+
+      .label {
+        opacity: 0;
+        visibility: hidden;
+        transition: opacity 0.3s ease, visibility 0.3s ease;
+      }
+    }
+
     .auth-section {
       margin-top: auto;
       padding-top: 1rem;
-      border-top: 1px solid rgba(255, 255, 255, 0.1);
+      border-top: 1px solid rgba(128, 128, 128, 0.3);
 
       .menu-item.auth-item {
         display: flex;
@@ -639,7 +682,7 @@ body {
         padding: 12px 16px;
         border-radius: 8px;
         transition: all 0.3s ease;
-        color: white;
+        color: var(--text-primary);
         font-family: $font;
         font-size: 15px;
         font-weight: 600;
@@ -648,7 +691,7 @@ body {
 
         &:hover {
           background: #e20c0ced;
-          color: white;
+          color: #ffffff;
           transform: translateX(5px);
         }
 

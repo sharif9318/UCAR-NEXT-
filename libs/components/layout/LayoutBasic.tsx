@@ -126,7 +126,7 @@ const withLayoutBasic = (Component: any) => {
             <Stack className={"InteractiveNavbar"}>
               <InteractiveNavbar />
             </Stack>
-            <Stack
+            {/* <Stack
               className={`header-basic ${authHeader && "auth"}`}
               style={{
                 backgroundImage: `url(${memoizedValues.bgImage})`,
@@ -138,7 +138,7 @@ const withLayoutBasic = (Component: any) => {
                 <strong>{t(memoizedValues.title)}</strong>
                 <span>{t(memoizedValues.desc)}</span>
               </Stack>
-            </Stack>
+            </Stack> */}
 
             <Stack id={"main"}>
               <Component {...props} />

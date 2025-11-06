@@ -80,8 +80,10 @@
       left: 20px;
       bottom: 20px;
       border-radius: 6px;
-      background: #fff;
-      color: #181a20;
+      background: rgba(0, 0, 0, 0.65);
+      color: #fff;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(6px);
       font-family: $font;
       font-size: 15px;
       font-style: normal;
@@ -102,13 +104,12 @@
     flex-direction: column;
     box-sizing: border-box;
     border-radius: 0px 0px 12px 12px;
-    border: 1px solid #ddd;
-    border-top: none;
-    background: #fff;
+    border: 1px solid #343a46;
+    background: var(--bg-paper);
     transition: border-color 0.3s ease, background-color 0.3s ease;
     .title {
       overflow: hidden;
-      color: #181a20;
+      color: var(--text-primary);
       text-overflow: ellipsis;
       white-space: nowrap;
       font-family: $font;
@@ -123,7 +124,7 @@
     .desc {
       margin-top: 5px;
       overflow: hidden;
-      color: #717171;
+      color: var(--text-secondary);
       font-family: $font;
       font-size: 13px;
       font-style: normal;
@@ -147,7 +148,7 @@
           height: 17px;
         }
         span {
-          color: #181a20;
+          color: var(--text-secondary);
           font-family: $font;
           font-size: 13px;
           font-style: normal;
@@ -169,7 +170,7 @@
         justify-content: space-between;
       }
       p {
-        color: #181a20;
+        color: var(--text-primary);
         font-family: $font;
         font-size: 13px;
         font-style: normal;
@@ -179,7 +180,7 @@
       }
       span {
         margin-left: 6px;
-        color: rgba(143, 143, 143, 0.54);
+        color: var(--text-secondary);
         font-family: $font;
         font-size: 15px;
         font-style: normal;
@@ -219,10 +220,11 @@
     }
   }
   &:hover .info {
-    border-color: #667eea;
-    background-color: #fafafa;
+    border-color: rgba(229, 9, 20, 0.35);
+    background-color: var(--bg-paper);
+    box-shadow: 0 8px 24px rgba(229, 9, 20, 0.18);
     .title {
-      color: #667eea;
+      color: #e50914;
     }
   }
 }
@@ -324,7 +326,7 @@
     width: 100%;
     height: 80px;
     .title {
-      color: #717171;
+      color: var(--text-secondary);
       font-family: $font;
       font-size: 13px;
       font-style: normal;
@@ -332,7 +334,7 @@
       line-height: normal;
     }
     .desc {
-      color: #181a20;
+      color: var(--text-primary);
       font-family: $font;
       font-size: 15px;
       font-style: normal;
@@ -365,10 +367,10 @@
     top: 235px;
     right: 20px;
     border-radius: 12px;
-    background: #fff;
+    background: var(--bg-paper);
     box-shadow: 0px 6px 15px 0px rgba(64, 79, 104, 0.05);
     .month {
-      color: #181a20;
+      color: var(--text-primary);
       text-align: center;
       font-family: $font;
       font-size: 13px;
@@ -377,7 +379,7 @@
       line-height: normal;
     }
     .day {
-      color: #181a20;
+      color: var(--text-primary);
       font-family: $font;
       font-size: 20px;
       font-style: normal;
@@ -498,7 +500,7 @@
     width: 100%;
     height: 80px;
     .title {
-      color: #717171;
+      color: var(--text-secondary);
       font-family: $font;
       font-size: 13px;
       font-style: normal;
@@ -506,7 +508,7 @@
       line-height: normal;
     }
     .desc {
-      color: #181a20;
+      color: var(--text-primary);
       font-family: $font;
       font-size: 15px;
       font-style: normal;
@@ -539,10 +541,10 @@
     top: 235px;
     right: 20px;
     border-radius: 12px;
-    background: #fff;
+    background: var(--bg-paper);
     box-shadow: 0px 6px 15px 0px rgba(64, 79, 104, 0.05);
     .month {
-      color: #181a20;
+      color: var(--text-primary);
       text-align: center;
       font-family: $font;
       font-size: 13px;
@@ -551,7 +553,7 @@
       line-height: normal;
     }
     .day {
-      color: #181a20;
+      color: var(--text-primary);
       font-family: $font;
       font-size: 20px;
       font-style: normal;

@@ -265,6 +265,22 @@ const AddNewCar = ({ initialValues, ...props }: any) => {
     }
   }
 
+  // Remove a regular image
+  const removeCarImage = useCallback((index: number) => {
+    setInsertCarData((prev) => ({
+      ...prev,
+      carImages: (prev.carImages || []).filter((_, i) => i !== index),
+    }));
+  }, []);
+
+  // Remove a 360 image
+  const removeCar360Image = useCallback((index: number) => {
+    setInsertCarData((prev) => ({
+      ...prev,
+      car360Images: (prev.car360Images || []).filter((_, i) => i !== index),
+    }));
+  }, []);
+
   const doDisabledCheck = () => {
     const checks = {
       carTitle:
@@ -403,278 +419,376 @@ const AddNewCar = ({ initialValues, ...props }: any) => {
 
       <div>
         <Stack className="config">
-          <Stack className="description-box">
-            <Stack className="config-column">
-              <Typography className="title">Title</Typography>
-              <input
-                type="text"
-                className="description-input"
-                placeholder={"Title"}
-                value={insertCarData.carTitle}
-                onChange={({ target: { value } }) =>
-                  setInsertCarData((prevData) => ({
-                    ...prevData,
-                    carTitle: value,
-                  }))
-                }
-              />
-            </Stack>
-
-            <Stack className="config-row">
-              <Stack className="price-year-after-price">
-                <Typography className="title">Price</Typography>
-                <input
-                  type="text"
-                  className="description-input"
-                  placeholder={"Price"}
-                  value={insertCarData.carPrice}
-                  onChange={({ target: { value } }) =>
-                    setInsertCarData((prevData) => ({
-                      ...prevData,
-                      carPrice: parseInt(value) || 0,
-                    }))
-                  }
-                />
-              </Stack>
-              <Stack className="price-year-after-price">
-                <Typography className="title">Select Type</Typography>
-                <select
-                  className={"select-description"}
-                  value={insertCarData.carType || "select"}
-                  onChange={({ target: { value } }) => {
-                    if (value !== "select") {
+          {/* Two column: left form + right live preview */}
+          <div className="two-column">
+            <div className="left-pane">
+              <Stack className="description-box">
+                <Stack className="config-column">
+                  <Typography className="title">Title</Typography>
+                  <input
+                    type="text"
+                    className="description-input"
+                    placeholder={"Title"}
+                    value={insertCarData.carTitle}
+                    onChange={({ target: { value } }) =>
                       setInsertCarData((prevData) => ({
                         ...prevData,
-                        carType: value as CarType,
-                      }));
+                        carTitle: value,
+                      }))
                     }
-                  }}
-                >
-                  <>
-                    <option disabled={true} value={"select"}>
-                      Select
-                    </option>
-                    {carType.map((type: any) => (
-                      <option value={`${type}`} key={type}>
-                        {type}
-                      </option>
-                    ))}
-                  </>
-                </select>
-                <div className={"divider"}></div>
-                <img src={"/img/icons/Vector.svg"} className={"arrow-down"} />
-              </Stack>
-            </Stack>
+                  />
+                </Stack>
 
-            <Stack className="config-row">
-              <Stack className="price-year-after-price">
-                <Typography className="title">Select Location</Typography>
-                <select
-                  className={"select-description"}
-                  value={insertCarData.carLocation || "select"}
-                  onChange={({ target: { value } }) => {
-                    if (value !== "select") {
-                      setInsertCarData((prevData) => ({
-                        ...prevData,
-                        carLocation: value as CarLocation,
-                      }));
-                    }
-                  }}
-                >
-                  <>
-                    <option disabled={true} value={"select"}>
-                      Select
-                    </option>
-                    {carLocation.map((location: any) => (
-                      <option value={`${location}`} key={location}>
-                        {location}
-                      </option>
-                    ))}
-                  </>
-                </select>
-                <div className={"divider"}></div>
-                <img src={"/img/icons/Vector.svg"} className={"arrow-down"} />
-              </Stack>
-              <Stack className="price-year-after-price">
-                <Typography className="title">Address</Typography>
-                <input
-                  type="text"
-                  className="description-input"
-                  placeholder={"Address"}
-                  value={insertCarData.carAddress}
-                  onChange={({ target: { value } }) =>
-                    setInsertCarData((prevData) => ({
-                      ...prevData,
-                      carAddress: value,
-                    }))
-                  }
-                />
-              </Stack>
-            </Stack>
-
-            <Stack className="config-row">
-              <Stack className="price-year-after-price">
-                <Typography className="title">Trade-In</Typography>
-                <select
-                  className={"select-description"}
-                  value={insertCarData.carTradeIn ? "yes" : "no"}
-                  onChange={({ target: { value } }) =>
-                    setInsertCarData((prevData) => ({
-                      ...prevData,
-                      carTradeIn: value === "yes",
-                    }))
-                  }
-                >
-                  <option disabled={true}>Select</option>
-                  <option value={"yes"}>Yes</option>
-                  <option value={"no"}>No</option>
-                </select>
-                <div className={"divider"}></div>
-                <img src={"/img/icons/Vector.svg"} className={"arrow-down"} />
-              </Stack>
-              <Stack className="price-year-after-price">
-                <Typography className="title">Lease</Typography>
-                <select
-                  className={"select-description"}
-                  value={insertCarData.carLease ? "yes" : "no"}
-                  onChange={({ target: { value } }) =>
-                    setInsertCarData((prevData) => ({
-                      ...prevData,
-                      carLease: value === "yes",
-                    }))
-                  }
-                >
-                  <option disabled={true}>Select</option>
-                  <option value={"yes"}>Yes</option>
-                  <option value={"no"}>No</option>
-                </select>
-                <div className={"divider"}></div>
-                <img src={"/img/icons/Vector.svg"} className={"arrow-down"} />
-              </Stack>
-            </Stack>
-
-            <Stack className="config-row">
-              <Stack className="price-year-after-price">
-                <Typography className="title">Seats</Typography>
-                <select
-                  className={"select-description"}
-                  value={insertCarData.carSeats || "select"}
-                  onChange={({ target: { value } }) =>
-                    setInsertCarData((prevData) => ({
-                      ...prevData,
-                      carSeats: parseInt(value),
-                    }))
-                  }
-                >
-                  <option disabled={true} value={"select"}>
-                    Select
-                  </option>
-                  {[2, 3, 4, 5, 6, 7, 8, 9].map((seat: number) => (
-                    <option value={`${seat}`} key={seat}>
-                      {seat}
-                    </option>
-                  ))}
-                </select>
-                <div className={"divider"}></div>
-                <img src={"/img/icons/Vector.svg"} className={"arrow-down"} />
-              </Stack>
-              <Stack className="price-year-after-price">
-                <Typography className="title">Year</Typography>
-                <select
-                  className={"select-description"}
-                  value={insertCarData.carYear || "select"}
-                  onChange={({ target: { value } }) =>
-                    setInsertCarData((prevData) => ({
-                      ...prevData,
-                      carYear: parseInt(value),
-                    }))
-                  }
-                >
-                  <option disabled={true} value={"select"}>
-                    Select
-                  </option>
-                  {carYears
-                    .slice()
-                    .reverse()
-                    .map((year: string) => (
-                      <option value={year} key={year}>
-                        {year}
-                      </option>
-                    ))}
-                </select>
-                <div className={"divider"}></div>
-                <img src={"/img/icons/Vector.svg"} className={"arrow-down"} />
-              </Stack>
-              <Stack className="price-year-after-price">
-                <Typography className="title">Mileage</Typography>
-                <select
-                  className={"select-description"}
-                  value={insertCarData.carMileage || "select"}
-                  onChange={({ target: { value } }) =>
-                    setInsertCarData((prevData) => ({
-                      ...prevData,
-                      carMileage: parseInt(value),
-                    }))
-                  }
-                >
-                  <option disabled={true} value={"select"}>
-                    Select
-                  </option>
-                  {carMileage.map((mileage: number) => {
-                    if (mileage !== 0) {
-                      return (
-                        <option value={`${mileage}`} key={mileage}>
-                          {mileage.toLocaleString()} miles
+                <Stack className="config-row">
+                  <Stack className="price-year-after-price">
+                    <Typography className="title">Price</Typography>
+                    <input
+                      type="text"
+                      className="description-input"
+                      placeholder={"Price"}
+                      value={insertCarData.carPrice}
+                      onChange={({ target: { value } }) =>
+                        setInsertCarData((prevData) => ({
+                          ...prevData,
+                          carPrice: parseInt(value) || 0,
+                        }))
+                      }
+                    />
+                  </Stack>
+                  <Stack className="price-year-after-price">
+                    <Typography className="title">Select Type</Typography>
+                    <select
+                      className={"select-description"}
+                      value={insertCarData.carType || "select"}
+                      onChange={({ target: { value } }) => {
+                        if (value !== "select") {
+                          setInsertCarData((prevData) => ({
+                            ...prevData,
+                            carType: value as CarType,
+                          }));
+                        }
+                      }}
+                    >
+                      <>
+                        <option disabled={true} value={"select"}>
+                          Select
                         </option>
-                      );
+                        {carType.map((type: any) => (
+                          <option value={`${type}`} key={type}>
+                            {type}
+                          </option>
+                        ))}
+                      </>
+                    </select>
+                    <div className={"divider"}></div>
+                    <img
+                      src={"/img/icons/Vector.svg"}
+                      className={"arrow-down"}
+                    />
+                  </Stack>
+                </Stack>
+
+                <Stack className="config-row">
+                  <Stack className="price-year-after-price">
+                    <Typography className="title">Select Location</Typography>
+                    <select
+                      className={"select-description"}
+                      value={insertCarData.carLocation || "select"}
+                      onChange={({ target: { value } }) => {
+                        if (value !== "select") {
+                          setInsertCarData((prevData) => ({
+                            ...prevData,
+                            carLocation: value as CarLocation,
+                          }));
+                        }
+                      }}
+                    >
+                      <>
+                        <option disabled={true} value={"select"}>
+                          Select
+                        </option>
+                        {carLocation.map((location: any) => (
+                          <option value={`${location}`} key={location}>
+                            {location}
+                          </option>
+                        ))}
+                      </>
+                    </select>
+                    <div className={"divider"}></div>
+                    <img
+                      src={"/img/icons/Vector.svg"}
+                      className={"arrow-down"}
+                    />
+                  </Stack>
+                  <Stack className="price-year-after-price">
+                    <Typography className="title">Address</Typography>
+                    <input
+                      type="text"
+                      className="description-input"
+                      placeholder={"Address"}
+                      value={insertCarData.carAddress}
+                      onChange={({ target: { value } }) =>
+                        setInsertCarData((prevData) => ({
+                          ...prevData,
+                          carAddress: value,
+                        }))
+                      }
+                    />
+                  </Stack>
+                </Stack>
+
+                <Stack className="config-row">
+                  <Stack className="price-year-after-price">
+                    <Typography className="title">Trade-In</Typography>
+                    <div className="toggle-group">
+                      <button
+                        type="button"
+                        className={`toggle-button ${
+                          insertCarData.carTradeIn ? "active" : ""
+                        }`}
+                        onClick={() =>
+                          setInsertCarData((prev) => ({
+                            ...prev,
+                            carTradeIn: true,
+                          }))
+                        }
+                      >
+                        Yes
+                      </button>
+                      <button
+                        type="button"
+                        className={`toggle-button ${
+                          !insertCarData.carTradeIn ? "active" : ""
+                        }`}
+                        onClick={() =>
+                          setInsertCarData((prev) => ({
+                            ...prev,
+                            carTradeIn: false,
+                          }))
+                        }
+                      >
+                        No
+                      </button>
+                    </div>
+                  </Stack>
+                  <Stack className="price-year-after-price">
+                    <Typography className="title">Lease</Typography>
+                    <div className="toggle-group">
+                      <button
+                        type="button"
+                        className={`toggle-button ${
+                          insertCarData.carLease ? "active" : ""
+                        }`}
+                        onClick={() =>
+                          setInsertCarData((prev) => ({
+                            ...prev,
+                            carLease: true,
+                          }))
+                        }
+                      >
+                        Yes
+                      </button>
+                      <button
+                        type="button"
+                        className={`toggle-button ${
+                          !insertCarData.carLease ? "active" : ""
+                        }`}
+                        onClick={() =>
+                          setInsertCarData((prev) => ({
+                            ...prev,
+                            carLease: false,
+                          }))
+                        }
+                      >
+                        No
+                      </button>
+                    </div>
+                  </Stack>
+                </Stack>
+
+                <Stack className="config-row">
+                  <Stack className="price-year-after-price">
+                    <Typography className="title">Seats</Typography>
+                    <select
+                      className={"select-description"}
+                      value={insertCarData.carSeats || "select"}
+                      onChange={({ target: { value } }) =>
+                        setInsertCarData((prevData) => ({
+                          ...prevData,
+                          carSeats: parseInt(value),
+                        }))
+                      }
+                    >
+                      <option disabled={true} value={"select"}>
+                        Select
+                      </option>
+                      {[2, 3, 4, 5, 6, 7, 8, 9].map((seat: number) => (
+                        <option value={`${seat}`} key={seat}>
+                          {seat}
+                        </option>
+                      ))}
+                    </select>
+                    <div className={"divider"}></div>
+                    <img
+                      src={"/img/icons/Vector.svg"}
+                      className={"arrow-down"}
+                    />
+                  </Stack>
+                  <Stack className="price-year-after-price">
+                    <Typography className="title">Year</Typography>
+                    <select
+                      className={"select-description"}
+                      value={insertCarData.carYear || "select"}
+                      onChange={({ target: { value } }) =>
+                        setInsertCarData((prevData) => ({
+                          ...prevData,
+                          carYear: parseInt(value),
+                        }))
+                      }
+                    >
+                      <option disabled={true} value={"select"}>
+                        Select
+                      </option>
+                      {carYears
+                        .slice()
+                        .reverse()
+                        .map((year: string) => (
+                          <option value={year} key={year}>
+                            {year}
+                          </option>
+                        ))}
+                    </select>
+                    <div className={"divider"}></div>
+                    <img
+                      src={"/img/icons/Vector.svg"}
+                      className={"arrow-down"}
+                    />
+                  </Stack>
+                  <Stack className="price-year-after-price">
+                    <Typography className="title">Mileage</Typography>
+                    <select
+                      className={"select-description"}
+                      value={insertCarData.carMileage || "select"}
+                      onChange={({ target: { value } }) =>
+                        setInsertCarData((prevData) => ({
+                          ...prevData,
+                          carMileage: parseInt(value),
+                        }))
+                      }
+                    >
+                      <option disabled={true} value={"select"}>
+                        Select
+                      </option>
+                      {carMileage.map((mileage: number) => {
+                        if (mileage !== 0) {
+                          return (
+                            <option value={`${mileage}`} key={mileage}>
+                              {mileage.toLocaleString()} miles
+                            </option>
+                          );
+                        }
+                      })}
+                    </select>
+                    <div className={"divider"}></div>
+                    <img
+                      src={"/img/icons/Vector.svg"}
+                      className={"arrow-down"}
+                    />
+                  </Stack>
+                </Stack>
+
+                <Typography className="car-title">Car Description</Typography>
+                <Stack className="config-column">
+                  <Typography className="title">Description</Typography>
+                  <textarea
+                    name=""
+                    id=""
+                    className="description-text"
+                    value={insertCarData.carDesc || ""}
+                    onChange={({ target: { value } }) =>
+                      setInsertCarData((prevData) => ({
+                        ...prevData,
+                        carDesc: value,
+                      }))
                     }
-                  })}
-                </select>
-                <div className={"divider"}></div>
-                <img src={"/img/icons/Vector.svg"} className={"arrow-down"} />
+                  ></textarea>
+                </Stack>
+
+                <Stack className="config-column">
+                  <Typography className="title">
+                    Manufactured Date (Optional)
+                  </Typography>
+                  <input
+                    type="date"
+                    className="description-input"
+                    value={
+                      insertCarData.manufacturedAt
+                        ? new Date(insertCarData.manufacturedAt)
+                            .toISOString()
+                            .split("T")[0]
+                        : ""
+                    }
+                    onChange={({ target: { value } }) =>
+                      setInsertCarData((prevData) => ({
+                        ...prevData,
+                        manufacturedAt: value ? new Date(value) : undefined,
+                      }))
+                    }
+                  />
+                </Stack>
               </Stack>
-            </Stack>
+            </div>
 
-            <Typography className="car-title">Car Description</Typography>
-            <Stack className="config-column">
-              <Typography className="title">Description</Typography>
-              <textarea
-                name=""
-                id=""
-                className="description-text"
-                value={insertCarData.carDesc || ""}
-                onChange={({ target: { value } }) =>
-                  setInsertCarData((prevData) => ({
-                    ...prevData,
-                    carDesc: value,
-                  }))
-                }
-              ></textarea>
-            </Stack>
-
-            <Stack className="config-column">
-              <Typography className="title">
-                Manufactured Date (Optional)
-              </Typography>
-              <input
-                type="date"
-                className="description-input"
-                value={
-                  insertCarData.manufacturedAt
-                    ? new Date(insertCarData.manufacturedAt)
-                        .toISOString()
-                        .split("T")[0]
-                    : ""
-                }
-                onChange={({ target: { value } }) =>
-                  setInsertCarData((prevData) => ({
-                    ...prevData,
-                    manufacturedAt: value ? new Date(value) : undefined,
-                  }))
-                }
-              />
-            </Stack>
-          </Stack>
+            <aside className="right-preview">
+              <Stack className="preview-card">
+                <Typography className="preview-title">Live Preview</Typography>
+                <div className="preview-image">
+                  <img
+                    src={
+                      insertCarData.carImages && insertCarData.carImages[0]
+                        ? `${REACT_APP_API_URL}/${insertCarData.carImages[0]}`
+                        : "/img/car/defaultCar.png"
+                    }
+                    alt="Preview"
+                  />
+                  <div className="price-chip">
+                    {insertCarData.carPrice
+                      ? `$${(insertCarData.carPrice || 0).toLocaleString()}`
+                      : "Set a price"}
+                  </div>
+                </div>
+                <div className="preview-meta">
+                  <Typography className="name">
+                    {insertCarData.carTitle || "Untitled Car"}
+                  </Typography>
+                  <Typography className="address">
+                    {insertCarData.carAddress || "Address not set"}
+                  </Typography>
+                  <div className="specs">
+                    <span>{insertCarData.carType || "Type"}</span>
+                    <span>{insertCarData.carYear || "Year"}</span>
+                    <span>
+                      {insertCarData.carMileage
+                        ? `${insertCarData.carMileage.toLocaleString()} miles`
+                        : "Mileage"}
+                    </span>
+                  </div>
+                  <div className="preview-thumbs">
+                    {(insertCarData.carImages || [])
+                      .slice(0, 4)
+                      .map((img, i) => (
+                        <div className="thumb" key={i}>
+                          <img
+                            src={`${REACT_APP_API_URL}/${img}`}
+                            alt={`thumb-${i}`}
+                          />
+                        </div>
+                      ))}
+                  </div>
+                </div>
+              </Stack>
+            </aside>
+          </div>
 
           <Typography className="upload-title">
             Upload photos of your car
@@ -896,11 +1010,21 @@ const AddNewCar = ({ initialValues, ...props }: any) => {
                   return (
                     <Stack className="image-box" key={index}>
                       <img src={imagePath} alt={`Car ${index + 1}`} />
+                      <button
+                        type="button"
+                        aria-label="Remove image"
+                        className="remove-btn"
+                        onClick={() => removeCarImage(index)}
+                      >
+                        ×
+                      </button>
                     </Stack>
                   );
                 })
               ) : (
-                <Typography>No images uploaded yet</Typography>
+                <Typography className="empty-text">
+                  No images uploaded yet
+                </Typography>
               )}
             </Stack>
           </Stack>
@@ -1051,11 +1175,11 @@ const AddNewCar = ({ initialValues, ...props }: any) => {
                       variant="outlined"
                       onClick={() => setShow360Modal(true)}
                       sx={{
-                        borderColor: "#181A20",
-                        color: "#181A20",
+                        borderColor: "#e50914",
+                        color: "#ffffff",
                         "&:hover": {
-                          borderColor: "#181A20",
-                          backgroundColor: "rgba(24, 26, 32, 0.04)",
+                          borderColor: "#ff4455",
+                          backgroundColor: "rgba(229, 9, 20, 0.08)",
                         },
                       }}
                     >
@@ -1077,7 +1201,6 @@ const AddNewCar = ({ initialValues, ...props }: any) => {
                       sx={{ position: "relative" }}
                     >
                       <img src={imagePath} alt={`360° ${index + 1}`} />
-                      {/* 360° indicator */}
                       <Box
                         sx={{
                           position: "absolute",
@@ -1093,6 +1216,14 @@ const AddNewCar = ({ initialValues, ...props }: any) => {
                       >
                         360°
                       </Box>
+                      <button
+                        type="button"
+                        aria-label="Remove 360 image"
+                        className="remove-btn"
+                        onClick={() => removeCar360Image(index)}
+                      >
+                        ×
+                      </button>
                     </Stack>
                   );
                 }

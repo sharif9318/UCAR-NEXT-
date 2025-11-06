@@ -11,7 +11,12 @@ import {
   MenuItem,
   Tooltip,
   IconButton,
+  Chip,
+  Collapse,
 } from "@mui/material";
+import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
+import ExpandLessIcon from "@mui/icons-material/ExpandLess";
+import ClearAllIcon from "@mui/icons-material/ClearAll";
 import useDeviceDetect from "../../hooks/useDeviceDetect";
 import { CarLocation, CarType } from "../../enums/car.enum";
 import { CarsInquiry } from "../../types/car/car.input";
@@ -43,13 +48,13 @@ const Filter = (props: FilterType) => {
   );
   const [carType, setCarType] = useState<CarType[]>(Object.values(CarType));
   const [searchText, setSearchText] = useState<string>("");
-  const [showMore, setShowMore] = useState<boolean>(false);
+  const [openLocation, setOpenLocation] = useState<boolean>(false);
 
   /** LIFECYCLES **/
   useEffect(() => {
     if (searchFilter?.search?.locationList?.length == 0) {
       delete searchFilter.search.locationList;
-      setShowMore(false);
+      setOpenLocation(false);
       router
         .push(
           `/car?input=${JSON.stringify({
@@ -153,7 +158,174 @@ const Filter = (props: FilterType) => {
         .then();
     }
 
-    if (searchFilter?.search?.locationList) setShowMore(true);
+    if (searchFilter?.search?.locationList) setOpenLocation(true);
+  }, [searchFilter]);
+
+  // Active filters helpers
+  const removeLocation = useCallback(
+    async (value: string) => {
+      if (!searchFilter?.search?.locationList) return;
+      const next = searchFilter.search.locationList.filter(
+        (v: string) => v !== value
+      );
+      await router.push(
+        `/car?input=${JSON.stringify({
+          ...searchFilter,
+          search: {
+            ...searchFilter.search,
+            locationList: next.length ? next : undefined,
+          },
+        })}`,
+        `/car?input=${JSON.stringify({
+          ...searchFilter,
+          search: {
+            ...searchFilter.search,
+            locationList: next.length ? next : undefined,
+          },
+        })}`,
+        { scroll: false }
+      );
+    },
+    [searchFilter]
+  );
+
+  const removeType = useCallback(
+    async (value: string) => {
+      if (!searchFilter?.search?.typeList) return;
+      const next = searchFilter.search.typeList.filter(
+        (v: string) => v !== value
+      );
+      await router.push(
+        `/car?input=${JSON.stringify({
+          ...searchFilter,
+          search: {
+            ...searchFilter.search,
+            typeList: next.length ? next : undefined,
+          },
+        })}`,
+        `/car?input=${JSON.stringify({
+          ...searchFilter,
+          search: {
+            ...searchFilter.search,
+            typeList: next.length ? next : undefined,
+          },
+        })}`,
+        { scroll: false }
+      );
+    },
+    [searchFilter]
+  );
+
+  const removeSeats = useCallback(
+    async (num: Number) => {
+      if (!searchFilter?.search?.seatsList) return;
+      if (searchFilter.search.seatsList.includes(num)) {
+        const next = searchFilter.search.seatsList.filter(
+          (n: Number) => n !== num
+        );
+        await router.push(
+          `/car?input=${JSON.stringify({
+            ...searchFilter,
+            search: {
+              ...searchFilter.search,
+              seatsList: next.length ? next : undefined,
+            },
+          })}`,
+          `/car?input=${JSON.stringify({
+            ...searchFilter,
+            search: {
+              ...searchFilter.search,
+              seatsList: next.length ? next : undefined,
+            },
+          })}`,
+          { scroll: false }
+        );
+      }
+    },
+    [searchFilter]
+  );
+
+  const removeYear = useCallback(
+    async (num: Number) => {
+      if (!searchFilter?.search?.yearsList) return;
+      const next = searchFilter.search.yearsList.filter(
+        (n: Number) => n !== num
+      );
+      await router.push(
+        `/car?input=${JSON.stringify({
+          ...searchFilter,
+          search: {
+            ...searchFilter.search,
+            yearsList: next.length ? next : undefined,
+          },
+        })}`,
+        `/car?input=${JSON.stringify({
+          ...searchFilter,
+          search: {
+            ...searchFilter.search,
+            yearsList: next.length ? next : undefined,
+          },
+        })}`,
+        { scroll: false }
+      );
+    },
+    [searchFilter]
+  );
+
+  const removeOption = useCallback(
+    async (value: string) => {
+      if (!searchFilter?.search?.options) return;
+      const next = searchFilter.search.options.filter(
+        (v: string) => v !== value
+      );
+      await router.push(
+        `/car?input=${JSON.stringify({
+          ...searchFilter,
+          search: {
+            ...searchFilter.search,
+            options: next.length ? next : undefined,
+          },
+        })}`,
+        `/car?input=${JSON.stringify({
+          ...searchFilter,
+          search: {
+            ...searchFilter.search,
+            options: next.length ? next : undefined,
+          },
+        })}`,
+        { scroll: false }
+      );
+    },
+    [searchFilter]
+  );
+
+  const resetMileage = useCallback(async () => {
+    await router.push(
+      `/car?input=${JSON.stringify({
+        ...searchFilter,
+        search: { ...searchFilter.search, mileageRange: {} },
+      })}`,
+      `/car?input=${JSON.stringify({
+        ...searchFilter,
+        search: { ...searchFilter.search, mileageRange: {} },
+      })}`,
+      { scroll: false }
+    );
+  }, [searchFilter]);
+
+  const resetPrice = useCallback(async () => {
+    const { pricesRange, ...rest } = searchFilter.search || ({} as any);
+    await router.push(
+      `/car?input=${JSON.stringify({
+        ...searchFilter,
+        search: { ...rest },
+      })}`,
+      `/car?input=${JSON.stringify({
+        ...searchFilter,
+        search: { ...rest },
+      })}`,
+      { scroll: false }
+    );
   }, [searchFilter]);
 
   /** HANDLERS **/
@@ -598,6 +770,90 @@ const Filter = (props: FilterType) => {
   if (device === "mobile") {
     return <div>CARS FILTER</div>;
   } else {
+    const chips: React.ReactNode[] = [];
+    (searchFilter?.search?.locationList || []).forEach((loc: string) =>
+      chips.push(
+        <Chip
+          key={`loc-${loc}`}
+          label={loc}
+          onDelete={() => removeLocation(loc)}
+          size="small"
+          color="error"
+          variant="outlined"
+        />
+      )
+    );
+    (searchFilter?.search?.typeList || []).forEach((t: string) =>
+      chips.push(
+        <Chip
+          key={`type-${t}`}
+          label={t}
+          onDelete={() => removeType(t)}
+          size="small"
+          color="error"
+          variant="outlined"
+        />
+      )
+    );
+    (searchFilter?.search?.seatsList || []).forEach((n: Number) =>
+      chips.push(
+        <Chip
+          key={`seats-${n}`}
+          label={`${n} seats`}
+          onDelete={() => removeSeats(n)}
+          size="small"
+          color="error"
+          variant="outlined"
+        />
+      )
+    );
+    (searchFilter?.search?.yearsList || []).forEach((n: Number) =>
+      chips.push(
+        <Chip
+          key={`years-${n}`}
+          label={`${n} yrs`}
+          onDelete={() => removeYear(n)}
+          size="small"
+          color="error"
+          variant="outlined"
+        />
+      )
+    );
+    const hasMileage =
+      searchFilter?.search?.mileageRange?.start != null ||
+      searchFilter?.search?.mileageRange?.end != null;
+    if (hasMileage) {
+      chips.push(
+        <Chip
+          key={`mileage`}
+          label={`km ${searchFilter?.search?.mileageRange?.start ?? 0} - ${
+            searchFilter?.search?.mileageRange?.end ?? 500
+          }`}
+          onDelete={resetMileage}
+          size="small"
+          color="error"
+          variant="outlined"
+        />
+      );
+    }
+    const hasPrice =
+      searchFilter?.search?.pricesRange?.start != null ||
+      searchFilter?.search?.pricesRange?.end != null;
+    if (hasPrice) {
+      chips.push(
+        <Chip
+          key={`price`}
+          label={`$ ${searchFilter?.search?.pricesRange?.start ?? 0} - ${
+            searchFilter?.search?.pricesRange?.end ?? 0
+          }`}
+          onDelete={resetPrice}
+          size="small"
+          color="error"
+          variant="outlined"
+        />
+      );
+    }
+
     return (
       <Stack className={"filter-main"}>
         <Stack className={"find-your-home"} mb={"40px"}>
@@ -638,45 +894,123 @@ const Filter = (props: FilterType) => {
               </IconButton>
             </Tooltip>
           </Stack>
+          {chips.length > 0 && (
+            <Stack
+              direction="row"
+              gap={1}
+              mt={2}
+              flexWrap="wrap"
+              alignItems="center"
+            >
+              {chips}
+              <Tooltip title="Clear all">
+                <IconButton onClick={refreshHandler} size="small">
+                  <ClearAllIcon />
+                </IconButton>
+              </Tooltip>
+            </Stack>
+          )}
         </Stack>
         <Stack className={"find-your-home"} mb={"30px"}>
-          <p className={"title"} style={{ textShadow: "0px 3px 4px #b9b9b9" }}>
-            Location
-          </p>
           <Stack
-            className={`car-location`}
-            style={{ height: showMore ? "253px" : "115px" }}
-            onMouseEnter={() => setShowMore(true)}
-            onMouseLeave={() => {
-              if (!searchFilter?.search?.locationList) {
-                setShowMore(false);
-              }
-            }}
+            direction="row"
+            alignItems="center"
+            justifyContent="space-between"
           >
-            {carLocation.map((location: string) => {
-              return (
-                <Stack className={"input-box"} key={location}>
-                  <Checkbox
-                    id={location}
-                    className="car-checkbox"
-                    color="default"
-                    size="small"
-                    value={location}
-                    checked={(
-                      searchFilter?.search?.locationList || []
-                    ).includes(location as CarLocation)}
-                    onChange={carLocationSelectHandler}
-                  />
-                  <label htmlFor={location} style={{ cursor: "pointer" }}>
-                    <Typography className="car-type">{location}</Typography>
-                  </label>
-                </Stack>
-              );
-            })}
+            <p
+              className={"title"}
+              style={{ textShadow: "0px 3px 4px #b9b9b9" }}
+            >
+              Location
+            </p>
+            <Stack direction="row" alignItems="center" gap={1}>
+              {(searchFilter?.search?.locationList || []).length > 0 && (
+                <Button
+                  size="small"
+                  onClick={() =>
+                    router.push(
+                      `/car?input=${JSON.stringify({
+                        ...searchFilter,
+                        search: {
+                          ...searchFilter.search,
+                          locationList: undefined,
+                        },
+                      })}`,
+                      `/car?input=${JSON.stringify({
+                        ...searchFilter,
+                        search: {
+                          ...searchFilter.search,
+                          locationList: undefined,
+                        },
+                      })}`,
+                      { scroll: false }
+                    )
+                  }
+                >
+                  Clear
+                </Button>
+              )}
+              <IconButton
+                size="small"
+                onClick={() => setOpenLocation(!openLocation)}
+              >
+                {openLocation ? <ExpandLessIcon /> : <ExpandMoreIcon />}
+              </IconButton>
+            </Stack>
           </Stack>
+          <Collapse in={openLocation}>
+            <Stack className={`car-location`}>
+              {carLocation.map((location: string) => {
+                return (
+                  <Stack className={"input-box"} key={location}>
+                    <Checkbox
+                      id={location}
+                      className="car-checkbox"
+                      color="default"
+                      size="small"
+                      value={location}
+                      checked={(
+                        searchFilter?.search?.locationList || []
+                      ).includes(location as CarLocation)}
+                      onChange={carLocationSelectHandler}
+                    />
+                    <label htmlFor={location} style={{ cursor: "pointer" }}>
+                      <Typography className="car-type">{location}</Typography>
+                    </label>
+                  </Stack>
+                );
+              })}
+            </Stack>
+          </Collapse>
         </Stack>
         <Stack className={"find-your-home"} mb={"30px"}>
-          <Typography className={"title"}>Car Type</Typography>
+          <Stack
+            direction="row"
+            alignItems="center"
+            justifyContent="space-between"
+          >
+            <Typography className={"title"}>Car Type</Typography>
+            {(searchFilter?.search?.typeList || []).length > 0 && (
+              <Button
+                size="small"
+                onClick={() =>
+                  router.push(
+                    `/car?input=${JSON.stringify({
+                      ...searchFilter,
+                      search: { ...searchFilter.search, typeList: undefined },
+                    })}`,
+                    `/car?input=${JSON.stringify({
+                      ...searchFilter,
+                      search: { ...searchFilter.search, typeList: undefined },
+                    })}`,
+                    { scroll: false }
+                  )
+                }
+              >
+                Clear
+              </Button>
+            )}
+          </Stack>
           {carType.map((type: string) => (
             <Stack className={"input-box"} key={type}>
               <Checkbox
@@ -697,180 +1031,121 @@ const Filter = (props: FilterType) => {
           ))}
         </Stack>
         <Stack className={"find-your-home"} mb={"30px"}>
-          <Typography className={"title"}>Seats</Typography>
+          <Stack
+            direction="row"
+            alignItems="center"
+            justifyContent="space-between"
+          >
+            <Typography className={"title"}>Seats</Typography>
+            {(searchFilter?.search?.seatsList || []).length > 0 && (
+              <Button size="small" onClick={() => carSeatsSelectHandler(0)}>
+                Clear
+              </Button>
+            )}
+          </Stack>
           <Stack className="button-group">
             <Button
               sx={{
                 borderRadius: "12px 0 0 12px",
                 border: !searchFilter?.search?.seatsList
-                  ? "2px solid #181A20"
+                  ? "2px solid #E50914"
                   : "1px solid #b9b9b9",
               }}
               onClick={() => carSeatsSelectHandler(0)}
             >
               Any
             </Button>
-            <Button
-              sx={{
-                borderRadius: 0,
-                border: searchFilter?.search?.seatsList?.includes(1)
-                  ? "2px solid #181A20"
-                  : "1px solid #b9b9b9",
-                borderLeft: searchFilter?.search?.seatsList?.includes(1)
-                  ? undefined
-                  : "none",
-              }}
-              onClick={() => carSeatsSelectHandler(1)}
-            >
-              1
-            </Button>
-            <Button
-              sx={{
-                borderRadius: 0,
-                border: searchFilter?.search?.seatsList?.includes(2)
-                  ? "2px solid #181A20"
-                  : "1px solid #b9b9b9",
-                borderLeft: searchFilter?.search?.seatsList?.includes(2)
-                  ? undefined
-                  : "none",
-              }}
-              onClick={() => carSeatsSelectHandler(2)}
-            >
-              2
-            </Button>
-            <Button
-              sx={{
-                borderRadius: 0,
-                border: searchFilter?.search?.seatsList?.includes(3)
-                  ? "2px solid #181A20"
-                  : "1px solid #b9b9b9",
-                borderLeft: searchFilter?.search?.seatsList?.includes(3)
-                  ? undefined
-                  : "none",
-              }}
-              onClick={() => carSeatsSelectHandler(3)}
-            >
-              3
-            </Button>
-            <Button
-              sx={{
-                borderRadius: 0,
-                border: searchFilter?.search?.seatsList?.includes(4)
-                  ? "2px solid #181A20"
-                  : "1px solid #b9b9b9",
-                borderLeft: searchFilter?.search?.seatsList?.includes(4)
-                  ? undefined
-                  : "none",
-                borderRight: searchFilter?.search?.seatsList?.includes(4)
-                  ? undefined
-                  : "none",
-              }}
-              onClick={() => carSeatsSelectHandler(4)}
-            >
-              4
-            </Button>
-            <Button
-              sx={{
-                borderRadius: "0 12px 12px 0",
-                border: searchFilter?.search?.seatsList?.includes(5)
-                  ? "2px solid #181A20"
-                  : "1px solid #b9b9b9",
-              }}
-              onClick={() => carSeatsSelectHandler(5)}
-            >
-              5+
-            </Button>
+            {[1, 2, 3, 4, 5].map((n, idx) => (
+              <Button
+                key={n}
+                sx={{
+                  borderRadius: idx === 4 ? "0 12px 12px 0" : 0,
+                  border: searchFilter?.search?.seatsList?.includes(n)
+                    ? "2px solid #E50914"
+                    : "1px solid #b9b9b9",
+                  borderLeft: searchFilter?.search?.seatsList?.includes(n)
+                    ? undefined
+                    : "none",
+                }}
+                onClick={() => carSeatsSelectHandler(n as unknown as Number)}
+              >
+                {n === 5 ? "5+" : n}
+              </Button>
+            ))}
           </Stack>
         </Stack>
         <Stack className={"find-your-home"} mb={"30px"}>
-          <Typography className={"title"}>Year Range</Typography>
+          <Stack
+            direction="row"
+            alignItems="center"
+            justifyContent="space-between"
+          >
+            <Typography className={"title"}>Year Range</Typography>
+            {(searchFilter?.search?.yearsList || []).length > 0 && (
+              <Button size="small" onClick={() => carYearSelectHandler(0)}>
+                Clear
+              </Button>
+            )}
+          </Stack>
           <Stack className="button-group">
             <Button
               sx={{
                 borderRadius: "12px 0 0 12px",
                 border: !searchFilter?.search?.yearsList
-                  ? "2px solid #181A20"
+                  ? "2px solid #E50914"
                   : "1px solid #b9b9b9",
               }}
               onClick={() => carYearSelectHandler(0)}
             >
               Any
             </Button>
-            <Button
-              sx={{
-                borderRadius: 0,
-                border: searchFilter?.search?.yearsList?.includes(1)
-                  ? "2px solid #181A20"
-                  : "1px solid #b9b9b9",
-                borderLeft: searchFilter?.search?.yearsList?.includes(1)
-                  ? undefined
-                  : "none",
-              }}
-              onClick={() => carYearSelectHandler(1)}
-            >
-              1
-            </Button>
-            <Button
-              sx={{
-                borderRadius: 0,
-                border: searchFilter?.search?.yearsList?.includes(2)
-                  ? "2px solid #181A20"
-                  : "1px solid #b9b9b9",
-                borderLeft: searchFilter?.search?.yearsList?.includes(2)
-                  ? undefined
-                  : "none",
-              }}
-              onClick={() => carYearSelectHandler(2)}
-            >
-              2
-            </Button>
-            <Button
-              sx={{
-                borderRadius: 0,
-                border: searchFilter?.search?.yearsList?.includes(3)
-                  ? "2px solid #181A20"
-                  : "1px solid #b9b9b9",
-                borderLeft: searchFilter?.search?.yearsList?.includes(3)
-                  ? undefined
-                  : "none",
-              }}
-              onClick={() => carYearSelectHandler(3)}
-            >
-              3
-            </Button>
-            <Button
-              sx={{
-                borderRadius: 0,
-                border: searchFilter?.search?.yearsList?.includes(4)
-                  ? "2px solid #181A20"
-                  : "1px solid #b9b9b9",
-                borderLeft: searchFilter?.search?.yearsList?.includes(4)
-                  ? undefined
-                  : "none",
-                // borderRight: false ? undefined : 'none',
-              }}
-              onClick={() => carYearSelectHandler(4)}
-            >
-              4
-            </Button>
-            <Button
-              sx={{
-                borderRadius: "0 12px 12px 0",
-                border: searchFilter?.search?.yearsList?.includes(5)
-                  ? "2px solid #181A20"
-                  : "1px solid #b9b9b9",
-                borderLeft: searchFilter?.search?.yearsList?.includes(5)
-                  ? undefined
-                  : "none",
-              }}
-              onClick={() => carYearSelectHandler(5)}
-            >
-              5+
-            </Button>
+            {[1, 2, 3, 4, 5].map((n, idx) => (
+              <Button
+                key={n}
+                sx={{
+                  borderRadius: idx === 4 ? "0 12px 12px 0" : 0,
+                  border: searchFilter?.search?.yearsList?.includes(n)
+                    ? "2px solid #E50914"
+                    : "1px solid #b9b9b9",
+                  borderLeft: searchFilter?.search?.yearsList?.includes(n)
+                    ? undefined
+                    : "none",
+                }}
+                onClick={() => carYearSelectHandler(n as unknown as Number)}
+              >
+                {n === 5 ? "5+" : n}
+              </Button>
+            ))}
           </Stack>
         </Stack>
         <Stack className={"find-your-home"} mb={"30px"}>
-          <Typography className={"title"}>Options</Typography>
+          <Stack
+            direction="row"
+            alignItems="center"
+            justifyContent="space-between"
+          >
+            <Typography className={"title"}>Options</Typography>
+            {(searchFilter?.search?.options || []).length > 0 && (
+              <Button
+                size="small"
+                onClick={() =>
+                  router.push(
+                    `/car?input=${JSON.stringify({
+                      ...searchFilter,
+                      search: { ...searchFilter.search, options: undefined },
+                    })}`,
+                    `/car?input=${JSON.stringify({
+                      ...searchFilter,
+                      search: { ...searchFilter.search, options: undefined },
+                    })}`,
+                    { scroll: false }
+                  )
+                }
+              >
+                Clear
+              </Button>
+            )}
+          </Stack>
           <Stack className={"input-box"}>
             <Checkbox
               id={"Trade-In"}
@@ -905,7 +1180,18 @@ const Filter = (props: FilterType) => {
           </Stack>
         </Stack>
         <Stack className={"find-your-home"} mb={"30px"}>
-          <Typography className={"title"}>Mileage (km)</Typography>
+          <Stack
+            direction="row"
+            alignItems="center"
+            justifyContent="space-between"
+          >
+            <Typography className={"title"}>Mileage (km)</Typography>
+            {hasMileage && (
+              <Button size="small" onClick={resetMileage}>
+                Reset
+              </Button>
+            )}
+          </Stack>
           <Stack className="square-year-input">
             <FormControl>
               <InputLabel id="demo-simple-select-label">Min</InputLabel>
@@ -957,7 +1243,18 @@ const Filter = (props: FilterType) => {
           </Stack>
         </Stack>
         <Stack className={"find-your-home"}>
-          <Typography className={"title"}>Price Range</Typography>
+          <Stack
+            direction="row"
+            alignItems="center"
+            justifyContent="space-between"
+          >
+            <Typography className={"title"}>Price Range</Typography>
+            {hasPrice && (
+              <Button size="small" onClick={resetPrice}>
+                Reset
+              </Button>
+            )}
+          </Stack>
           <Stack className="square-year-input">
             <input
               type="number"

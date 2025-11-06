@@ -1,7 +1,7 @@
 import { useReactiveVar } from "@apollo/client";
 import { Box, Link, Button, Stack } from "@mui/material";
 import { userVar } from "../../apollo/store";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useContext } from "react";
 import { getJwtToken, updateUserInfo } from "../auth";
 import { useTranslation } from "next-i18next";
 import HomeIcon from "@mui/icons-material/Home";
@@ -12,14 +12,17 @@ import PersonIcon from "@mui/icons-material/Person";
 import HelpIcon from "@mui/icons-material/Help";
 import LoginIcon from "@mui/icons-material/Login";
 import LogoutIcon from "@mui/icons-material/Logout";
+import Brightness4Icon from "@mui/icons-material/Brightness4";
 import { useRouter } from "next/router";
 import { sweetConfirmAlert, sweetTopSmallSuccessAlert } from "./../sweetAlert";
+import { ThemeModeContext, ThemeMode } from "../../pages/_app";
 
 const InteractiveNavbar = () => {
   const user = useReactiveVar(userVar);
   const { t, i18n } = useTranslation("common");
   const [isExpanded, setIsExpanded] = useState(false);
   const router = useRouter();
+  const { mode, setMode } = useContext(ThemeModeContext);
 
   useEffect(() => {
     const jwt = getJwtToken();
@@ -28,6 +31,12 @@ const InteractiveNavbar = () => {
 
   const toggleNavbar = () => {
     setIsExpanded(!isExpanded);
+  };
+
+  const nextMode = (): ThemeMode => {
+    if (mode === "light") return "elevatedDark";
+    if (mode === "elevatedDark") return "dark";
+    return "light";
   };
 
   const handleLogout = async () => {
@@ -99,6 +108,20 @@ const InteractiveNavbar = () => {
             </span>
           </div>
         </Link>
+
+        {/* Global Theme Toggle */}
+        <div className="menu-item" onClick={() => setMode(nextMode())}>
+          <span className="icon">
+            <Brightness4Icon sx={{ fontSize: 28 }} />
+          </span>
+          <span className="label">
+            {mode === "light"
+              ? "Light"
+              : mode === "elevatedDark"
+              ? "Elevated"
+              : "Dark"}
+          </span>
+        </div>
 
         <Link href={"/car"}>
           <div className="menu-item">

@@ -3,10 +3,39 @@
 @import "reset.scss";
 @import "components/panorama360.scss";
 
+:root {
+  --bg-default: #ffffff;
+  --bg-paper: #ffffff;
+  --text-primary: #212121;
+  --text-secondary: #616161;
+  --accent: #e50914;
+}
+
+html[data-theme="light"] {
+  --bg-default: #f4f6f8;
+  --bg-paper: #ffffff;
+  --text-primary: #212121;
+  --text-secondary: #616161;
+}
+
+html[data-theme="dark"] {
+  --bg-default: #0b0c10;
+  --bg-paper: #0f1115;
+  --text-primary: #e6e7ea;
+  --text-secondary: #9ea3af;
+}
+
+html[data-theme="elevatedDark"] {
+  --bg-default: #1c1e23;
+  --bg-paper: #14171d;
+  --text-primary: #eceff4;
+  --text-secondary: #c9ced6;
+}
+
 a {
   white-space: nowrap;
   text-decoration: none;
-  color: #212121;
+  color: var(--text-primary);
 }
 button {
   text-transform: none;
@@ -25,6 +54,8 @@ p {
 }
 body {
   font-family: $font;
+  background: var(--bg-default);
+  color: var(--text-primary);
   &::-webkit-scrollbar {
     width: 9px;
   }

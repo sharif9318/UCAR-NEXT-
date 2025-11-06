@@ -8,8 +8,8 @@
     position: fixed;
     left: auto;
     box-shadow: none;
-    background: #fff;
-    border-bottom: 1px solid rgba(0, 0, 0, 0.12);
+    background: var(--bg-paper);
+    border-bottom: 1px solid #343a46;
     .settings-icon-admin {
       margin-right: 15px;
       color: #7b809a;
@@ -27,7 +27,7 @@
       }
     }
     .user {
-      background: #f5f5f5;
+      background: var(--bg-paper);
     }
     hr {
       margin: 24px 0;
@@ -37,7 +37,7 @@
     }
   }
   .user {
-    background: #f5f5f5;
+    background: var(--bg-paper);
   }
   .menu-list {
     padding: 8px 24px 8px 32px;
@@ -48,8 +48,8 @@
     }
     li.on {
       font-weight: 600;
-      background: #FDF4F4;
-      color: #F54D56;
+      background: #fdf4f4;
+      color: #f54d56;
       span {
         color: #212121;
       }
@@ -60,6 +60,7 @@
     margin-left: auto;
     padding: 116px 24px;
     align-items: center;
+    background: var(--bg-default);
     .flex-space {
       display: flex;
       flex-direction: row;
@@ -86,7 +87,7 @@
       border-radius: 4px;
     }
     .error {
-      color: #B72136;
+      color: #b72136;
       background: rgba(255, 72, 66, 0.16);
     }
     .block {
@@ -109,7 +110,7 @@
     }
     .error-txt {
       font-size: 14px;
-      color: #B72136;
+      color: #b72136;
     }
     .hacking-txt {
       font-size: 14px;
@@ -121,7 +122,7 @@
     }
     .up {
       color: rgba(45, 153, 255);
-      background: rgba(45, 153, 255, 0.3) ;
+      background: rgba(45, 153, 255, 0.3);
     }
     .down {
       color: rgba(255, 48, 48);
@@ -171,7 +172,7 @@
           border-radius: 4px;
         }
         .error {
-          color: #B72136;
+          color: #b72136;
           background: rgba(255, 72, 66, 0.16);
         }
         .hacking {
@@ -202,7 +203,9 @@
       .btn-upload {
         flex-direction: column;
         .img-area {
-          img { width: 100%; }
+          img {
+            width: 100%;
+          }
         }
       }
       .comment {
@@ -266,12 +269,12 @@
         font-weight: 500;
       }
       button:nth-child(2) {
-        color:#fff;
+        color: #fff;
         box-shadow: rgb(255 48 48 / 24%) 0px 8px 16px 0px;
       }
     }
     .btn-complete {
-      color:#fff;
+      color: #fff;
       box-shadow: rgb(255 48 48 / 24%) 0px 8px 16px 0px;
     }
     .btn-action {
@@ -292,7 +295,9 @@
     .btn-upload {
       border: 1px dashed #eee;
     }
-    .btn-text { color: #e92c28; }
+    .btn-text {
+      color: #e92c28;
+    }
     .btn-window {
       color: #757575;
       margin-left: 8px;
@@ -309,7 +314,8 @@
     .table-wrap {
       background: #fff;
       border-radius: 4px;
-      box-shadow: rgb(145 158 171 / 20%) 0px 0px 2px 0px, rgb(145 158 171 / 12%) 0px 12px 24px -4px;
+      box-shadow: rgb(145 158 171 / 20%) 0px 0px 2px 0px,
+        rgb(145 158 171 / 12%) 0px 12px 24px -4px;
       .tab-menu {
         display: flex;
         flex-direction: row;
@@ -329,7 +335,8 @@
         }
       }
       &.check-table-wrap {
-        th:nth-child(1),td:first-child {
+        th:nth-child(1),
+        td:first-child {
           width: 50px;
           padding: 0 0 0 15px;
         }
@@ -398,17 +405,15 @@
           padding-left: 24px;
         }
       }
-      .MuiAvatar-root {
-        //width: 30px;
-        //height: 30px;
-      }
       .flex-box {
         button {
           color: #e92c28;
           font-weight: 500;
           margin-right: 8px;
         }
-        button:last-child { margin-right:0; }
+        button:last-child {
+          margin-right: 0;
+        }
       }
       .edit-options {
         padding: 25px;
@@ -432,11 +437,13 @@
         .option {
           flex-flow: row wrap;
           label {
-            width:301px;
+            width: 301px;
             height: 48px;
             padding-right: 8px;
             color: #616161;
-            span { font-size: 14px; }
+            span {
+              font-size: 14px;
+            }
           }
         }
       }
@@ -480,7 +487,9 @@
         color: #757575;
         margin-right: 8px;
       }
-      thead { font-weight: 600; }
+      thead {
+        font-weight: 600;
+      }
     }
     .MuiTabPanel-root {
       padding: 0;
@@ -538,7 +547,7 @@
       align-items: center;
       h6 {
         font-size: 16px;
-        font-family: $font ;
+        font-family: $font;
         font-weight: 600;
       }
     }

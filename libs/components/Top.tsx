@@ -1,4 +1,10 @@
-import React, { useCallback, useEffect, useRef, useState } from "react";
+import React, {
+  useCallback,
+  useContext,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 import { useRouter } from "next/router";
 import { useTranslation } from "next-i18next";
 import { getJwtToken, logOut, updateUserInfo } from "../auth";
@@ -18,6 +24,7 @@ import { Logout } from "@mui/icons-material";
 import { REACT_APP_API_URL } from "../config";
 import { Car } from "../types/car/car";
 import { Typography } from "@mui/material";
+import { ThemeModeContext, ThemeMode } from "../../pages/_app";
 
 interface TopProps {
   trendingCar?: Car;
@@ -41,6 +48,7 @@ const Top = ({ trendingCar }: TopProps) => {
   const logoutOpen = Boolean(logoutAnchor);
   const [showCarInfo, setShowCarInfo] = useState(false);
   const videoRef = useRef<HTMLVideoElement>(null);
+  const { mode, setMode } = useContext(ThemeModeContext);
 
   // Determine video source - use car video if exists, otherwise default
   const getVideoSource = () => {
@@ -190,6 +198,13 @@ const Top = ({ trendingCar }: TopProps) => {
     window.addEventListener("scroll", changeNavbarColor);
   }
 
+  // helper to rotate modes
+  const nextMode = useCallback((): ThemeMode => {
+    if (mode === "light") return "elevatedDark";
+    if (mode === "elevatedDark") return "dark";
+    return "light";
+  }, [mode]);
+
   if (device == "mobile") {
     return (
       <Stack className={"top"}>
@@ -275,6 +290,37 @@ const Top = ({ trendingCar }: TopProps) => {
             </Box>
 
             <Box component={"div"} className={"user-box"}>
+              {/* theme toggle */}
+              <div
+                className="theme-toggle"
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  marginRight: 12,
+                }}
+              >
+                <Button
+                  size="small"
+                  variant="outlined"
+                  onClick={() => setMode(nextMode())}
+                  sx={{
+                    color: "#fff",
+                    borderColor: "rgba(255,255,255,0.4)",
+                    "&:hover": {
+                      borderColor: "#fff",
+                      background: "rgba(255,255,255,0.08)",
+                    },
+                    mr: 1,
+                  }}
+                >
+                  {mode === "light"
+                    ? "Light"
+                    : mode === "elevatedDark"
+                    ? "Elevated"
+                    : "Dark"}
+                </Button>
+              </div>
+
               {user?._id ? (
                 <>
                   <div

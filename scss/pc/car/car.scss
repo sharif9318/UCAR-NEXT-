@@ -1,7 +1,7 @@
 #pc-wrap {
   #car-list-page {
     padding-bottom: 40px;
-    background: #f6f6f6;
+    background: var(--bg-default);
     .container {
       .right {
         position: absolute;
@@ -13,7 +13,7 @@
         z-index: 2;
         button {
           margin-left: 10px;
-          color: #181a20;
+          color: var(--text-primary);
           font-family: $font;
           font-size: 14px;
           font-style: normal;
@@ -37,25 +37,24 @@
             width: 100%;
             padding: 30px 24px;
             border-radius: 12px;
-            background: #fff;
-            box-shadow: 0 1px 4px 0 rgba(24, 26, 32, 0.07);
+            background: var(--bg-paper);
+            border: 1px solid #343a46;
+            box-shadow: 0 0 0 1px rgba(229, 9, 20, 0.06) inset,
+              0 6px 18px rgba(0, 0, 0, 0.4);
             .find-your-home {
               position: relative;
               width: 100%;
               gap: 10px;
               .car-location {
                 gap: 10px;
-                height: 115px;
+                height: auto;
                 overflow: hidden;
                 transition: height 0.3s ease;
-                &:hover {
-                  height: 253px;
-                }
               }
               .title-main {
                 width: 100%;
                 height: 25px;
-                color: #181a20;
+                color: var(--text-primary);
                 font-family: $font;
                 font-size: 15px;
                 font-style: normal;
@@ -65,7 +64,7 @@
               .title {
                 width: auto;
                 height: auto;
-                color: #181a20;
+                color: var(--text-primary);
                 font-family: $font;
                 font-size: 14px;
                 font-style: normal;
@@ -84,11 +83,9 @@
                   width: 100%;
                   height: 53px;
                   border-radius: 8px;
-                  border: 1px solid #ddd;
-                  background: #fff;
-                  outline: none;
-                  padding-left: 43px;
-                  color: #717171;
+                  border: 1px solid #343a46;
+                  background: var(--bg-paper);
+                  color: var(--text-secondary);
                   font-family: $font;
                   font-size: 14px;
                   font-style: normal;
@@ -96,7 +93,8 @@
                   line-height: 26px;
                   transition: border-color 0.2s ease;
                   &:focus {
-                    border-color: #667eea;
+                    border-color: rgba(229, 9, 20, 0.65);
+                    box-shadow: 0 0 0 3px rgba(229, 9, 20, 0.1);
                   }
                 }
                 img {
@@ -118,11 +116,17 @@
               }
               .button-group {
                 width: 100%;
-                height: 43.998px;
+                display: flex;
                 flex-direction: row;
+                align-items: stretch;
+                flex-wrap: nowrap;
                 button {
-                  width: 100%;
-                  color: #181a20;
+                  flex: 1 1 0;
+                  min-width: 0;
+                  width: auto;
+                  box-sizing: border-box;
+                  white-space: nowrap;
+                  color: var(--text-primary);
                   text-align: center;
                   font-family: $font;
                   font-size: 13px;
@@ -131,7 +135,7 @@
                   line-height: normal;
                   transition: all 0.2s ease;
                   &:hover {
-                    background-color: rgba(102, 126, 234, 0.1);
+                    background-color: rgba(229, 9, 20, 0.12);
                   }
                 }
               }
@@ -142,19 +146,21 @@
                 align-items: center;
                 .central-divider {
                   width: 22px;
-                  border: 1px solid black;
+                  border: 1px dashed #343a46;
                 }
                 input {
                   width: 100%;
                   height: 49px;
                   border-radius: 8px;
-                  border: 1px solid #ddd;
-                  background: #fff;
+                  border: 1px solid #343a46;
+                  background: var(--bg-paper);
+                  color: var(--text-primary);
                   outline: none;
                   padding-left: 15px;
                   transition: border-color 0.2s ease;
                   &:focus {
-                    border-color: #667eea;
+                    border-color: rgba(229, 9, 20, 0.65);
+                    box-shadow: 0 0 0 3px rgba(229, 9, 20, 0.1);
                   }
                 }
                 label {
@@ -188,12 +194,15 @@
               height: 413px;
               margin-bottom: 7px;
               border-radius: 12px;
-              background: #fff;
-              box-shadow: 0px 1px 4px 0px rgba(24, 26, 32, 0.07);
+              background: var(--bg-paper);
+              border: 1px solid #343a46;
+              box-shadow: 0 0 0 1px rgba(229, 9, 20, 0.06) inset,
+                0 6px 18px rgba(0, 0, 0, 0.4);
               transition: transform 0.2s ease, box-shadow 0.2s ease;
               &:hover {
                 transform: translateY(-4px);
-                box-shadow: 0px 4px 12px 0px rgba(24, 26, 32, 0.15);
+                box-shadow: 0 8px 24px rgba(229, 9, 20, 0.18),
+                  inset 0 0 0 1px rgba(229, 9, 20, 0.25);
               }
               .top {
                 position: relative;
@@ -243,12 +252,12 @@
                   left: 20px;
                   padding: 8px 15px;
                   align-items: center;
-                  border-radius: 6px;
-                  border: 1px solid rgba(255, 255, 255, 0.5);
-                  background: #fff;
-                  backdrop-filter: blur(10px);
+                  border-radius: 10px;
+                  border: 1px solid rgba(255, 255, 255, 0.1);
+                  background: rgba(0, 0, 0, 0.65);
+                  backdrop-filter: blur(6px);
                   p {
-                    color: #181a20;
+                    color: #fff;
                     font-family: $font;
                     font-size: 15px;
                     font-style: normal;

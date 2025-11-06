@@ -72,21 +72,26 @@ const PopularCars = (props: PopularCarsProps) => {
     return (
       <Stack
         className={"popular-properties"}
-        sx={{
-          backgroundImage:
-            "url(/img/banner/arteum-ro-SkKTh9ZyTxU-unsplash.jpg)!important",
+        sx={(theme) => ({
           backgroundSize: "cover !important",
           backgroundPosition: "center",
           backgroundRepeat: "no-repeat",
-          border: "2px solid #ec1919ff",
-          borderRadius: "12px",
+          border: `1px solid ${
+            theme.palette.mode === "light"
+              ? "rgba(0,0,0,0.06)"
+              : "rgba(229, 9, 20, 0.12)"
+          }`,
+          borderRadius: "16px",
           transition: "all 0.3s ease",
           "&:hover": {
-            border: "2px solid #667eea",
-            boxShadow: "0 8px 24px rgba(102, 126, 234, 0.2)",
+            borderColor: theme.palette.primary.main,
+            boxShadow:
+              theme.palette.mode === "light"
+                ? "0 8px 24px rgba(229, 9, 20, 0.15)"
+                : "0 8px 24px rgba(229, 9, 20, 0.2)",
             transform: "translateY(-4px)",
           },
-        }}
+        })}
       >
         <Stack className={"container"}>
           <Stack className={"info-box"}>
