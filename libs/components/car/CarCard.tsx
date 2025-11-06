@@ -11,6 +11,7 @@ import { useReactiveVar } from "@apollo/client";
 import { userVar } from "../../../apollo/store";
 import IconButton from "@mui/material/IconButton";
 import RemoveRedEyeIcon from "@mui/icons-material/RemoveRedEye";
+import { useTranslation } from "react-i18next";
 
 interface CarCardType {
   car: Car;
@@ -23,6 +24,7 @@ const CarCard = memo((props: CarCardType) => {
   const { car, likeCarHandler, myFavorites, recentlyVisited } = props;
   const device = useDeviceDetect();
   const user = useReactiveVar(userVar);
+  const { t } = useTranslation("common");
 
   const imagePath = useMemo(
     () =>
@@ -134,15 +136,21 @@ const CarCard = memo((props: CarCardType) => {
           <Stack className="options">
             <Stack className="option">
               <img src="/img/icons/year.svg" alt="" />{" "}
-              <Typography>{car.carYear} year</Typography>
+              <Typography>
+                {car.carYear} {t("car.year")}
+              </Typography>
             </Stack>
             <Stack className="option">
               <img src="/img/icons/seat.svg" alt="" />{" "}
-              <Typography>{car.carSeats} seats</Typography>
+              <Typography>
+                {car.carSeats} {t("car.seats")}
+              </Typography>
             </Stack>
             <Stack className="option">
               <img src="/img/icons/mileage.svg" alt="" />{" "}
-              <Typography>{car.carMileage} km</Typography>
+              <Typography>
+                {car.carMileage} {t("car.km")}
+              </Typography>
             </Stack>
           </Stack>
           <Stack className="divider"></Stack>
@@ -152,13 +160,13 @@ const CarCard = memo((props: CarCardType) => {
                 sx={{ fontWeight: 500, fontSize: "13px" }}
                 className={car.carLease ? "" : "disabled-type"}
               >
-                Lease
+                {t("car.lease")}
               </Typography>
               <Typography
                 sx={{ fontWeight: 500, fontSize: "13px" }}
                 className={car.carTradeIn ? "" : "disabled-type"}
               >
-                Trade-In
+                {t("car.sale")}
               </Typography>
             </Stack>
             {!recentlyVisited && (

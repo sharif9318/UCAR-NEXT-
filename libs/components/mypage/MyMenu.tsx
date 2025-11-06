@@ -10,8 +10,10 @@ import IconButton from "@mui/material/IconButton";
 import { REACT_APP_API_URL } from "../../config";
 import { logOut } from "../../auth";
 import { sweetConfirmAlert, sweetMixinErrorAlert } from "../../sweetAlert";
+import { useTranslation } from "react-i18next";
 
 const MyMenu = () => {
+  const { t } = useTranslation("common");
   const device = useDeviceDetect();
   const router = useRouter();
   const pathname = router.query.category ?? "myProfile";
@@ -21,11 +23,19 @@ const MyMenu = () => {
   /** HANDLERS **/
   const logoutHandler = async () => {
     try {
-      if (await sweetConfirmAlert("Do you want to logout?")) logOut();
+      if (await sweetConfirmAlert(t("mypage.confirmLogout"))) logOut();
     } catch (err: any) {
       console.log("ERROR, logoutHandler:", err.message);
     }
   };
+
+  const roleKey = (user?.memberType || "").toString().toLowerCase();
+  const roleLabel =
+    roleKey === "admin"
+      ? t("role.admin")
+      : roleKey === "agent"
+      ? t("role.agent")
+      : t("role.member");
 
   if (device === "mobile") {
     return <div>MY MENU</div>;
@@ -53,14 +63,10 @@ const MyMenu = () => {
             </Box>
             {user?.memberType === "ADMIN" ? (
               <a href="/_admin/users" target={"_blank"}>
-                <Typography className={"view-list"}>
-                  {user?.memberType}
-                </Typography>
+                <Typography className={"view-list"}>{roleLabel}</Typography>
               </a>
             ) : (
-              <Typography className={"view-list"}>
-                {user?.memberType}
-              </Typography>
+              <Typography className={"view-list"}>{roleLabel}</Typography>
             )}
           </Stack>
         </Stack>
@@ -70,7 +76,7 @@ const MyMenu = () => {
             style={{ height: user.memberType === "AGENT" ? "228px" : "153px" }}
           >
             <Typography className="title" variant={"h5"}>
-              MANAGE LISTINGS
+              {t("mypage.manageListings")}
             </Typography>
             <List className={"sub-section"}>
               {user.memberType === "AGENT" && (
@@ -102,7 +108,7 @@ const MyMenu = () => {
                           variant={"subtitle1"}
                           component={"p"}
                         >
-                          Add Car
+                          {t("mypage.addCar")}
                         </Typography>
                         <IconButton
                           aria-label="delete"
@@ -140,7 +146,7 @@ const MyMenu = () => {
                           variant={"subtitle1"}
                           component={"p"}
                         >
-                          My Cars
+                          {t("mypage.myCars")}
                         </Typography>
                         <IconButton aria-label="delete" sx={{ ml: "36px" }}>
                           <PortraitIcon style={{ color: "red" }} />
@@ -178,7 +184,7 @@ const MyMenu = () => {
                       variant={"subtitle1"}
                       component={"p"}
                     >
-                      My Favorites
+                      {t("mypage.myFavorites")}
                     </Typography>
                   </div>
                 </Link>
@@ -213,7 +219,7 @@ const MyMenu = () => {
                       variant={"subtitle1"}
                       component={"p"}
                     >
-                      Recently Visited
+                      {t("mypage.recentlyVisited")}
                     </Typography>
                   </div>
                 </Link>
@@ -264,7 +270,7 @@ const MyMenu = () => {
                       variant={"subtitle1"}
                       component={"p"}
                     >
-                      My Followers
+                      {t("mypage.myFollowers")}
                     </Typography>
                   </div>
                 </Link>
@@ -316,7 +322,7 @@ const MyMenu = () => {
                       variant={"subtitle1"}
                       component={"p"}
                     >
-                      My Followings
+                      {t("mypage.myFollowings")}
                     </Typography>
                   </div>
                 </Link>
@@ -326,7 +332,7 @@ const MyMenu = () => {
           <Stack className={"section"} sx={{ marginTop: "10px" }}>
             <div>
               <Typography className="title" variant={"h5"}>
-                Community
+                {t("mypage.community")}
               </Typography>
               <List className={"sub-section"}>
                 <ListItem className={pathname === "myArticles" ? "focus" : ""}>
@@ -357,7 +363,7 @@ const MyMenu = () => {
                         variant={"subtitle1"}
                         component={"p"}
                       >
-                        Articles
+                        {t("mypage.articles")}
                       </Typography>
                     </div>
                   </Link>
@@ -391,7 +397,7 @@ const MyMenu = () => {
                         variant={"subtitle1"}
                         component={"p"}
                       >
-                        Write Article
+                        {t("mypage.writeArticle")}
                       </Typography>
                     </div>
                   </Link>
@@ -401,7 +407,7 @@ const MyMenu = () => {
           </Stack>
           <Stack className={"section"} sx={{ marginTop: "30px" }}>
             <Typography className="title" variant={"h5"}>
-              MANAGE ACCOUNT
+              {t("mypage.manageAccount")}
             </Typography>
             <List className={"sub-section"}>
               <ListItem className={pathname === "myProfile" ? "focus" : ""}>
@@ -431,7 +437,7 @@ const MyMenu = () => {
                       variant={"subtitle1"}
                       component={"p"}
                     >
-                      My Profile
+                      {t("mypage.myProfile")}
                     </Typography>
                   </div>
                 </Link>
@@ -448,7 +454,7 @@ const MyMenu = () => {
                     variant={"subtitle1"}
                     component={"p"}
                   >
-                    Logout
+                    {t("mypage.logout")}
                   </Typography>
                 </div>
               </ListItem>

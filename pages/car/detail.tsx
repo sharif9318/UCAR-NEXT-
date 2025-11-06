@@ -52,6 +52,7 @@ import {
   sweetMixinErrorAlert,
   sweetTopSmallSuccessAlert,
 } from "../../libs/sweetAlert";
+import { useTranslation } from "react-i18next";
 
 SwiperCore.use([Autoplay, Navigation, Pagination]);
 
@@ -61,16 +62,18 @@ export const getStaticProps = async ({ locale }: any) => ({
   },
 });
 
-const CarDetail: NextPage = ({ initialComment, ...props }: any) => {
+const CarDetail: NextPage = (props: any) => {
   const device = useDeviceDetect();
   const router = useRouter();
   const user = useReactiveVar(userVar);
+  const { t } = useTranslation("common");
   const [carId, setCarId] = useState<string | null>(null);
   const [car, setCar] = useState<Car | null>(null);
   const [slideImage, setSlideImage] = useState<string>("");
   const [destinationCars, setDestinationCars] = useState<Car[]>([]);
-  const [commentInquiry, setCommentInquiry] =
-    useState<CommentsInquiry>(initialComment);
+  const [commentInquiry, setCommentInquiry] = useState<CommentsInquiry>(
+    props.initialComment
+  );
   const [carComments, setCarComments] = useState<Comment[]>([]);
   const [commentTotal, setCommentTotal] = useState<number>(0);
   const [insertCommentData, setInsertCommentData] = useState<CommentInput>({
@@ -381,7 +384,7 @@ const CarDetail: NextPage = ({ initialComment, ...props }: any) => {
                             </svg>
                           </Stack>
                           <Typography className={"buy-lease"}>
-                            Trade-In
+                            {t("car.sale")}
                           </Typography>
                         </>
                       )}
@@ -399,7 +402,9 @@ const CarDetail: NextPage = ({ initialComment, ...props }: any) => {
                               <circle cx="3" cy="3" r="3" fill="#EB6753" />
                             </svg>
                           </Stack>
-                          <Typography className={"buy-lease"}>Lease</Typography>
+                          <Typography className={"buy-lease"}>
+                            {t("car.lease")}
+                          </Typography>
                         </>
                       )}
                     </Stack>
@@ -652,7 +657,9 @@ const CarDetail: NextPage = ({ initialComment, ...props }: any) => {
                       </svg>
                     </Stack>
                     <Stack className={"option-includes"}>
-                      <Typography className={"title"}>Mileage</Typography>
+                      <Typography className={"title"}>
+                        {t("filter.mileage")}
+                      </Typography>
                       <Typography className={"option-data"}>
                         {formatterStr(car?.carMileage)} km
                       </Typography>
@@ -668,13 +675,15 @@ const CarDetail: NextPage = ({ initialComment, ...props }: any) => {
                         fill="none"
                       >
                         <path
-                          d="M19.77 7.23L19.78 7.22L16.06 3.5L15 4.56L17.11 6.67C16.17 7.03 15.5 7.93 15.5 9C15.5 10.38 16.62 11.5 18 11.5C18.36 11.5 18.69 11.42 19 11.29V18.5C19 19.05 18.55 19.5 18 19.5C17.45 19.5 17 19.05 17 18.5V14C17 12.9 16.1 12 15 12H13V5C13 3.9 12.1 3 11 3H6C4.9 3 4 3.9 4 5V21H6V19H12V21H14V13.5H15.5V18.5C15.5 19.88 16.62 21 18 21C19.38 21 20.5 19.88 20.5 18.5V9C20.5 8.31 20.22 7.68 19.77 7.23ZM12 10H6V5H12V10Z"
+                          d="M18.92 6.01C18.72 5.42 18.16 5 17.5 5H6.5C5.84 5 5.29 5.42 5.08 6.01L3 12V20C3 20.55 3.45 21 4 21H5C5.55 21 6 20.55 6 20V19H18V20C18 20.55 18.45 21 19 21H20C20.55 21 21 20.55 21 20V12L18.92 6.01ZM6.5 16C5.67 16 5 15.33 5 14.5C5 13.67 5.67 13 6.5 13C7.33 13 8 13.67 8 14.5C8 15.33 7.33 16 6.5 16ZM17.5 16C16.67 16 16 15.33 16 14.5C16 13.67 16.67 13 17.5 13C18.33 13 19 13.67 19 14.5C19 15.33 18.33 16 17.5 16ZM5 11L6.5 6.5H17.5L19 11H5Z"
                           fill="#181A20"
                         />
                       </svg>
                     </Stack>
                     <Stack className={"option-includes"}>
-                      <Typography className={"title"}>Fuel Type</Typography>
+                      <Typography className={"title"}>
+                        {t("car.fuel")}
+                      </Typography>
                       <Typography className={"option-data"}>
                         {car?.carYear} L/100km
                       </Typography>
@@ -690,17 +699,15 @@ const CarDetail: NextPage = ({ initialComment, ...props }: any) => {
                         fill="none"
                       >
                         <path
-                          d="M15 11V5L9 11H13V17L19 11H15Z"
-                          fill="#181A20"
-                        />
-                        <path
-                          d="M19.35 10.04C18.67 6.59 15.64 4 12 4C9.11 4 6.6 5.64 5.35 8.04C2.34 8.36 0 10.91 0 14C0 17.31 2.69 20 6 20H19C21.76 20 24 17.76 24 15C24 12.36 21.95 10.22 19.35 10.04ZM19 18H6C3.79 18 2 16.21 2 14C2 11.95 3.53 10.24 5.56 10.03L6.63 9.92L7.13 8.97C8.08 7.14 9.94 6 12 6C14.62 6 16.88 7.86 17.39 10.43L17.69 11.93L19.22 12.04C20.78 12.14 22 13.45 22 15C22 16.65 20.65 18 19 18Z"
+                          d="M19 3H5C3.9 3 3 3.9 3 5V19C3 20.1 3.9 21 5 21H19C20.1 21 21 20.1 21 19V5C21 3.9 20.1 3 19 3ZM19 19H5V5H19V19ZM7 17H9V13H7V17ZM11 17H13V7H11V17ZM15 17H17V10H15V17Z"
                           fill="#181A20"
                         />
                       </svg>
                     </Stack>
                     <Stack className={"option-includes"}>
-                      <Typography className={"title"}>Transmission</Typography>
+                      <Typography className={"title"}>
+                        {t("car.transmission")}
+                      </Typography>
                       <Typography className={"option-data"}>
                         {car?.carSeats === 1 ? "Manual" : "Automatic"}
                       </Typography>
@@ -723,20 +730,24 @@ const CarDetail: NextPage = ({ initialComment, ...props }: any) => {
                     <Stack className={"info-box"}>
                       <Stack className={"left"}>
                         <Box component={"div"} className={"info"}>
-                          <Typography className={"title"}>Price</Typography>
+                          <Typography className={"title"}>
+                            {t("car.price")}
+                          </Typography>
                           <Typography className={"data"}>
                             ${formatterStr(car?.carPrice)}
                           </Typography>
                         </Box>
                         <Box component={"div"} className={"info"}>
-                          <Typography className={"title"}>Mileage</Typography>
+                          <Typography className={"title"}>
+                            {t("filter.mileage")}
+                          </Typography>
                           <Typography className={"data"}>
                             {formatterStr(car?.carMileage)} km
                           </Typography>
                         </Box>
                         <Box component={"div"} className={"info"}>
                           <Typography className={"title"}>
-                            Transmission
+                            {t("car.transmission")}
                           </Typography>
                           <Typography className={"data"}>
                             {car?.carSeats === 1 ? "Manual" : "Automatic"}
@@ -753,7 +764,9 @@ const CarDetail: NextPage = ({ initialComment, ...props }: any) => {
                       </Stack>
                       <Stack className={"right"}>
                         <Box component={"div"} className={"info"}>
-                          <Typography className={"title"}>Year</Typography>
+                          <Typography className={"title"}>
+                            {t("car.year")}
+                          </Typography>
                           <Typography className={"data"}>
                             {moment(car?.createdAt).format("YYYY")}
                           </Typography>
@@ -769,8 +782,8 @@ const CarDetail: NextPage = ({ initialComment, ...props }: any) => {
                             Availability
                           </Typography>
                           <Typography className={"data"}>
-                            {car?.carTradeIn && "Trade-In"}{" "}
-                            {car?.carLease && "Lease"}
+                            {car?.carTradeIn && t("car.sale")}{" "}
+                            {car?.carLease && t("car.lease")}
                           </Typography>
                         </Box>
                       </Stack>

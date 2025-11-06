@@ -8,9 +8,11 @@ import { useQuery } from "@apollo/client";
 import { GET_BOARD_ARTICLES } from "../../../apollo/user/query";
 import { BoardArticleCategory } from "../../enums/board-article.enum";
 import { T } from "../../types/common";
+import { useTranslation } from "next-i18next";
 
 const CommunityBoards = () => {
   const device = useDeviceDetect();
+  const { t } = useTranslation("common");
   const [searchCommunity, setSearchCommunity] = useState({
     page: 1,
     sort: "articleViews",
@@ -72,13 +74,13 @@ const CommunityBoards = () => {
       <Stack className={"community-board"}>
         <Stack className={"container"}>
           <Stack>
-            <Typography variant={"h1"}>COMMUNITY BOARD HIGHLIGHTS</Typography>
+            <Typography variant={"h1"}>{t("community.title")}</Typography>
           </Stack>
           <Stack className="community-main">
             <Stack className={"community-left"}>
               <Stack className={"content-top"}>
                 <Link href={"/community?articleCategory=NEWS"}>
-                  <span>News</span>
+                  <span>{t("community.news")}</span>
                 </Link>
                 <img src="/img/icons/arrowBig.svg" alt="" />
               </Stack>
@@ -98,7 +100,7 @@ const CommunityBoards = () => {
             <Stack className={"community-right"}>
               <Stack className={"content-top"}>
                 <Link href={"/community?articleCategory=FREE"}>
-                  <span>Free</span>
+                  <span>{t("community.free")}</span>
                 </Link>
                 <img src="/img/icons/arrowBig.svg" alt="" />
               </Stack>

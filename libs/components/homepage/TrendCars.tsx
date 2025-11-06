@@ -17,6 +17,7 @@ import {
   sweetMixinErrorAlert,
 } from "../../sweetAlert";
 import { Message } from "../../enums/common.enum";
+import { useTranslation } from "next-i18next";
 
 interface TrendCarsProps {
   initialInput: CarsInquiry;
@@ -26,6 +27,7 @@ interface TrendCarsProps {
 const TrendCars = (props: TrendCarsProps) => {
   const { initialInput, onCarsLoaded } = props;
   const device = useDeviceDetect();
+  const { t } = useTranslation("common");
   const [trendCars, setTrendCars] = useState<Car[]>([]);
 
   /** APOLLO REQUESTS **/
@@ -104,12 +106,12 @@ const TrendCars = (props: TrendCarsProps) => {
       <Stack className={"trend-properties"}>
         <Stack className={"container"}>
           <Stack className={"info-box"}>
-            <span>Trend Cars</span>
+            <span>{t("trend.titleMobile")}</span>
           </Stack>
           <Stack className={"card-box"}>
             {trendCars.length === 0 ? (
               <Box component={"div"} className={"empty-list"}>
-                Trends Empty
+                {t("trend.empty")}
               </Box>
             ) : (
               <Swiper
@@ -142,13 +144,8 @@ const TrendCars = (props: TrendCarsProps) => {
         <Stack className={"container"}>
           <Stack className={"info-box"}>
             <Box component={"div"} className={"left"}>
-              <span>The Like-Driven Garage</span>
-              <p>
-                These aren't just cars, they're the community's favorites. Every
-                'like' is a vote, and this is the hall of fame. <br />
-                Scroll through the rides that are capturing hearts and turning
-                heads right now.
-              </p>
+              <span>{t("trend.title")}</span>
+              <p>{t("trend.desc")}</p>
             </Box>
             <Box component={"div"} className={"right"}>
               <div className={"pagination-box"}>
@@ -161,7 +158,7 @@ const TrendCars = (props: TrendCarsProps) => {
           <Stack className={"card-box"}>
             {trendCars.length === 0 ? (
               <Box component={"div"} className={"empty-list"}>
-                Trends Empty
+                {t("trend.empty")}
               </Box>
             ) : (
               <Swiper

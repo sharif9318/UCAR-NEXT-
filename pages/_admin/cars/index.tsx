@@ -17,6 +17,7 @@ import {
   sweetErrorHandling,
 } from "../../../libs/sweetAlert";
 import { CarUpdate } from "../../../libs/types/car/car.update";
+import withI18n from "../../../libs/i18n/withI18n";
 
 const AdminCars: NextPage = ({ initialInquiry, ...props }: any) => {
   const [anchorEl, setAnchorEl] = useState<[] | HTMLElement[]>([]);
@@ -228,4 +229,4 @@ AdminCars.defaultProps = {
   },
 };
 
-export default withAdminLayout(AdminCars);
+export default withI18n()(withAdminLayout(AdminCars));

@@ -10,8 +10,10 @@ import { userVar } from "../../../apollo/store";
 import { MemberUpdate } from "../../types/member/member.update";
 import { UPDATE_MEMBER } from "../../../apollo/user/mutation";
 import { sweetErrorHandling, sweetMixinSuccessAlert } from "../../sweetAlert";
+import { useTranslation } from "react-i18next";
 
 const MyProfile: NextPage = ({ initialValues, ...props }: any) => {
+  const { t } = useTranslation("common");
   const device = useDeviceDetect();
   const token = getJwtToken();
   const user = useReactiveVar(userVar);
@@ -118,11 +120,11 @@ const MyProfile: NextPage = ({ initialValues, ...props }: any) => {
       const jwtToken = result.data.updateMember?.accessToken;
       await updateStorage({ jwtToken });
       updateUserInfo(result.data.updateMember?.accessToken);
-      await sweetMixinSuccessAlert("information updated successfully.");
+      await sweetMixinSuccessAlert(t("mypage.profileUpdated"));
     } catch (err: any) {
       sweetErrorHandling(err).then();
     }
-  }, [updateData, updateMember, user?._id]);
+  }, [updateData, updateMember, user?._id, t]);
 
   const doDisabledCheck = () => {
     if (errors.memberNick || errors.memberPhone || isUploadingAvatar)
@@ -137,9 +139,11 @@ const MyProfile: NextPage = ({ initialValues, ...props }: any) => {
       <div id="my-profile-page">
         <Stack className="main-title-box">
           <Stack className="right-box">
-            <Typography className="main-title">My Profile</Typography>
+            <Typography className="main-title">
+              {t("mypage.myProfile")}
+            </Typography>
             <Typography className="sub-title">
-              We are glad to see you again!
+              {t("We are glad to see you again!")}
             </Typography>
           </Stack>
         </Stack>
@@ -179,12 +183,14 @@ const MyProfile: NextPage = ({ initialValues, ...props }: any) => {
                     disabled={isUploadingAvatar}
                   >
                     <Typography>
-                      {isUploadingAvatar ? "Uploading..." : "Change Photo"}
+                      {isUploadingAvatar
+                        ? t("mypage.uploading")
+                        : t("mypage.changePhoto")}
                     </Typography>
                   </Button>
                   {updateData?.memberImage && (
                     <Button className="remove-photo-btn" onClick={removeAvatar}>
-                      <Typography>Remove</Typography>
+                      <Typography>{t("mypage.removePhoto")}</Typography>
                     </Button>
                   )}
                   <input
@@ -199,18 +205,18 @@ const MyProfile: NextPage = ({ initialValues, ...props }: any) => {
 
               <div className="profile-meta">
                 <Typography className="name">
-                  {updateData.memberNick || "Guest"}
+                  {updateData.memberNick || t("mypage.guest")}
                 </Typography>
                 <Typography className="phone">
                   {updateData.memberPhone || "—"}
                 </Typography>
                 <Typography className="address">
-                  {updateData.memberAddress || "No address"}
+                  {updateData.memberAddress || t("mypage.noAddress")}
                 </Typography>
 
                 <div className="chips">
-                  <span className="chip">Member</span>
-                  <span className="chip accent">Verified</span>
+                  <span className="chip">{t("role.member")}</span>
+                  <span className="chip accent">{t("status.verified")}</span>
                 </div>
               </div>
             </aside>
@@ -219,10 +225,12 @@ const MyProfile: NextPage = ({ initialValues, ...props }: any) => {
             <div className="form-pane">
               <Stack className="small-input-box">
                 <Stack className="input-box">
-                  <Typography className="title">Username</Typography>
+                  <Typography className="title">
+                    {t("mypage.username")}
+                  </Typography>
                   <input
                     type="text"
-                    placeholder="Your username"
+                    placeholder={t("mypage.usernamePlaceholder")}
                     value={updateData.memberNick}
                     onChange={({ target: { value } }) =>
                       setUpdateData({ ...updateData, memberNick: value })
@@ -230,15 +238,15 @@ const MyProfile: NextPage = ({ initialValues, ...props }: any) => {
                   />
                   {errors.memberNick && (
                     <Typography className="helper-error">
-                      Please enter at least 3 characters.
+                      {t("mypage.usernameError")}
                     </Typography>
                   )}
                 </Stack>
                 <Stack className="input-box">
-                  <Typography className="title">Phone</Typography>
+                  <Typography className="title">{t("mypage.phone")}</Typography>
                   <input
                     type="text"
-                    placeholder="Your Phone"
+                    placeholder={t("mypage.phonePlaceholder")}
                     value={updateData.memberPhone}
                     onChange={({ target: { value } }) =>
                       setUpdateData({ ...updateData, memberPhone: value })
@@ -246,17 +254,17 @@ const MyProfile: NextPage = ({ initialValues, ...props }: any) => {
                   />
                   {errors.memberPhone && (
                     <Typography className="helper-error">
-                      Enter a valid phone number.
+                      {t("mypage.phoneError")}
                     </Typography>
                   )}
                 </Stack>
               </Stack>
 
               <Stack className="address-box">
-                <Typography className="title">Address</Typography>
+                <Typography className="title">{t("mypage.address")}</Typography>
                 <input
                   type="text"
-                  placeholder="Your address"
+                  placeholder={t("mypage.addressPlaceholder")}
                   value={updateData.memberAddress}
                   onChange={({ target: { value } }) =>
                     setUpdateData({ ...updateData, memberAddress: value })
@@ -270,7 +278,7 @@ const MyProfile: NextPage = ({ initialValues, ...props }: any) => {
                   onClick={updateCarHandler}
                   disabled={doDisabledCheck()}
                 >
-                  <Typography>Update Profile</Typography>
+                  <Typography>{t("mypage.updateProfile")}</Typography>
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
                     width="13"

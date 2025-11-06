@@ -353,7 +353,7 @@ const Top = ({ trendingCar }: TopProps) => {
                         fontSize="small"
                         style={{ color: "blue", marginRight: "10px" }}
                       />
-                      Logout
+                      {t("mypage.logout")}
                     </MenuItem>
                   </Menu>
                 </>
@@ -440,7 +440,7 @@ const Top = ({ trendingCar }: TopProps) => {
                 whiteSpace: "pre-line",
               }}
             >
-              Drive Your Dream {"\n"} Within Reach
+              {t("hero.title")}
             </Typography>
             <Typography
               variant="h3"
@@ -456,9 +456,7 @@ const Top = ({ trendingCar }: TopProps) => {
                 whiteSpace: "pre-line",
               }}
             >
-              Buy and sell pre-loved cars with confidence.{"\n"} Find your
-              perfect match from thousands of verified used cars, {"\n"}or sell
-              your car fast to qualified buyers.
+              {t("hero.subtitle")}
             </Typography>
           </Box>
         </Stack>

@@ -8,6 +8,7 @@ import { Navigation, Pagination, Autoplay } from "swiper";
 import "swiper/css";
 import "swiper/css/navigation";
 import "swiper/css/pagination";
+import { useTranslation } from "next-i18next";
 
 interface EventData {
   eventTitle: string;
@@ -91,7 +92,7 @@ const Events = () => {
     variables: { limit: 10 },
     fetchPolicy: "cache-and-network",
   });
-
+  const { t } = useTranslation("common");
   const featuredCards: EventData[] = useMemo(() => {
     const list: FeaturedArticle[] = data?.featuredArticles?.list || [];
     const mapped: EventData[] = list
@@ -116,11 +117,8 @@ const Events = () => {
         <Stack className={"container"}>
           <Stack className={"info-box"}>
             <Box component={"div"} className={"left"}>
-              <span className={"white"}>News Around the World</span>
-              <p className={"white"}>
-                You can read featured articles of Forbes, NYTimes, Bloomberg
-                without leaving our platform{" "}
-              </p>
+              <span className={"white"}>{t("events.title")}</span>
+              <p className={"white"}>{t("events.desc")}</p>
             </Box>
           </Stack>
           <Box className={"card-wrapper"}>

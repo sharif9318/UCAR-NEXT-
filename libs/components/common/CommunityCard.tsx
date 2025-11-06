@@ -11,6 +11,7 @@ import IconButton from "@mui/material/IconButton";
 import RemoveRedEyeIcon from "@mui/icons-material/RemoveRedEye";
 import FavoriteIcon from "@mui/icons-material/Favorite";
 import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
+import { useTranslation } from "react-i18next";
 
 interface CommunityCardProps {
   boardArticle: BoardArticle;
@@ -23,6 +24,7 @@ const CommunityCard = (props: CommunityCardProps) => {
   const device = useDeviceDetect();
   const router = useRouter();
   const user = useReactiveVar(userVar);
+  const { t } = useTranslation("common");
   const imagePath: string = boardArticle?.articleImage
     ? `${REACT_APP_API_URL}/${boardArticle?.articleImage}`
     : "/img/community/communityImg.png";
@@ -82,7 +84,7 @@ const CommunityCard = (props: CommunityCardProps) => {
               <RemoveRedEyeIcon />
             </IconButton>
             <Typography className="view-cnt">
-              {boardArticle?.articleViews}
+              {boardArticle?.articleViews} {t("community.views")}
             </Typography>
             <IconButton
               color={"default"}
@@ -98,7 +100,7 @@ const CommunityCard = (props: CommunityCardProps) => {
               )}
             </IconButton>
             <Typography className="view-cnt">
-              {boardArticle?.articleLikes}
+              {boardArticle?.articleLikes} {t("community.likes")}
             </Typography>
           </Stack>
         </Stack>

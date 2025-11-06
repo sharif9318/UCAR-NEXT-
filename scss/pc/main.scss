@@ -47,10 +47,41 @@ body {
   -ms-overflow-style: none;
   scrollbar-width: none;
   overflow-y: scroll;
+  margin: 0; // ensure no default body margin pushes content down
 
   &::-webkit-scrollbar {
     display: none;
   }
+}
+
+/* Theme-specific variables for the hero/header area */
+[data-theme="light"] .header-basic {
+  --text-on-hero: #111;
+  --hero-title-color: #111;
+  --hero-subtitle-color: rgba(0, 0, 0, 0.8);
+  --hero-cta-border: rgba(0, 0, 0, 0.3);
+  --hero-cta-color: #111;
+  --hero-chip-bg: rgba(255, 255, 255, 0.9);
+  --hero-overlay: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.1) 0%,
+    rgba(255, 255, 255, 0.6) 100%
+  );
+}
+
+[data-theme="dark"] .header-basic,
+[data-theme="elevatedDark"] .header-basic {
+  --text-on-hero: #fff;
+  --hero-title-color: #fff;
+  --hero-subtitle-color: rgba(255, 255, 255, 0.85);
+  --hero-cta-border: rgba(255, 255, 255, 0.4);
+  --hero-cta-color: #fff;
+  --hero-chip-bg: rgba(255, 255, 255, 0.575);
+  --hero-overlay: linear-gradient(
+    180deg,
+    rgba(0, 0, 0, 0.35) 0%,
+    rgba(0, 0, 0, 0.65) 100%
+  );
 }
 
 // ============================================
@@ -194,21 +225,16 @@ body {
               align-items: center;
               justify-content: center;
               border-radius: 60px;
-              border: 1px solid #ffffff;
+              border: 1px solid var(--hero-cta-border, rgba(255, 255, 255, 0.7));
               cursor: pointer;
 
               svg {
-                color: #ffffff;
+                color: var(--hero-cta-color, var(--text-on-hero, #fff));
                 margin-right: 10px;
               }
 
               span {
-                font-family: $font;
-                font-size: 14px;
-                font-style: normal;
-                font-weight: 600;
-                line-height: normal;
-                color: #ffffff;
+                color: var(--hero-cta-color, var(--text-on-hero, #fff));
               }
             }
 
@@ -226,8 +252,9 @@ body {
             margin-left: 28px;
             display: flex;
             align-items: center;
+
             .notification-icon {
-              color: white;
+              color: var(--text-on-hero, #fff);
             }
             .btn-lang {
               border-radius: 4px;
@@ -235,6 +262,21 @@ body {
                 width: 24px;
                 height: 17px;
                 border-radius: 2px;
+              }
+
+              // Ensure inner flag image never grows
+              .flag {
+                display: inline-flex;
+                align-items: center;
+                img {
+                  width: 24px !important;
+                  height: 17px !important;
+                  max-width: 24px !important;
+                  max-height: 17px !important;
+                  object-fit: cover;
+                  border-radius: 2px;
+                  display: block;
+                }
               }
             }
             .img-flag {
@@ -273,23 +315,18 @@ body {
             align-items: center;
             justify-content: space-between;
             border-radius: 12px;
-            background: rgba(255, 255, 255, 0.575);
+            background: var(--hero-chip-bg, rgba(255, 255, 255, 0.575));
             box-sizing: border-box;
             cursor: pointer;
 
             &.on {
               background: #ffffff;
-              border: 1px solid #000;
-              color: #181a20;
+              border: 1px solid var(--text-on-hero, #000);
+              color: var(--text-on-hero, #181a20);
             }
 
             span {
-              color: #181a20;
-              font-family: $font;
-              font-size: 14px;
-              font-style: normal;
-              font-weight: 400;
-              line-height: 26px;
+              color: var(--text-on-hero, #181a20);
             }
           }
         }
@@ -312,7 +349,7 @@ body {
             }
 
             span {
-              color: #fff;
+              color: var(--text-on-hero, #fff);
               font-family: $font;
               font-size: 20px;
               font-style: normal;
@@ -919,17 +956,144 @@ body {
   display: flex;
   flex-direction: row;
   justify-content: center;
-  background: black;
+  background: none; // image from LayoutBasic + overlay below
+
+  &::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: var(
+      --hero-overlay,
+      linear-gradient(180deg, rgba(0, 0, 0, 0.35) 0%, rgba(0, 0, 0, 0.65) 100%)
+    );
+    z-index: 0;
+    pointer-events: none;
+  }
 
   &.auth {
     height: 300px;
   }
 
+  // Top navigation container inside the hero
+  .nav-container {
+    // align visually with InteractiveNavbar toggle and stick to top
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 2;
+    width: 1300px;
+    max-width: 95vw;
+    margin: 0; // remove vertical offset
+    padding-right: 96px; // default: collapsed sidebar (70px) + 16px padding
+
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+
+    .logo-box {
+      img {
+        height: 100px;
+        width: 400px;
+        object-fit: contain;
+        cursor: pointer;
+      }
+    }
+
+    .user-box {
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      gap: 12px;
+
+      .join-box {
+        width: 184px;
+        height: 47px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 60px;
+        border: 1px solid var(--hero-cta-border, rgba(255, 255, 255, 0.4));
+        cursor: pointer;
+
+        svg {
+          color: var(--hero-cta-color, var(--text-on-hero, #fff));
+          margin-right: 10px;
+        }
+
+        span {
+          font-family: $font;
+          font-size: 14px;
+          font-weight: 600;
+          color: var(--hero-cta-color, var(--text-on-hero, #fff));
+        }
+      }
+
+      .login-user {
+        img {
+          width: 42px;
+          height: 42px;
+          border-radius: 50%;
+          object-fit: cover;
+        }
+      }
+    }
+
+    .lan-box {
+      margin-left: 8px;
+      display: flex;
+      align-items: center;
+
+      .notification-icon {
+        color: var(--text-on-hero, #fff);
+        margin-right: 4px;
+      }
+
+      .btn-lang {
+        border-radius: 4px;
+        min-width: auto;
+        padding: 4px 6px;
+
+        img {
+          width: 24px;
+          height: 17px;
+          border-radius: 2px;
+        }
+
+        // Ensure inner flag image never grows
+        .flag {
+          display: inline-flex;
+          align-items: center;
+          img {
+            width: 24px !important;
+            height: 17px !important;
+            max-width: 24px !important;
+            max-height: 17px !important;
+            object-fit: cover;
+            border-radius: 2px;
+            display: block;
+          }
+        }
+      }
+
+      .img-flag {
+        width: 24px;
+        height: 17px;
+        border-radius: 2px;
+        margin-right: 8px;
+      }
+    }
+  }
+
+  // Title/Subtitle container that sits below the nav
   .container {
+    position: relative;
+    z-index: 1;
     margin-top: 175px;
 
     strong {
-      color: #fff;
+      color: var(--hero-title-color, #fff);
       font-family: $font;
       font-size: 48px;
       font-style: normal;
@@ -937,16 +1101,28 @@ body {
       line-height: normal;
       letter-spacing: 0.96px;
       text-transform: capitalize;
+      text-shadow: 0 2px 12px rgba(0, 0, 0, 0.35);
     }
 
     span {
-      color: #fff;
+      color: var(--hero-subtitle-color, #fff);
       font-family: $font;
       font-size: 24px;
       font-style: normal;
       font-weight: 400;
       line-height: 26px;
+      text-shadow: 0 1px 6px rgba(0, 0, 0, 0.25);
     }
+  }
+}
+
+// Make the header nav container adapt when the sidebar expands/collapses
+#pc-wrap {
+  .InteractiveNavbar.collapsed ~ .header-basic .nav-container {
+    padding-right: 96px; // 70 + 16
+  }
+  .InteractiveNavbar.expanded ~ .header-basic .nav-container {
+    padding-right: 266px; // 250 + 16
   }
 }
 

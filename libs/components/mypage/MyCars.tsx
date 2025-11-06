@@ -13,8 +13,10 @@ import { useRouter } from "next/router";
 import { UPDATE_CAR } from "../../../apollo/user/mutation";
 import { GET_AGENT_CARS } from "../../../apollo/user/query";
 import { sweetConfirmAlert, sweetErrorHandling } from "../../sweetAlert";
+import { useTranslation } from "react-i18next";
 
 const MyCars: NextPage = ({ initialInput, ...props }: any) => {
+  const { t } = useTranslation("common");
   const device = useDeviceDetect();
   const [searchFilter, setSearchFilter] =
     useState<AgentCarsInquiry>(initialInput);
@@ -52,7 +54,7 @@ const MyCars: NextPage = ({ initialInput, ...props }: any) => {
 
   const deleteCarHandler = async (id: string) => {
     try {
-      if (await sweetConfirmAlert("Are you sure to delete this car?")) {
+      if (await sweetConfirmAlert(t("mypage.confirmDeleteCar"))) {
         await updateCar({
           variables: {
             input: {
@@ -69,7 +71,13 @@ const MyCars: NextPage = ({ initialInput, ...props }: any) => {
 
   const updateCarHandler = async (status: string, id: string) => {
     try {
-      if (await sweetConfirmAlert(`Are you sure change to ${status} status?`)) {
+      const statusLabel =
+        status === "SOLD" ? t("status.sold") : t("status.active");
+      if (
+        await sweetConfirmAlert(
+          t("mypage.confirmChangeStatus", { status: statusLabel })
+        )
+      ) {
         await updateCar({
           variables: {
             input: {
@@ -96,9 +104,9 @@ const MyCars: NextPage = ({ initialInput, ...props }: any) => {
       <div id="my-cars-page">
         <Stack className="main-title-box">
           <Stack className="right-box">
-            <Typography className="main-title">My Cars</Typography>
+            <Typography className="main-title">{t("mypage.myCars")}</Typography>
             <Typography className="sub-title">
-              We are glad to see you again!
+              {t("We are glad to see you again!")}
             </Typography>
           </Stack>
         </Stack>
@@ -112,7 +120,7 @@ const MyCars: NextPage = ({ initialInput, ...props }: any) => {
                   : "tab-name"
               }
             >
-              On Sale
+              {t("mypage.onSale")}
             </Typography>
             <Typography
               onClick={() => changeStatusHandler(CarStatus.SOLD)}
@@ -122,22 +130,30 @@ const MyCars: NextPage = ({ initialInput, ...props }: any) => {
                   : "tab-name"
               }
             >
-              On Sold
+              {t("mypage.onSold")}
             </Typography>
           </Stack>
           <Stack className="list-box">
             <Stack className="listing-title-box">
-              <Typography className="title-text">Listing title</Typography>
-              <Typography className="title-text">Date Published</Typography>
-              <Typography className="title-text">Status</Typography>
-              <Typography className="title-text">View</Typography>
-              <Typography className="title-text">Action</Typography>
+              <Typography className="title-text">
+                {t("mypage.listingTitle")}
+              </Typography>
+              <Typography className="title-text">
+                {t("mypage.datePublished")}
+              </Typography>
+              <Typography className="title-text">
+                {t("mypage.status")}
+              </Typography>
+              <Typography className="title-text">{t("mypage.view")}</Typography>
+              <Typography className="title-text">
+                {t("mypage.action")}
+              </Typography>
             </Stack>
 
             {agentProperties?.length === 0 ? (
               <div className={"no-data"}>
                 <img src="/img/icons/icoAlert.svg" alt="" />
-                <p>No Car found!</p>
+                <p>{t("car.noResults")}</p>
               </div>
             ) : (
               agentProperties.map((car: Car) => (
@@ -162,7 +178,9 @@ const MyCars: NextPage = ({ initialInput, ...props }: any) => {
                   />
                 </Stack>
                 <Stack className="total-result">
-                  <Typography>{total} car available</Typography>
+                  <Typography>
+                    {t("car.totalAvailable", { count: total })}
+                  </Typography>
                 </Stack>
               </Stack>
             )}

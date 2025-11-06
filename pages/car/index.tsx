@@ -35,6 +35,8 @@ import {
   sweetTopSmallSuccessAlert,
   sweetMixinErrorAlert,
 } from "../../libs/sweetAlert";
+import withI18n from "../../libs/i18n/withI18n";
+import { useTranslation } from "react-i18next";
 
 export const getStaticProps = async ({ locale }: any) => ({
   props: {
@@ -45,6 +47,7 @@ export const getStaticProps = async ({ locale }: any) => ({
 const CarList: NextPage = ({ initialInput, ...props }: any) => {
   const device = useDeviceDetect();
   const router = useRouter();
+  const { t } = useTranslation("common");
   const [searchFilter, setSearchFilter] = useState<CarsInquiry>(
     router?.query?.input
       ? JSON.parse(router?.query?.input as string)
@@ -55,7 +58,9 @@ const CarList: NextPage = ({ initialInput, ...props }: any) => {
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [sortingOpen, setSortingOpen] = useState(false);
-  const [filterSortName, setFilterSortName] = useState("New");
+  const [filterSortKey, setFilterSortKey] = useState<
+    "new" | "lowest" | "highest"
+  >("new");
 
   /** APOLLO REQUESTS **/
   const [likeTargetCar] = useMutation(LIKE_TARGET_CAR);
@@ -146,9 +151,8 @@ const CarList: NextPage = ({ initialInput, ...props }: any) => {
 
   const sortingHandler = useCallback(
     (e: React.MouseEvent<HTMLLIElement>) => {
-      const targetId = e.currentTarget.id;
+      const targetId = e.currentTarget.id as "new" | "lowest" | "highest";
       let updatedFilter = { ...searchFilter };
-
       switch (targetId) {
         case "new":
           updatedFilter = {
@@ -156,7 +160,7 @@ const CarList: NextPage = ({ initialInput, ...props }: any) => {
             sort: "createdAt",
             direction: Direction.ASC,
           };
-          setFilterSortName("New");
+          setFilterSortKey("new");
           break;
         case "lowest":
           updatedFilter = {
@@ -164,7 +168,7 @@ const CarList: NextPage = ({ initialInput, ...props }: any) => {
             sort: "carPrice",
             direction: Direction.ASC,
           };
-          setFilterSortName("Lowest Price");
+          setFilterSortKey("lowest");
           break;
         case "highest":
           updatedFilter = {
@@ -172,18 +176,28 @@ const CarList: NextPage = ({ initialInput, ...props }: any) => {
             sort: "carPrice",
             direction: Direction.DESC,
           };
-          setFilterSortName("Highest Price");
+          setFilterSortKey("highest");
           break;
         default:
           return;
       }
-
       setSearchFilter(updatedFilter);
       setSortingOpen(false);
       setAnchorEl(null);
     },
     [searchFilter]
   );
+
+  const sortLabel = useMemo(() => {
+    switch (filterSortKey) {
+      case "new":
+        return t("filter.newest");
+      case "lowest":
+        return t("filter.priceAsc");
+      case "highest":
+        return t("filter.priceDesc");
+    }
+  }, [filterSortKey, t]);
 
   /** MEMOIZED VALUES **/
   const totalPages = useMemo(
@@ -200,13 +214,13 @@ const CarList: NextPage = ({ initialInput, ...props }: any) => {
       <div id="car-list-page" style={{ position: "relative" }}>
         <div className="container">
           <Box component={"div"} className={"right"}>
-            <span>Sort by</span>
+            <span>{t("filter.sortBy")}</span>
             <div>
               <Button
                 onClick={sortingClickHandler}
                 endIcon={<KeyboardArrowDownRoundedIcon />}
               >
-                {filterSortName}
+                {sortLabel}
               </Button>
               <Menu
                 anchorEl={anchorEl}
@@ -220,7 +234,7 @@ const CarList: NextPage = ({ initialInput, ...props }: any) => {
                   disableRipple
                   sx={{ boxShadow: "rgba(149, 157, 165, 0.2) 0px 8px 24px" }}
                 >
-                  New
+                  {t("filter.newest")}
                 </MenuItem>
                 <MenuItem
                   onClick={sortingHandler}
@@ -228,7 +242,7 @@ const CarList: NextPage = ({ initialInput, ...props }: any) => {
                   disableRipple
                   sx={{ boxShadow: "rgba(149, 157, 165, 0.2) 0px 8px 24px" }}
                 >
-                  Lowest Price
+                  {t("filter.priceAsc")}
                 </MenuItem>
                 <MenuItem
                   onClick={sortingHandler}
@@ -236,7 +250,7 @@ const CarList: NextPage = ({ initialInput, ...props }: any) => {
                   disableRipple
                   sx={{ boxShadow: "rgba(149, 157, 165, 0.2) 0px 8px 24px" }}
                 >
-                  Highest Price
+                  {t("filter.priceDesc")}
                 </MenuItem>
               </Menu>
             </div>
@@ -263,12 +277,12 @@ const CarList: NextPage = ({ initialInput, ...props }: any) => {
                 ) : getCarsError ? (
                   <div className={"no-data"}>
                     <img src="/img/icons/icoAlert.svg" alt="" />
-                    <p>Error loading cars. Please try again.</p>
+                    <p>{t("common.errorLoading")}</p>
                   </div>
                 ) : !hasCars ? (
                   <div className={"no-data"}>
                     <img src="/img/icons/icoAlert.svg" alt="" />
-                    <p>No Cars found!</p>
+                    <p>{t("car.noResults")}</p>
                   </div>
                 ) : (
                   <>
@@ -296,7 +310,7 @@ const CarList: NextPage = ({ initialInput, ...props }: any) => {
                     </Stack>
                     <Stack className="total-result">
                       <Typography>
-                        Total {total} car{total > 1 ? "s" : ""} available
+                        {t("car.totalAvailable", { count: total })}
                       </Typography>
                     </Stack>
                   </>
@@ -329,4 +343,4 @@ CarList.defaultProps = {
   },
 };
 
-export default withLayoutBasic(CarList);
+export default withI18n()(withLayoutBasic(CarList));

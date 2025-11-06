@@ -5,8 +5,10 @@ import { Pagination, Stack, Typography } from "@mui/material";
 import CarCard from "../car/CarCard";
 import { Car } from "../../types/car/car";
 import { T } from "../../types/common";
+import { useTranslation } from "react-i18next";
 
 const RecentlyVisited: NextPage = () => {
+  const { t } = useTranslation("common");
   const device = useDeviceDetect();
   const [recentlyVisited, setRecentlyVisited] = useState<Car[]>([]);
   const [total, setTotal] = useState<number>(0);
@@ -26,9 +28,11 @@ const RecentlyVisited: NextPage = () => {
       <div id="my-favorites-page">
         <Stack className="main-title-box">
           <Stack className="right-box">
-            <Typography className="main-title">Recently Visited</Typography>
+            <Typography className="main-title">
+              {t("mypage.recentlyVisited")}
+            </Typography>
             <Typography className="sub-title">
-              We are glad to see you again!
+              {t("We are glad to see you again!")}
             </Typography>
           </Stack>
         </Stack>
@@ -40,7 +44,7 @@ const RecentlyVisited: NextPage = () => {
           ) : (
             <div className={"no-data"}>
               <img src="/img/icons/icoAlert.svg" alt="" />
-              <p>No Recently Visited Properties found!</p>
+              <p>{t("mypage.noRecentlyVisited")}</p>
             </div>
           )}
         </Stack>
@@ -57,7 +61,7 @@ const RecentlyVisited: NextPage = () => {
             </Stack>
             <Stack className="total-result">
               <Typography>
-                Total {total} recently visited propert{total > 1 ? "ies" : "y"}
+                {t("mypage.totalRecentlyVisited", { count: total })}
               </Typography>
             </Stack>
           </Stack>

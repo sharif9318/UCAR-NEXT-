@@ -12,6 +12,7 @@ import { CarsInquiry } from "../../types/car/car.input";
 import { useQuery } from "@apollo/client";
 import { GET_CARS } from "../../../apollo/user/query";
 import { T } from "../../types/common";
+import { useTranslation } from "next-i18next";
 
 interface PopularCarsProps {
   initialInput: CarsInquiry;
@@ -20,6 +21,7 @@ interface PopularCarsProps {
 const PopularCars = (props: PopularCarsProps) => {
   const { initialInput } = props;
   const device = useDeviceDetect();
+  const { t } = useTranslation("common");
   const [popularCars, setPopularCars] = useState<Car[]>([]);
 
   /** APOLLO REQUESTS **/
@@ -46,7 +48,7 @@ const PopularCars = (props: PopularCarsProps) => {
       <Stack className={"popular-properties"}>
         <Stack className={"container"}>
           <Stack className={"info-box"}>
-            <span>Popular Cars</span>
+            <span>{t("popular.titleMobile")}</span>
           </Stack>
           <Stack className={"card-box"}>
             <Swiper
@@ -96,17 +98,14 @@ const PopularCars = (props: PopularCarsProps) => {
         <Stack className={"container"}>
           <Stack className={"info-box"}>
             <Box component={"div"} className={"left"}>
-              <span>The Main Attraction</span>
-              <p>
-                See what's capturing attention. This list updates based on
-                real-time view counts.
-              </p>
+              <span>{t("popular.title")}</span>
+              <p>{t("popular.desc")}</p>
             </Box>
             <Box component={"div"} className={"right"}>
               <div className={"more-box"}>
                 <Link href={"/car"}>
                   <p>
-                    See All Categories
+                    {t("popular.seeAll")}
                     <svg
                       width="24"
                       height="24"

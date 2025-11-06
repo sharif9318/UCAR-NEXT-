@@ -24,6 +24,7 @@ import { useRouter } from "next/router";
 import CancelRoundedIcon from "@mui/icons-material/CancelRounded";
 import { carMileage } from "../../config";
 import RefreshIcon from "@mui/icons-material/Refresh";
+import { useTranslation } from "react-i18next";
 
 const MenuProps = {
   PaperProps: {
@@ -43,6 +44,7 @@ const Filter = (props: FilterType) => {
   const { searchFilter, setSearchFilter, initialInput } = props;
   const device = useDeviceDetect();
   const router = useRouter();
+  const { t } = useTranslation("common");
   const [carLocation, setCarLocation] = useState<CarLocation[]>(
     Object.values(CarLocation)
   );
@@ -783,12 +785,12 @@ const Filter = (props: FilterType) => {
         />
       )
     );
-    (searchFilter?.search?.typeList || []).forEach((t: string) =>
+    (searchFilter?.search?.typeList || []).forEach((tItem: string) =>
       chips.push(
         <Chip
-          key={`type-${t}`}
-          label={t}
-          onDelete={() => removeType(t)}
+          key={`type-${tItem}`}
+          label={tItem}
+          onDelete={() => removeType(tItem)}
           size="small"
           color="error"
           variant="outlined"
@@ -799,7 +801,7 @@ const Filter = (props: FilterType) => {
       chips.push(
         <Chip
           key={`seats-${n}`}
-          label={`${n} seats`}
+          label={`${n} ${t("car.seats")}`}
           onDelete={() => removeSeats(n)}
           size="small"
           color="error"
@@ -826,9 +828,9 @@ const Filter = (props: FilterType) => {
       chips.push(
         <Chip
           key={`mileage`}
-          label={`km ${searchFilter?.search?.mileageRange?.start ?? 0} - ${
-            searchFilter?.search?.mileageRange?.end ?? 500
-          }`}
+          label={`${t("car.km")} ${
+            searchFilter?.search?.mileageRange?.start ?? 0
+          } - ${searchFilter?.search?.mileageRange?.end ?? 500}`}
           onDelete={resetMileage}
           size="small"
           color="error"
@@ -857,13 +859,15 @@ const Filter = (props: FilterType) => {
     return (
       <Stack className={"filter-main"}>
         <Stack className={"find-your-home"} mb={"40px"}>
-          <Typography className={"title-main"}>Find Your Car</Typography>
+          <Typography className={"title-main"}>
+            {t("filter.findCar")}
+          </Typography>
           <Stack className={"input-box"}>
             <OutlinedInput
               value={searchText}
               type={"text"}
               className={"search-input"}
-              placeholder={"What are you looking for?"}
+              placeholder={t("filter.placeholder")}
               onChange={(e: any) => setSearchText(e.target.value)}
               onKeyDown={(event: any) => {
                 if (event.key == "Enter") {
@@ -888,7 +892,7 @@ const Filter = (props: FilterType) => {
               }
             />
             <img src={"/img/icons/search_icon.png"} alt={""} />
-            <Tooltip title="Reset">
+            <Tooltip title={t("filter.reset")}>
               <IconButton onClick={refreshHandler}>
                 <RefreshIcon />
               </IconButton>
@@ -903,7 +907,7 @@ const Filter = (props: FilterType) => {
               alignItems="center"
             >
               {chips}
-              <Tooltip title="Clear all">
+              <Tooltip title={t("filter.clearAll")}>
                 <IconButton onClick={refreshHandler} size="small">
                   <ClearAllIcon />
                 </IconButton>
@@ -921,7 +925,7 @@ const Filter = (props: FilterType) => {
               className={"title"}
               style={{ textShadow: "0px 3px 4px #b9b9b9" }}
             >
-              Location
+              {t("filter.location")}
             </p>
             <Stack direction="row" alignItems="center" gap={1}>
               {(searchFilter?.search?.locationList || []).length > 0 && (
@@ -947,7 +951,7 @@ const Filter = (props: FilterType) => {
                     )
                   }
                 >
-                  Clear
+                  {t("filter.clear")}
                 </Button>
               )}
               <IconButton
@@ -989,7 +993,7 @@ const Filter = (props: FilterType) => {
             alignItems="center"
             justifyContent="space-between"
           >
-            <Typography className={"title"}>Car Type</Typography>
+            <Typography className={"title"}>{t("filter.carType")}</Typography>
             {(searchFilter?.search?.typeList || []).length > 0 && (
               <Button
                 size="small"
@@ -1007,7 +1011,7 @@ const Filter = (props: FilterType) => {
                   )
                 }
               >
-                Clear
+                {t("filter.clear")}
               </Button>
             )}
           </Stack>
@@ -1036,10 +1040,10 @@ const Filter = (props: FilterType) => {
             alignItems="center"
             justifyContent="space-between"
           >
-            <Typography className={"title"}>Seats</Typography>
+            <Typography className={"title"}>{t("car.seats")}</Typography>
             {(searchFilter?.search?.seatsList || []).length > 0 && (
               <Button size="small" onClick={() => carSeatsSelectHandler(0)}>
-                Clear
+                {t("filter.clear")}
               </Button>
             )}
           </Stack>
@@ -1080,10 +1084,10 @@ const Filter = (props: FilterType) => {
             alignItems="center"
             justifyContent="space-between"
           >
-            <Typography className={"title"}>Year Range</Typography>
+            <Typography className={"title"}>{t("filter.yearRange")}</Typography>
             {(searchFilter?.search?.yearsList || []).length > 0 && (
               <Button size="small" onClick={() => carYearSelectHandler(0)}>
-                Clear
+                {t("filter.clear")}
               </Button>
             )}
           </Stack>
@@ -1124,7 +1128,7 @@ const Filter = (props: FilterType) => {
             alignItems="center"
             justifyContent="space-between"
           >
-            <Typography className={"title"}>Options</Typography>
+            <Typography className={"title"}>{t("filter.options")}</Typography>
             {(searchFilter?.search?.options || []).length > 0 && (
               <Button
                 size="small"
@@ -1142,7 +1146,7 @@ const Filter = (props: FilterType) => {
                   )
                 }
               >
-                Clear
+                {t("filter.clear")}
               </Button>
             )}
           </Stack>
@@ -1159,7 +1163,7 @@ const Filter = (props: FilterType) => {
               onChange={carOptionSelectHandler}
             />
             <label htmlFor={"Trade-In"} style={{ cursor: "pointer" }}>
-              <Typography className="car-type">Trade-In</Typography>
+              <Typography className="car-type">{t("car.sale")}</Typography>
             </label>
           </Stack>
           <Stack className={"input-box"}>
@@ -1175,7 +1179,7 @@ const Filter = (props: FilterType) => {
               onChange={carOptionSelectHandler}
             />
             <label htmlFor={"Lease"} style={{ cursor: "pointer" }}>
-              <Typography className="car-type">Lease</Typography>
+              <Typography className="car-type">{t("car.lease")}</Typography>
             </label>
           </Stack>
         </Stack>
@@ -1185,10 +1189,10 @@ const Filter = (props: FilterType) => {
             alignItems="center"
             justifyContent="space-between"
           >
-            <Typography className={"title"}>Mileage (km)</Typography>
+            <Typography className={"title"}>{t("filter.mileage")}</Typography>
             {hasMileage && (
               <Button size="small" onClick={resetMileage}>
-                Reset
+                {t("filter.reset")}
               </Button>
             )}
           </Stack>
@@ -1248,10 +1252,12 @@ const Filter = (props: FilterType) => {
             alignItems="center"
             justifyContent="space-between"
           >
-            <Typography className={"title"}>Price Range</Typography>
+            <Typography className={"title"}>
+              {t("filter.priceRange")}
+            </Typography>
             {hasPrice && (
               <Button size="small" onClick={resetPrice}>
-                Reset
+                {t("filter.reset")}
               </Button>
             )}
           </Stack>

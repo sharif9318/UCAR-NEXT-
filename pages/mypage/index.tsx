@@ -28,6 +28,7 @@ import {
   UNSUBSCRIBE,
 } from "../../apollo/user/mutation";
 import { Messages } from "../../libs/config";
+import withI18n from "../../libs/i18n/withI18n";
 
 export const getStaticProps = async ({ locale }: any) => ({
   props: {
@@ -178,4 +179,4 @@ const MyPage: NextPage = () => {
   }
 };
 
-export default withLayoutBasic(MyPage);
+export default withI18n()(withLayoutBasic(MyPage));

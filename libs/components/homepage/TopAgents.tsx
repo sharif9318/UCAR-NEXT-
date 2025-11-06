@@ -12,6 +12,7 @@ import { useQuery } from "@apollo/client";
 import { GET_AGENTS } from "../../../apollo/user/query";
 import { T } from "../../types/common";
 import Link from "next/link";
+import { useTranslation } from "next-i18next";
 
 interface TopAgentsProps {
   initialInput: AgentsInquiry;
@@ -22,6 +23,7 @@ const TopAgents = (props: TopAgentsProps) => {
   const device = useDeviceDetect();
   const router = useRouter();
   const [topAgents, setTopAgents] = useState<Member[]>([]);
+  const { t } = useTranslation("common");
 
   /** APOLLO REQUESTS **/
   const {
@@ -45,7 +47,7 @@ const TopAgents = (props: TopAgentsProps) => {
       <Stack className={"top-agents"}>
         <Stack className={"container"}>
           <Stack className={"info-box"}>
-            <span>Top Agents</span>
+            <span>{t("agents.titleMobile")}</span>
           </Stack>
           <Stack className={"wrapper"}>
             <Swiper
@@ -82,17 +84,14 @@ const TopAgents = (props: TopAgentsProps) => {
         <Stack className={"container"}>
           <Stack className={"info-box"}>
             <Box component={"div"} className={"left"}>
-              <span>Expert Rankings</span>
-              <p>
-                Connecting you with the best. We calculate agent rankings based
-                on their complete professional profile and engagement.
-              </p>
+              <span>{t("agents.title")}</span>
+              <p>{t("agents.desc")}</p>
             </Box>
             <Box component={"div"} className={"right"}>
               <div className={"more-box"}>
                 <Link href={"/agent"}>
                   <p>
-                    See All Agents
+                    {t("agents.seeAll")}
                     <svg
                       width="24"
                       height="24"

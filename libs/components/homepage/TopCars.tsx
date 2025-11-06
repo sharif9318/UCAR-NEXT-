@@ -17,6 +17,7 @@ import {
   sweetTopSmallSuccessAlert,
   sweetMixinErrorAlert,
 } from "../../sweetAlert";
+import { useTranslation } from "next-i18next";
 
 interface TopCarsProps {
   initialInput: CarsInquiry;
@@ -26,6 +27,7 @@ interface TopCarsProps {
 const TopCars = (props: TopCarsProps) => {
   const { initialInput, onCarsLoaded } = props;
   const device = useDeviceDetect();
+  const { t } = useTranslation("common");
   const [topCars, setTopCars] = useState<Car[]>([]);
 
   /** APOLLO REQUESTS **/
@@ -102,7 +104,7 @@ const TopCars = (props: TopCarsProps) => {
       <Stack className={"top-properties"}>
         <Stack className={"container"}>
           <Stack className={"info-box"}>
-            <span>Top cars</span>
+            <span>{t("top.titleMobile")}</span>
           </Stack>
           <Stack className={"card-box"}>
             <Swiper
@@ -139,11 +141,8 @@ const TopCars = (props: TopCarsProps) => {
         <Stack className={"container"}>
           <Stack className={"info-box"}>
             <Box component={"div"} className={"left"}>
-              <span>Leaderboard</span>
-              <p>
-                Where popularity meets quality. Cars are ranked by engagement,
-                valuing likes twice as much as views.
-              </p>
+              <span>{t("top.title")}</span>
+              <p>{t("top.desc")}</p>
             </Box>
             <Box component={"div"} className={"right"}>
               <div className={"pagination-box"}>

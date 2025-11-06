@@ -41,6 +41,8 @@ import { serverSideTranslations } from "next-i18next/serverSideTranslations";
 import { CREATE_COMMENT, LIKE_TARGET_CAR } from "../../apollo/user/mutation";
 import { GET_COMMENTS, GET_MEMBER, GET_CARS } from "../../apollo/user/query";
 import { T } from "../../libs/types/common";
+import withI18n from "../../libs/i18n/withI18n";
+import { useTranslation } from "react-i18next";
 
 export const getStaticProps = async ({ locale }: any) => ({
   props: {
@@ -48,21 +50,20 @@ export const getStaticProps = async ({ locale }: any) => ({
   },
 });
 
-const AgentDetail: NextPage = ({
-  initialInput,
-  initialComment,
-  ...props
-}: any) => {
+const AgentDetail: NextPage = (props: any) => {
   const device = useDeviceDetect();
   const router = useRouter();
   const user = useReactiveVar(userVar);
   const [agentId, setAgentId] = useState<string>("");
   const [agent, setAgent] = useState<Member | null>(null);
-  const [searchFilter, setSearchFilter] = useState<CarsInquiry>(initialInput);
+  const [searchFilter, setSearchFilter] = useState<CarsInquiry>(
+    props.initialInput
+  );
   const [agentCars, setAgentCars] = useState<Car[]>([]);
   const [carTotal, setCarTotal] = useState<number>(0);
-  const [commentInquiry, setCommentInquiry] =
-    useState<CommentsInquiry>(initialComment);
+  const [commentInquiry, setCommentInquiry] = useState<CommentsInquiry>(
+    props.initialComment
+  );
   const [agentComments, setAgentComments] = useState<Comment[]>([]);
   const [commentTotal, setCommentTotal] = useState<number>(0);
   const [insertCommentData, setInsertCommentData] = useState<CommentInput>({
@@ -254,6 +255,8 @@ const AgentDetail: NextPage = ({
 
   const hasCars = useMemo(() => agentCars.length > 0, [agentCars.length]);
 
+  const { t } = useTranslation("common");
+
   if (device === "mobile") {
     return <div>AGENT DETAIL PAGE MOBILE</div>;
   } else {
@@ -300,10 +303,7 @@ const AgentDetail: NextPage = ({
                 <Stack className={"card-wrap"}>
                   {agentCars.map((car: Car) => (
                     <div className={"wrap-main"} key={car?._id}>
-                      <CarBigCard
-                        property={car}
-                        likeCarHandler={likeCarHandler}
-                      />
+                      <CarBigCard car={car} likeCarHandler={likeCarHandler} />
                     </div>
                   ))}
                 </Stack>
@@ -320,13 +320,13 @@ const AgentDetail: NextPage = ({
                         />
                       </Stack>
                       <span>
-                        Total {carTotal} car{carTotal > 1 ? "s" : ""} available
+                        {t("car.totalAvailable", { count: carTotal })}
                       </span>
                     </>
                   ) : (
                     <div className={"no-data"}>
                       <img src="/img/icons/icoAlert.svg" alt="" />
-                      <p>No cars found!</p>
+                      <p>{t("car.noResults")}</p>
                     </div>
                   )}
                 </Stack>
@@ -438,4 +438,4 @@ AgentDetail.defaultProps = {
   },
 };
 
-export default withLayoutBasic(AgentDetail);
+export default withI18n()(withLayoutBasic(AgentDetail));

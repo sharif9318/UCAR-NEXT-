@@ -5,8 +5,10 @@ import { Pagination, Stack, Typography } from "@mui/material";
 import CarCard from "../car/CarCard";
 import { Car } from "../../types/car/car";
 import { T } from "../../types/common";
+import { useTranslation } from "react-i18next";
 
 const MyFavorites: NextPage = () => {
+  const { t } = useTranslation("common");
   const device = useDeviceDetect();
   const [myFavorites, setMyFavorites] = useState<Car[]>([]);
   const [total, setTotal] = useState<number>(0);
@@ -29,9 +31,11 @@ const MyFavorites: NextPage = () => {
       <div id="my-favorites-page">
         <Stack className="main-title-box">
           <Stack className="right-box">
-            <Typography className="main-title">My Favorites</Typography>
+            <Typography className="main-title">
+              {t("mypage.myFavorites")}
+            </Typography>
             <Typography className="sub-title">
-              We are glad to see you again!
+              {t("We are glad to see you again!")}
             </Typography>
           </Stack>
         </Stack>
@@ -43,7 +47,7 @@ const MyFavorites: NextPage = () => {
           ) : (
             <div className={"no-data"}>
               <img src="/img/icons/icoAlert.svg" alt="" />
-              <p>No Favorites found!</p>
+              <p>{t("mypage.noFavorites")}</p>
             </div>
           )}
         </Stack>
@@ -60,7 +64,7 @@ const MyFavorites: NextPage = () => {
             </Stack>
             <Stack className="total-result">
               <Typography>
-                Total {total} favorite car{total > 1 ? "s" : ""}
+                {t("mypage.totalFavorites", { count: total })}
               </Typography>
             </Stack>
           </Stack>

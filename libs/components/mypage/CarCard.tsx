@@ -9,6 +9,7 @@ import { formatterStr } from "../../utils";
 import Moment from "react-moment";
 import { useRouter } from "next/router";
 import { CarStatus } from "../../enums/car.enum";
+import { useTranslation } from "react-i18next";
 
 interface CarCardProps {
   car: Car;
@@ -23,6 +24,7 @@ export const CarCard = (props: CarCardProps) => {
   const router = useRouter();
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
+  const { t } = useTranslation("common");
 
   /** HANDLERS **/
   const pushEditCar = async (id: string) => {
@@ -50,6 +52,9 @@ export const CarCard = (props: CarCardProps) => {
     setAnchorEl(null);
   };
 
+  const statusLabel =
+    car.carStatus === "SOLD" ? t("status.sold") : t("status.active");
+
   if (device === "mobile") {
     return <div>MOBILE CAR CARD</div>;
   } else
@@ -68,7 +73,8 @@ export const CarCard = (props: CarCardProps) => {
           <Typography className="name">{car.carTitle}</Typography>
           <Typography className="address">{car.carAddress}</Typography>
           <Typography className="price">
-            <strong>${formatterStr(car?.carPrice)}</strong>/ mo
+            <strong>${formatterStr(car?.carPrice)}</strong>/{" "}
+            {t("car.month", { defaultValue: "mo" })}
           </Typography>
         </Stack>
         <Stack className="date-box">
@@ -83,7 +89,7 @@ export const CarCard = (props: CarCardProps) => {
             onClick={handleClick}
           >
             <Typography className="status" sx={{ color: "#3554d1" }}>
-              {car.carStatus}
+              {statusLabel}
             </Typography>
           </Stack>
         </Stack>
@@ -117,7 +123,7 @@ export const CarCard = (props: CarCardProps) => {
                     updateCarHandler?.(CarStatus.SOLD, car?._id);
                   }}
                 >
-                  Sold
+                  {t("status.sold")}
                 </MenuItem>
               </>
             )}

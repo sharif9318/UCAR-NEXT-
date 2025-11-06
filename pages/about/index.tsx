@@ -3,6 +3,7 @@ import { NextPage } from "next";
 import useDeviceDetect from "../../libs/hooks/useDeviceDetect";
 import withLayoutBasic from "../../libs/components/layout/LayoutBasic";
 import { Stack, Box } from "@mui/material";
+import withI18n from "../../libs/i18n/withI18n";
 
 const About: NextPage = () => {
   const device = useDeviceDetect();
@@ -168,4 +169,4 @@ const About: NextPage = () => {
   }
 };
 
-export default withLayoutBasic(About);
+export default withI18n()(withLayoutBasic(About));

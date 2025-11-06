@@ -14,10 +14,12 @@ import { userVar } from "../../../apollo/store";
 import { CREATE_CAR, UPDATE_CAR } from "../../../apollo/user/mutation";
 import { GET_CAR } from "../../../apollo/user/query";
 import Panorama360Modal from "../common/Panorama360Modal";
+import { useTranslation } from "react-i18next";
 
 const AddNewCar = ({ initialValues, ...props }: any) => {
   const device = useDeviceDetect();
   const router = useRouter();
+  const { t } = useTranslation("common");
   const inputRef = useRef<any>(null);
   const [insertCarData, setInsertCarData] = useState<CarInput>(initialValues);
   const car360Ref = useRef<any>(null);
@@ -72,9 +74,9 @@ const AddNewCar = ({ initialValues, ...props }: any) => {
   useEffect(() => {
     if (getCarError) {
       console.error("Car loading error:", getCarError);
-      sweetMixinErrorAlert("Failed to load car data");
+      sweetMixinErrorAlert(t("common.errorLoading"));
     }
-  }, [getCarError]);
+  }, [getCarError, t]);
 
   useEffect(() => {
     if (getCarData?.getCar && !getCarLoading) {
@@ -111,7 +113,7 @@ const AddNewCar = ({ initialValues, ...props }: any) => {
       }
       if (selectedFiles.length > 5) {
         setIsUploading360(false);
-        throw new Error("Cannot upload more than 5 360° images!");
+        throw new Error(t("mypage.upload360.limit"));
       }
 
       const mutationVariables = {
@@ -167,9 +169,7 @@ const AddNewCar = ({ initialValues, ...props }: any) => {
       const responseImages = response.data.data?.imagesUploader;
 
       if (!responseImages || responseImages.length === 0) {
-        await sweetMixinErrorAlert(
-          "360° upload failed - server returned no images. The backend may not support the 'car360' target."
-        );
+        await sweetMixinErrorAlert(t("mypage.upload360.noServerImages"));
         return;
       }
 
@@ -196,7 +196,7 @@ const AddNewCar = ({ initialValues, ...props }: any) => {
       }
       if (selectedFiles.length > 5) {
         setIsUploading(false);
-        throw new Error("Cannot upload more than 5 images!");
+        throw new Error(t("mypage.upload.limit"));
       }
 
       formData.append(
@@ -248,9 +248,7 @@ const AddNewCar = ({ initialValues, ...props }: any) => {
       const responseImages = response.data.data?.imagesUploader;
 
       if (!responseImages || responseImages.length === 0) {
-        await sweetMixinErrorAlert(
-          "Upload failed - server returned no images."
-        );
+        await sweetMixinErrorAlert(t("mypage.upload.noServerImages"));
         return;
       }
 
@@ -337,18 +335,18 @@ const AddNewCar = ({ initialValues, ...props }: any) => {
       });
 
       if (result.data?.createCar) {
-        await sweetMixinSuccessAlert("Car created successfully!");
+        await sweetMixinSuccessAlert(t("mypage.create.success"));
         await router.push(`/car/detail?id=${result.data.createCar._id}`);
       }
     } catch (err: any) {
-      await sweetMixinErrorAlert(err.message || "Failed to create car");
+      await sweetMixinErrorAlert(err.message || t("mypage.create.fail"));
     }
-  }, [insertCarData, createCar, router]);
+  }, [insertCarData, createCar, router, t]);
 
   const updateCarHandler = useCallback(async () => {
     try {
       if (!carId) {
-        throw new Error("Car ID is required for update");
+        throw new Error(t("mypage.update.noId"));
       }
 
       const input: CarUpdate = {
@@ -374,15 +372,15 @@ const AddNewCar = ({ initialValues, ...props }: any) => {
       });
 
       if (result.data?.updateCar) {
-        await sweetMixinSuccessAlert("Car updated successfully!");
+        await sweetMixinSuccessAlert(t("mypage.update.success"));
         await router.push(`/car/detail?id=${result.data.updateCar._id}`);
       } else {
-        throw new Error("Update failed - no data returned");
+        throw new Error(t("mypage.update.noData"));
       }
     } catch (err: any) {
-      await sweetMixinErrorAlert(err.message || "Failed to update car");
+      await sweetMixinErrorAlert(err.message || t("mypage.update.fail"));
     }
-  }, [insertCarData, updateCar, router, carId]);
+  }, [insertCarData, updateCar, router, carId, t]);
 
   if (user?.memberType !== "AGENT") {
     router.back();
@@ -397,9 +395,11 @@ const AddNewCar = ({ initialValues, ...props }: any) => {
     return (
       <div id="add-car-page">
         <Stack className="main-title-box">
-          <Typography className="main-title">Loading Car Data...</Typography>
+          <Typography className="main-title">
+            {t("mypage.loadingCar")}
+          </Typography>
           <Typography className="sub-title">
-            Please wait while we fetch the car information.
+            {t("mypage.loadingCarSubtitle")}
           </Typography>
         </Stack>
       </div>
@@ -410,10 +410,10 @@ const AddNewCar = ({ initialValues, ...props }: any) => {
     <div id="add-car-page">
       <Stack className="main-title-box">
         <Typography className="main-title">
-          {carId ? "Edit Car" : "Add New Car"}
+          {carId ? t("mypage.editCarTitle") : t("mypage.addCarTitle")}
         </Typography>
         <Typography className="sub-title">
-          We are glad to see you again!
+          {t("We are glad to see you again!")}
         </Typography>
       </Stack>
 
@@ -424,11 +424,13 @@ const AddNewCar = ({ initialValues, ...props }: any) => {
             <div className="left-pane">
               <Stack className="description-box">
                 <Stack className="config-column">
-                  <Typography className="title">Title</Typography>
+                  <Typography className="title">
+                    {t("mypage.carForm.title")}
+                  </Typography>
                   <input
                     type="text"
                     className="description-input"
-                    placeholder={"Title"}
+                    placeholder={t("mypage.carForm.title")}
                     value={insertCarData.carTitle}
                     onChange={({ target: { value } }) =>
                       setInsertCarData((prevData) => ({
@@ -441,11 +443,13 @@ const AddNewCar = ({ initialValues, ...props }: any) => {
 
                 <Stack className="config-row">
                   <Stack className="price-year-after-price">
-                    <Typography className="title">Price</Typography>
+                    <Typography className="title">
+                      {t("mypage.carForm.price")}
+                    </Typography>
                     <input
                       type="text"
                       className="description-input"
-                      placeholder={"Price"}
+                      placeholder={t("mypage.carForm.price")}
                       value={insertCarData.carPrice}
                       onChange={({ target: { value } }) =>
                         setInsertCarData((prevData) => ({
@@ -456,7 +460,9 @@ const AddNewCar = ({ initialValues, ...props }: any) => {
                     />
                   </Stack>
                   <Stack className="price-year-after-price">
-                    <Typography className="title">Select Type</Typography>
+                    <Typography className="title">
+                      {t("mypage.carForm.selectType")}
+                    </Typography>
                     <select
                       className={"select-description"}
                       value={insertCarData.carType || "select"}
@@ -471,7 +477,7 @@ const AddNewCar = ({ initialValues, ...props }: any) => {
                     >
                       <>
                         <option disabled={true} value={"select"}>
-                          Select
+                          {t("mypage.carForm.select")}
                         </option>
                         {carType.map((type: any) => (
                           <option value={`${type}`} key={type}>
@@ -490,7 +496,9 @@ const AddNewCar = ({ initialValues, ...props }: any) => {
 
                 <Stack className="config-row">
                   <Stack className="price-year-after-price">
-                    <Typography className="title">Select Location</Typography>
+                    <Typography className="title">
+                      {t("mypage.carForm.selectLocation")}
+                    </Typography>
                     <select
                       className={"select-description"}
                       value={insertCarData.carLocation || "select"}
@@ -505,7 +513,7 @@ const AddNewCar = ({ initialValues, ...props }: any) => {
                     >
                       <>
                         <option disabled={true} value={"select"}>
-                          Select
+                          {t("mypage.carForm.select")}
                         </option>
                         {carLocation.map((location: any) => (
                           <option value={`${location}`} key={location}>
@@ -521,11 +529,13 @@ const AddNewCar = ({ initialValues, ...props }: any) => {
                     />
                   </Stack>
                   <Stack className="price-year-after-price">
-                    <Typography className="title">Address</Typography>
+                    <Typography className="title">
+                      {t("mypage.carForm.address")}
+                    </Typography>
                     <input
                       type="text"
                       className="description-input"
-                      placeholder={"Address"}
+                      placeholder={t("mypage.carForm.address")}
                       value={insertCarData.carAddress}
                       onChange={({ target: { value } }) =>
                         setInsertCarData((prevData) => ({
@@ -539,7 +549,9 @@ const AddNewCar = ({ initialValues, ...props }: any) => {
 
                 <Stack className="config-row">
                   <Stack className="price-year-after-price">
-                    <Typography className="title">Trade-In</Typography>
+                    <Typography className="title">
+                      {t("mypage.carForm.tradeIn")}
+                    </Typography>
                     <div className="toggle-group">
                       <button
                         type="button"
@@ -553,7 +565,7 @@ const AddNewCar = ({ initialValues, ...props }: any) => {
                           }))
                         }
                       >
-                        Yes
+                        {t("mypage.common.yes")}
                       </button>
                       <button
                         type="button"
@@ -567,12 +579,14 @@ const AddNewCar = ({ initialValues, ...props }: any) => {
                           }))
                         }
                       >
-                        No
+                        {t("mypage.common.no")}
                       </button>
                     </div>
                   </Stack>
                   <Stack className="price-year-after-price">
-                    <Typography className="title">Lease</Typography>
+                    <Typography className="title">
+                      {t("mypage.carForm.lease")}
+                    </Typography>
                     <div className="toggle-group">
                       <button
                         type="button"
@@ -586,7 +600,7 @@ const AddNewCar = ({ initialValues, ...props }: any) => {
                           }))
                         }
                       >
-                        Yes
+                        {t("mypage.common.yes")}
                       </button>
                       <button
                         type="button"
@@ -600,7 +614,7 @@ const AddNewCar = ({ initialValues, ...props }: any) => {
                           }))
                         }
                       >
-                        No
+                        {t("mypage.common.no")}
                       </button>
                     </div>
                   </Stack>
@@ -608,7 +622,9 @@ const AddNewCar = ({ initialValues, ...props }: any) => {
 
                 <Stack className="config-row">
                   <Stack className="price-year-after-price">
-                    <Typography className="title">Seats</Typography>
+                    <Typography className="title">
+                      {t("mypage.carForm.seats")}
+                    </Typography>
                     <select
                       className={"select-description"}
                       value={insertCarData.carSeats || "select"}
@@ -620,7 +636,7 @@ const AddNewCar = ({ initialValues, ...props }: any) => {
                       }
                     >
                       <option disabled={true} value={"select"}>
-                        Select
+                        {t("mypage.carForm.select")}
                       </option>
                       {[2, 3, 4, 5, 6, 7, 8, 9].map((seat: number) => (
                         <option value={`${seat}`} key={seat}>
@@ -635,7 +651,9 @@ const AddNewCar = ({ initialValues, ...props }: any) => {
                     />
                   </Stack>
                   <Stack className="price-year-after-price">
-                    <Typography className="title">Year</Typography>
+                    <Typography className="title">
+                      {t("mypage.carForm.year")}
+                    </Typography>
                     <select
                       className={"select-description"}
                       value={insertCarData.carYear || "select"}
@@ -647,7 +665,7 @@ const AddNewCar = ({ initialValues, ...props }: any) => {
                       }
                     >
                       <option disabled={true} value={"select"}>
-                        Select
+                        {t("mypage.carForm.select")}
                       </option>
                       {carYears
                         .slice()
@@ -665,7 +683,9 @@ const AddNewCar = ({ initialValues, ...props }: any) => {
                     />
                   </Stack>
                   <Stack className="price-year-after-price">
-                    <Typography className="title">Mileage</Typography>
+                    <Typography className="title">
+                      {t("mypage.carForm.mileage")}
+                    </Typography>
                     <select
                       className={"select-description"}
                       value={insertCarData.carMileage || "select"}
@@ -677,13 +697,13 @@ const AddNewCar = ({ initialValues, ...props }: any) => {
                       }
                     >
                       <option disabled={true} value={"select"}>
-                        Select
+                        {t("mypage.carForm.select")}
                       </option>
                       {carMileage.map((mileage: number) => {
                         if (mileage !== 0) {
                           return (
                             <option value={`${mileage}`} key={mileage}>
-                              {mileage.toLocaleString()} miles
+                              {mileage.toLocaleString()} {t("car.miles")}
                             </option>
                           );
                         }
@@ -697,9 +717,13 @@ const AddNewCar = ({ initialValues, ...props }: any) => {
                   </Stack>
                 </Stack>
 
-                <Typography className="car-title">Car Description</Typography>
+                <Typography className="car-title">
+                  {t("mypage.carForm.descriptionHeader")}
+                </Typography>
                 <Stack className="config-column">
-                  <Typography className="title">Description</Typography>
+                  <Typography className="title">
+                    {t("mypage.carForm.description")}
+                  </Typography>
                   <textarea
                     name=""
                     id=""
@@ -716,7 +740,7 @@ const AddNewCar = ({ initialValues, ...props }: any) => {
 
                 <Stack className="config-column">
                   <Typography className="title">
-                    Manufactured Date (Optional)
+                    {t("mypage.carForm.manufacturedAt")}
                   </Typography>
                   <input
                     type="date"
@@ -741,7 +765,9 @@ const AddNewCar = ({ initialValues, ...props }: any) => {
 
             <aside className="right-preview">
               <Stack className="preview-card">
-                <Typography className="preview-title">Live Preview</Typography>
+                <Typography className="preview-title">
+                  {t("mypage.preview.title")}
+                </Typography>
                 <div className="preview-image">
                   <img
                     src={
@@ -754,23 +780,31 @@ const AddNewCar = ({ initialValues, ...props }: any) => {
                   <div className="price-chip">
                     {insertCarData.carPrice
                       ? `$${(insertCarData.carPrice || 0).toLocaleString()}`
-                      : "Set a price"}
+                      : t("mypage.preview.setPrice")}
                   </div>
                 </div>
                 <div className="preview-meta">
                   <Typography className="name">
-                    {insertCarData.carTitle || "Untitled Car"}
+                    {insertCarData.carTitle || t("mypage.preview.untitled")}
                   </Typography>
                   <Typography className="address">
-                    {insertCarData.carAddress || "Address not set"}
+                    {insertCarData.carAddress || t("mypage.noAddress")}
                   </Typography>
                   <div className="specs">
-                    <span>{insertCarData.carType || "Type"}</span>
-                    <span>{insertCarData.carYear || "Year"}</span>
+                    <span>
+                      {insertCarData.carType ||
+                        t("mypage.preview.typePlaceholder")}
+                    </span>
+                    <span>
+                      {insertCarData.carYear ||
+                        t("mypage.preview.yearPlaceholder")}
+                    </span>
                     <span>
                       {insertCarData.carMileage
-                        ? `${insertCarData.carMileage.toLocaleString()} miles`
-                        : "Mileage"}
+                        ? `${insertCarData.carMileage.toLocaleString()} ${t(
+                            "car.miles"
+                          )}`
+                        : t("mypage.preview.mileagePlaceholder")}
                     </span>
                   </div>
                   <div className="preview-thumbs">
@@ -791,7 +825,7 @@ const AddNewCar = ({ initialValues, ...props }: any) => {
           </div>
 
           <Typography className="upload-title">
-            Upload photos of your car
+            {t("mypage.upload.title")}
           </Typography>
           <Stack className="images-box">
             <Stack
@@ -834,7 +868,9 @@ const AddNewCar = ({ initialValues, ...props }: any) => {
                   const files = Array.from(e.dataTransfer.files);
 
                   if (files.length === 0) {
-                    await sweetMixinErrorAlert("No files were dropped!");
+                    await sweetMixinErrorAlert(
+                      t("mypage.upload.noFilesDropped")
+                    );
                     return;
                   }
 
@@ -858,7 +894,9 @@ const AddNewCar = ({ initialValues, ...props }: any) => {
 
                   if (invalidFiles.length > 0) {
                     await sweetMixinErrorAlert(
-                      `${invalidFiles.length} file(s) rejected. Only JPEG, JPG, PNG, or AVIF files are allowed!`
+                      t("mypage.upload.invalidTypes", {
+                        count: invalidFiles.length,
+                      })
                     );
                   }
 
@@ -867,9 +905,7 @@ const AddNewCar = ({ initialValues, ...props }: any) => {
                   }
 
                   if (validFiles.length > 5) {
-                    await sweetMixinErrorAlert(
-                      "Cannot upload more than 5 images at once!"
-                    );
+                    await sweetMixinErrorAlert(t("mypage.upload.limit"));
                     return;
                   }
 
@@ -881,7 +917,9 @@ const AddNewCar = ({ initialValues, ...props }: any) => {
 
                   if (oversizedFiles.length > 0) {
                     await sweetMixinErrorAlert(
-                      `${oversizedFiles.length} file(s) are too large. Maximum file size is 10MB.`
+                      t("mypage.upload.maxSize", {
+                        count: oversizedFiles.length,
+                      })
                     );
                     return;
                   }
@@ -895,7 +933,7 @@ const AddNewCar = ({ initialValues, ...props }: any) => {
                   }
                 } catch (error: any) {
                   await sweetMixinErrorAlert(
-                    "Error processing dropped files: " + error.message
+                    t("mypage.upload.dropError", { message: error.message })
                   );
                 }
               }}
@@ -955,13 +993,13 @@ const AddNewCar = ({ initialValues, ...props }: any) => {
               <Stack className="text-box">
                 <Typography className="drag-title">
                   {isUploading
-                    ? "Uploading..."
+                    ? t("mypage.uploading")
                     : isDragOver
-                    ? "Drop files here!"
-                    : "Drag and drop images here"}
+                    ? t("mypage.upload.dragTitleOver")
+                    : t("mypage.upload.dragTitleDefault")}
                 </Typography>
                 <Typography className="format-title">
-                  Photos must be JPEG, JPG, PNG, or AVIF format
+                  {t("mypage.upload.formatTitle")}
                 </Typography>
               </Stack>
               <Button
@@ -972,7 +1010,9 @@ const AddNewCar = ({ initialValues, ...props }: any) => {
                 }}
               >
                 <Typography className="browse-button-text">
-                  {isUploading ? "Uploading..." : "Browse Files"}
+                  {isUploading
+                    ? t("mypage.uploading")
+                    : t("mypage.upload.browse")}
                 </Typography>
                 <input
                   ref={inputRef}
@@ -1023,14 +1063,14 @@ const AddNewCar = ({ initialValues, ...props }: any) => {
                 })
               ) : (
                 <Typography className="empty-text">
-                  No images uploaded yet
+                  {t("mypage.upload.empty")}
                 </Typography>
               )}
             </Stack>
           </Stack>
 
           <Typography className="upload-title">
-            Upload 360° photos (Optional)
+            {t("mypage.upload360.title")}
           </Typography>
           <Stack className="images-box">
             <Stack
@@ -1073,7 +1113,9 @@ const AddNewCar = ({ initialValues, ...props }: any) => {
                   const files = Array.from(e.dataTransfer.files);
 
                   if (files.length === 0) {
-                    await sweetMixinErrorAlert("No files were dropped!");
+                    await sweetMixinErrorAlert(
+                      t("mypage.upload.noFilesDropped")
+                    );
                     return;
                   }
 
@@ -1097,7 +1139,9 @@ const AddNewCar = ({ initialValues, ...props }: any) => {
 
                   if (invalidFiles.length > 0) {
                     await sweetMixinErrorAlert(
-                      `${invalidFiles.length} file(s) rejected. Only JPEG, JPG, PNG, or AVIF files are allowed for 360° images!`
+                      t("mypage.upload360.invalidTypes", {
+                        count: invalidFiles.length,
+                      })
                     );
                   }
 
@@ -1106,9 +1150,7 @@ const AddNewCar = ({ initialValues, ...props }: any) => {
                   }
 
                   if (validFiles.length > 5) {
-                    await sweetMixinErrorAlert(
-                      "Cannot upload more than 5 360° images at once!"
-                    );
+                    await sweetMixinErrorAlert(t("mypage.upload360.limit"));
                     return;
                   }
 
@@ -1120,7 +1162,9 @@ const AddNewCar = ({ initialValues, ...props }: any) => {
 
                   if (oversizedFiles.length > 0) {
                     await sweetMixinErrorAlert(
-                      `${oversizedFiles.length} 360° file(s) are too large. Maximum file size is 10MB.`
+                      t("mypage.upload360.maxSize", {
+                        count: oversizedFiles.length,
+                      })
                     );
                     return;
                   }
@@ -1134,7 +1178,7 @@ const AddNewCar = ({ initialValues, ...props }: any) => {
                   }
                 } catch (error: any) {
                   await sweetMixinErrorAlert(
-                    "Error processing dropped 360° files: " + error.message
+                    t("mypage.upload.dropError", { message: error.message })
                   );
                 }
               }}
@@ -1144,10 +1188,10 @@ const AddNewCar = ({ initialValues, ...props }: any) => {
                 style={{ marginBottom: "10px" }}
               >
                 {isUploading360
-                  ? "Uploading 360°..."
+                  ? t("mypage.upload360.uploading")
                   : isDragOver360
-                  ? "Drop 360° files here!"
-                  : "360° Images"}
+                  ? t("mypage.upload360.dragTitleOver")
+                  : t("mypage.upload360.dragTitleDefault")}
               </Typography>
               <Stack direction="row" spacing={2}>
                 <Button
@@ -1158,7 +1202,9 @@ const AddNewCar = ({ initialValues, ...props }: any) => {
                   }}
                 >
                   <Typography className="browse-button-text">
-                    {isUploading360 ? "Uploading..." : "Browse 360° Files"}
+                    {isUploading360
+                      ? t("mypage.uploading")
+                      : t("mypage.upload360.browse")}
                   </Typography>
                   <input
                     ref={car360Ref}
@@ -1184,7 +1230,7 @@ const AddNewCar = ({ initialValues, ...props }: any) => {
                       }}
                     >
                       <Typography style={{ fontSize: "14px" }}>
-                        Preview 360° View
+                        {t("mypage.upload360.preview")}
                       </Typography>
                     </Button>
                   )}
@@ -1238,7 +1284,9 @@ const AddNewCar = ({ initialValues, ...props }: any) => {
                 disabled={doDisabledCheck()}
                 onClick={updateCarHandler}
               >
-                <Typography className="next-button-text">Update Car</Typography>
+                <Typography className="next-button-text">
+                  {t("mypage.actions.updateCar")}
+                </Typography>
               </Button>
             ) : (
               <Button
@@ -1246,7 +1294,9 @@ const AddNewCar = ({ initialValues, ...props }: any) => {
                 disabled={doDisabledCheck()}
                 onClick={insertCarHandler}
               >
-                <Typography className="next-button-text">Create Car</Typography>
+                <Typography className="next-button-text">
+                  {t("mypage.actions.createCar")}
+                </Typography>
               </Button>
             )}
           </Stack>
