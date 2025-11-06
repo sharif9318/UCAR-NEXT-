@@ -92,7 +92,8 @@ body {
     .navbar {
       position: relative;
       width: 100%;
-      height: 100%;
+      min-height: 100vh;
+      height: 100vh;
       overflow: hidden;
 
       // Video Background
@@ -130,62 +131,154 @@ body {
           }
         }
 
-        // Car Info Overlay
+        // Car Info Overlay - Luxury Design
         .car-info-overlay {
           position: absolute;
           bottom: 30px;
           left: 18%;
-          max-width: 450px;
+          max-width: 500px;
           color: white;
           opacity: 0;
-          transform: translateY(-50%);
-          transition: all 0.4s ease;
+          transform: translateY(20px) scale(0.95);
+          transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
           pointer-events: none;
           z-index: 15;
+          padding: 2rem;
+          background: linear-gradient(
+            135deg,
+            rgba(0, 0, 0, 0.75) 0%,
+            rgba(0, 0, 0, 0.5) 100%
+          );
+          backdrop-filter: blur(20px) saturate(180%);
+          border-radius: 24px;
+          border: 1px solid rgba(255, 255, 255, 0.18);
+          box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5),
+            0 0 0 1px rgba(255, 255, 255, 0.1) inset;
 
           &.visible {
             opacity: 1;
-            transform: translateY(0);
+            transform: translateY(0) scale(1);
+          }
+
+          // Luxury Badge
+          .luxury-badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 0.4rem 1rem;
+            margin-bottom: 1rem;
+            background: linear-gradient(135deg, #c9a961 0%, #e8d89f 100%);
+            border-radius: 20px;
+            font-size: 0.7rem;
+            font-weight: 700;
+            letter-spacing: 1.2px;
+            color: #1a1a1a;
+            box-shadow: 0 4px 15px rgba(201, 169, 97, 0.4);
+            text-transform: uppercase;
           }
 
           .car-title {
-            font-size: 1.8rem;
+            font-size: 2.25rem;
             font-weight: 700;
-            margin-bottom: 0.8rem;
-            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);
+            margin-bottom: 1rem;
+            background: linear-gradient(135deg, #ffffff 0%, #e0e0e0 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-shadow: none;
+            line-height: 1.2;
+            letter-spacing: -0.5px;
           }
 
           .car-desc {
-            font-size: 0.95rem;
-            line-height: 1.5;
-            margin-bottom: 1rem;
-            text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.7);
+            font-size: 1rem;
+            line-height: 1.6;
+            margin-bottom: 1.5rem;
+            color: rgba(255, 255, 255, 0.85);
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+            font-weight: 300;
           }
 
           .car-details {
             display: flex;
-            gap: 1rem;
-            margin-bottom: 0.8rem;
-            font-size: 0.9rem;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 1.5rem;
+            padding: 1rem 1.5rem;
+            background: rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(10px);
+            border-radius: 16px;
+            border: 1px solid rgba(255, 255, 255, 0.12);
 
-            span {
+            .detail-item {
+              display: flex;
+              align-items: center;
+              gap: 0.5rem;
+              color: white;
+
+              svg {
+                color: #c9a961;
+                filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
+              }
+
+              p {
+                font-size: 0.95rem;
+                font-weight: 500;
+                margin: 0;
+                white-space: nowrap;
+              }
+            }
+
+            .detail-divider {
+              width: 1px;
+              height: 20px;
               background: rgba(255, 255, 255, 0.2);
-              backdrop-filter: blur(10px);
-              padding: 0.5rem 1rem;
-              border-radius: 20px;
-              text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+              margin: 0 0.25rem;
             }
           }
 
-          .car-price {
-            font-size: 1.5rem;
-            font-weight: 700;
-            color: #e20c0ced;
-            background: white;
-            display: inline-block;
-            padding: 0.4rem 1rem;
-            border-radius: 8px;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+          .car-price-container {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+
+            .price-wrapper {
+              display: flex;
+              flex-direction: column;
+              gap: 0.25rem;
+
+              .price-label {
+                font-size: 0.75rem;
+                color: rgba(255, 255, 255, 0.6);
+                text-transform: uppercase;
+                letter-spacing: 1px;
+                font-weight: 500;
+              }
+
+              .car-price {
+                font-size: 2rem;
+                font-weight: 800;
+                background: linear-gradient(
+                  135deg,
+                  #c9a961 0%,
+                  #f4e4b8 50%,
+                  #c9a961 100%
+                );
+                -webkit-background-clip: text;
+                -webkit-text-fill-color: transparent;
+                background-clip: text;
+                letter-spacing: -1px;
+                text-shadow: none;
+                line-height: 1;
+                filter: drop-shadow(0 2px 8px rgba(201, 169, 97, 0.5));
+              }
+            }
+          }
+
+          // Hover effect on the entire overlay
+          &:hover {
+            border-color: rgba(201, 169, 97, 0.3);
+            box-shadow: 0 25px 70px rgba(0, 0, 0, 0.6),
+              0 0 0 1px rgba(201, 169, 97, 0.2) inset;
           }
         }
       }

@@ -25,6 +25,10 @@ import { REACT_APP_API_URL } from "../config";
 import { Car } from "../types/car/car";
 import { Typography } from "@mui/material";
 import { ThemeModeContext, ThemeMode } from "../../pages/_app";
+import CalendarTodayIcon from "@mui/icons-material/CalendarToday";
+import EventSeatIcon from "@mui/icons-material/EventSeat";
+import SpeedIcon from "@mui/icons-material/Speed";
+import LocalOfferIcon from "@mui/icons-material/LocalOffer";
 
 interface TopProps {
   trendingCar?: Car;
@@ -36,7 +40,8 @@ const Top = ({ trendingCar }: TopProps) => {
   const { t, i18n } = useTranslation("common");
   const router = useRouter();
   const [anchorEl2, setAnchorEl2] = useState<null | HTMLElement>(null);
-  const [lang, setLang] = useState<string | null>("en");
+  // Initialize with router.locale to match server rendering
+  const [lang, setLang] = useState<string | null>(router.locale || null);
   const drop = Boolean(anchorEl2);
   const [colorChange, setColorChange] = useState(false);
   const [anchorEl, setAnchorEl] = React.useState<any | HTMLElement>(null);
@@ -47,6 +52,7 @@ const Top = ({ trendingCar }: TopProps) => {
   );
   const logoutOpen = Boolean(logoutAnchor);
   const [showCarInfo, setShowCarInfo] = useState(false);
+  const [mounted, setMounted] = useState(false);
   const videoRef = useRef<HTMLVideoElement>(null);
   const { mode, setMode } = useContext(ThemeModeContext);
 
@@ -60,13 +66,30 @@ const Top = ({ trendingCar }: TopProps) => {
 
   /** LIFECYCLES **/
   useEffect(() => {
-    if (localStorage.getItem("locale") === null) {
-      localStorage.setItem("locale", "en");
-      setLang("en");
-    } else {
-      setLang(localStorage.getItem("locale"));
+    setMounted(true);
+    // Restore saved language from localStorage after mount
+    if (typeof window !== "undefined") {
+      const savedLang = localStorage.getItem("locale");
+      if (savedLang && savedLang !== router.locale) {
+        // If saved language differs from router locale, update the route
+        router.replace(router.asPath, router.asPath, {
+          locale: savedLang,
+          shallow: true,
+        });
+        setLang(savedLang);
+      }
     }
-  }, [router]);
+  }, []); // Run only once on mount
+
+  // Update language when router locale changes (when user switches language)
+  useEffect(() => {
+    if (router.locale && router.locale !== lang) {
+      setLang(router.locale);
+      if (typeof window !== "undefined") {
+        localStorage.setItem("locale", router.locale);
+      }
+    }
+  }, [router.locale]);
 
   useEffect(() => {
     switch (router.pathname) {
@@ -206,19 +229,19 @@ const Top = ({ trendingCar }: TopProps) => {
     return (
       <Stack className={"top"}>
         <Link href={"/"}>
-          <div>{t("Home")}</div>
+          <div suppressHydrationWarning>{t("Home")}</div>
         </Link>
         <Link href={"/car"}>
-          <div>{t("Cars")}</div>
+          <div suppressHydrationWarning>{t("Cars")}</div>
         </Link>
         <Link href={"/agent"}>
-          <div> {t("Agents")} </div>
+          <div suppressHydrationWarning>{t("Agents")}</div>
         </Link>
         <Link href={"/community?articleCategory=FREE"}>
-          <div> {t("Community")} </div>
+          <div suppressHydrationWarning>{t("Community")}</div>
         </Link>
         <Link href={"/cs"}>
-          <div> {t("CS")} </div>
+          <div suppressHydrationWarning>{t("CS")}</div>
         </Link>
       </Stack>
     );
@@ -251,24 +274,79 @@ const Top = ({ trendingCar }: TopProps) => {
               className={`car-info-overlay ${showCarInfo ? "visible" : ""}`}
               sx={{
                 position: "absolute",
-                bottom: "30px",
-                left: "30px",
-                maxWidth: "450px",
+                bottom: "40px",
+                left: "40px",
+                maxWidth: "500px",
                 color: "white",
                 zIndex: 15,
                 pointerEvents: "none",
+                visibility: mounted ? "visible" : "hidden",
               }}
+              suppressHydrationWarning
             >
-              <h2 className="car-title">{trendingCar.carTitle}</h2>
-              <p className="car-desc">
-                {trendingCar.carDesc || "No description available"}
-              </p>
-              <div className="car-details">
-                <span>🛏️ {trendingCar.carYear} year</span>
-                <span>🚪 {trendingCar.carSeats} seats</span>
-                <span>📏 {trendingCar.carMileage} km</span>
-              </div>
-              <div className="car-price">${trendingCar.carPrice}</div>
+              <Box className="luxury-badge" suppressHydrationWarning>
+                <LocalOfferIcon sx={{ fontSize: 16, mr: 0.5 }} />
+                <Typography variant="caption" suppressHydrationWarning>
+                  {t("car.featured")}
+                </Typography>
+              </Box>
+
+              <Typography
+                variant="h3"
+                className="car-title"
+                suppressHydrationWarning
+              >
+                {trendingCar.carTitle}
+              </Typography>
+
+              <Typography
+                variant="body1"
+                className="car-desc"
+                suppressHydrationWarning
+              >
+                {trendingCar.carDesc || t("car.defaultDesc")}
+              </Typography>
+
+              <Box className="car-details">
+                <Box className="detail-item">
+                  <CalendarTodayIcon sx={{ fontSize: 18 }} />
+                  <Typography variant="body2">{trendingCar.carYear}</Typography>
+                </Box>
+                <Box className="detail-divider" />
+                <Box className="detail-item">
+                  <EventSeatIcon sx={{ fontSize: 18 }} />
+                  <Typography variant="body2" suppressHydrationWarning>
+                    {trendingCar.carSeats} {t("car.seatsLabel")}
+                  </Typography>
+                </Box>
+                <Box className="detail-divider" />
+                <Box className="detail-item">
+                  <SpeedIcon sx={{ fontSize: 18 }} />
+                  <Typography variant="body2" suppressHydrationWarning>
+                    {trendingCar.carMileage.toLocaleString("en-US")}{" "}
+                    {t("car.km")}
+                  </Typography>
+                </Box>
+              </Box>
+
+              <Box className="car-price-container">
+                <Box className="price-wrapper">
+                  <Typography
+                    variant="caption"
+                    className="price-label"
+                    suppressHydrationWarning
+                  >
+                    {t("car.startingFrom")}
+                  </Typography>
+                  <Typography
+                    variant="h4"
+                    className="car-price"
+                    suppressHydrationWarning
+                  >
+                    ${trendingCar.carPrice.toLocaleString("en-US")}
+                  </Typography>
+                </Box>
+              </Box>
             </Box>
           )}
         </Box>
@@ -288,35 +366,37 @@ const Top = ({ trendingCar }: TopProps) => {
 
             <Box component={"div"} className={"user-box"}>
               {/* theme toggle */}
-              <div
-                className="theme-toggle"
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  marginRight: 12,
-                }}
-              >
-                <Button
-                  size="small"
-                  variant="outlined"
-                  onClick={() => setMode(nextMode())}
-                  sx={{
-                    color: "#fff",
-                    borderColor: "rgba(255,255,255,0.4)",
-                    "&:hover": {
-                      borderColor: "#fff",
-                      background: "rgba(255,255,255,0.08)",
-                    },
-                    mr: 1,
+              {mounted && (
+                <div
+                  className="theme-toggle"
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    marginRight: 12,
                   }}
                 >
-                  {mode === "light"
-                    ? "Light"
-                    : mode === "elevatedDark"
-                    ? "Elevated"
-                    : "Dark"}
-                </Button>
-              </div>
+                  <Button
+                    size="small"
+                    variant="outlined"
+                    onClick={() => setMode(nextMode())}
+                    sx={{
+                      color: "#fff",
+                      borderColor: "rgba(255,255,255,0.4)",
+                      "&:hover": {
+                        borderColor: "#fff",
+                        background: "rgba(255,255,255,0.08)",
+                      },
+                      mr: 1,
+                    }}
+                  >
+                    {mode === "light"
+                      ? "Light"
+                      : mode === "elevatedDark"
+                      ? "Elevated"
+                      : "Dark"}
+                  </Button>
+                </div>
+              )}
 
               {user?._id ? (
                 <>
@@ -345,7 +425,7 @@ const Top = ({ trendingCar }: TopProps) => {
                     }}
                     sx={{ mt: "5px" }}
                   >
-                    <MenuItem onClick={() => logOut()}>
+                    <MenuItem onClick={() => logOut()} suppressHydrationWarning>
                       <Logout
                         fontSize="small"
                         style={{ color: "blue", marginRight: "10px" }}
@@ -358,7 +438,7 @@ const Top = ({ trendingCar }: TopProps) => {
                 <Link href={"/account/join"}>
                   <div className={"join-box"}>
                     <AccountCircleOutlinedIcon />
-                    <span>
+                    <span suppressHydrationWarning>
                       {t("Login")} / {t("Register")}
                     </span>
                   </div>
@@ -378,11 +458,10 @@ const Top = ({ trendingCar }: TopProps) => {
                   }
                 >
                   <Box component={"div"} className={"flag"}>
-                    {lang !== null ? (
-                      <img src={`/img/flag/lang${lang}.png`} alt={"usaFlag"} />
-                    ) : (
-                      <img src={`/img/flag/langen.png`} alt={"usaFlag"} />
-                    )}
+                    <img
+                      src={`/img/flag/lang${router.locale || "en"}.png`}
+                      alt={"flag"}
+                    />
                   </Box>
                 </Button>
 
@@ -391,7 +470,12 @@ const Top = ({ trendingCar }: TopProps) => {
                   open={drop}
                   onClose={langClose}
                 >
-                  <MenuItem disableRipple onClick={langChoice} id="en">
+                  <MenuItem
+                    disableRipple
+                    onClick={langChoice}
+                    id="en"
+                    suppressHydrationWarning
+                  >
                     <img
                       className="img-flag"
                       src={"/img/flag/langen.png"}
@@ -401,7 +485,12 @@ const Top = ({ trendingCar }: TopProps) => {
                     />
                     {t("English")}
                   </MenuItem>
-                  <MenuItem disableRipple onClick={langChoice} id="kr">
+                  <MenuItem
+                    disableRipple
+                    onClick={langChoice}
+                    id="kr"
+                    suppressHydrationWarning
+                  >
                     <img
                       className="img-flag"
                       src={"/img/flag/langkr.png"}
@@ -411,7 +500,12 @@ const Top = ({ trendingCar }: TopProps) => {
                     />
                     {t("Korean")}
                   </MenuItem>
-                  <MenuItem disableRipple onClick={langChoice} id="ru">
+                  <MenuItem
+                    disableRipple
+                    onClick={langChoice}
+                    id="ru"
+                    suppressHydrationWarning
+                  >
                     <img
                       className="img-flag"
                       src={"/img/flag/langru.png"}
@@ -427,7 +521,11 @@ const Top = ({ trendingCar }: TopProps) => {
           </Stack>
           <Box
             className={`motto-box ${showCarInfo ? "hidden" : ""}`}
-            sx={{ pointerEvents: "auto" }}
+            sx={{
+              pointerEvents: "auto",
+              visibility: mounted ? "visible" : "hidden",
+            }}
+            suppressHydrationWarning
           >
             <Typography
               variant="h1"
@@ -439,6 +537,7 @@ const Top = ({ trendingCar }: TopProps) => {
                 mb: 2,
                 whiteSpace: "pre-line",
               }}
+              suppressHydrationWarning
             >
               {t("hero.title")}
             </Typography>
@@ -455,6 +554,7 @@ const Top = ({ trendingCar }: TopProps) => {
                 mb: 3,
                 whiteSpace: "pre-line",
               }}
+              suppressHydrationWarning
             >
               {t("hero.subtitle")}
             </Typography>

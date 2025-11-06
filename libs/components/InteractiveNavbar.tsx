@@ -33,19 +33,44 @@ const InteractiveNavbar = () => {
   const router = useRouter();
   const { mode, setMode } = useContext(ThemeModeContext);
 
-  // language state
-  const [lang, setLang] = useState<string | null>(
-    (typeof window !== "undefined" &&
-      (localStorage.getItem("locale") || router.locale)) ||
-      "en"
-  );
+  // language state - initialize with router.locale to match SSR
+  const [lang, setLang] = useState<string | null>(router.locale || "en");
   const [langAnchor, setLangAnchor] = useState<null | HTMLElement>(null);
   const langOpen = Boolean(langAnchor);
+  const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
     const jwt = getJwtToken();
     if (jwt) updateUserInfo(jwt);
   }, []);
+
+  // Initialize language from localStorage after mount and sync with router.locale
+  useEffect(() => {
+    setMounted(true);
+    if (typeof window !== "undefined") {
+      const savedLang = localStorage.getItem("locale");
+      if (savedLang && savedLang !== router.locale) {
+        // If saved language differs from router locale, update the route
+        router.replace(router.asPath, router.asPath, {
+          locale: savedLang,
+          shallow: true,
+        });
+        setLang(savedLang);
+      } else if (router.locale) {
+        setLang(router.locale);
+      }
+    }
+  }, []); // Run only once on mount
+
+  // Sync lang state when router.locale changes (when user switches language)
+  useEffect(() => {
+    if (mounted && router.locale && router.locale !== lang) {
+      setLang(router.locale);
+      if (typeof window !== "undefined") {
+        localStorage.setItem("locale", router.locale);
+      }
+    }
+  }, [router.locale, mounted]);
 
   const StyledMenu = styled((props: MenuProps) => (
     <Menu
