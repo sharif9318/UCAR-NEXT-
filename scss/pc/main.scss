@@ -634,6 +634,9 @@ body {
     backdrop-filter: none;
     box-shadow: none;
     border-bottom-color: transparent;
+    .user-box {
+      visibility: hidden;
+    }
 
     .menu-items {
       opacity: 0;
@@ -648,6 +651,42 @@ body {
   &.expanded {
     width: 250px;
     height: 100vh;
+
+    .user-box {
+      width: 270px;
+      margin-top: 10px;
+      margin-bottom: 30px;
+      display: flex;
+      flex-direction: row;
+      justify-content: flex-start;
+      align-items: center;
+
+      .join-box {
+        width: 184px;
+        height: 47px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 60px;
+        border: 1px solid var(--hero-cta-border, rgba(255, 255, 255, 0.7));
+        cursor: pointer;
+
+        svg {
+          color: var(--hero-cta-color, var(--text-on-hero, #fff));
+          margin-right: 10px;
+        }
+
+        span {
+          color: var(--hero-cta-color, var(--text-on-hero, #fff));
+        }
+      }
+      a {
+        margin-left: 20px;
+        font-weight: 800;
+        font-family: $font;
+        color: red;
+      }
+    }
 
     .menu-items {
       opacity: 1;
@@ -669,6 +708,14 @@ body {
         &:nth-child(3) {
           transform: translateY(-8.5px) rotate(-45deg);
         }
+      }
+    }
+    .login-user {
+      img {
+        width: 42px;
+        height: 42px;
+        border-radius: 50%;
+        object-fit: cover;
       }
     }
 

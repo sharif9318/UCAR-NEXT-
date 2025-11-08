@@ -30,7 +30,6 @@ import "swiper/css/pagination";
 import "swiper/css/navigation";
 import InteractiveNavbar from "../InteractiveNavbar";
 import { Logout } from "@mui/icons-material";
-import { lang } from "moment";
 import { CaretDown } from "phosphor-react";
 import { REACT_APP_API_URL } from "../../config";
 import { ThemeMode, ThemeModeContext } from "../../../pages/_app";

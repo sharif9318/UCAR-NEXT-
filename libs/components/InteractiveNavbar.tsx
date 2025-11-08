@@ -7,12 +7,11 @@ import {
   Menu,
   MenuItem,
   MenuProps,
+  Typography,
 } from "@mui/material";
 import { userVar } from "../../apollo/store";
-import { useEffect, useState, useContext } from "react";
-import { getJwtToken, updateUserInfo } from "../auth";
+import { useEffect, useState, useContext, useCallback } from "react";
 import { useTranslation } from "next-i18next";
-import HomeIcon from "@mui/icons-material/Home";
 import DirectionsCarIcon from "@mui/icons-material/DirectionsCar";
 import PeopleIcon from "@mui/icons-material/People";
 import ForumIcon from "@mui/icons-material/Forum";
@@ -20,11 +19,150 @@ import PersonIcon from "@mui/icons-material/Person";
 import HelpIcon from "@mui/icons-material/Help";
 import LoginIcon from "@mui/icons-material/Login";
 import LogoutIcon from "@mui/icons-material/Logout";
+import { Logout } from "@mui/icons-material";
 import Brightness4Icon from "@mui/icons-material/Brightness4";
 import { useRouter } from "next/router";
 import { sweetConfirmAlert, sweetTopSmallSuccessAlert } from "./../sweetAlert";
 import { ThemeModeContext, ThemeMode } from "../../pages/_app";
+import AccountCircleOutlinedIcon from "@mui/icons-material/AccountCircleOutlined";
 import { styled, alpha } from "@mui/material/styles";
+import { REACT_APP_API_URL } from "../config";
+import React from "react";
+import { getJwtToken, logOut, updateUserInfo } from "../auth";
+import NotificationsOutlinedIcon from "@mui/icons-material/NotificationsOutlined";
+import { CaretDown } from "phosphor-react";
+
+const StyledWrapper = styled("div")<{ $themeMode?: ThemeMode }>`
+  .glass-radio-group {
+    --bg: ${({ $themeMode }) =>
+      $themeMode === "dark"
+        ? "rgba(30, 30, 40, 0.5)"
+        : $themeMode === "elevatedDark"
+        ? "rgba(40, 40, 60, 0.3)"
+        : "rgba(255, 255, 255, 0.06)"};
+    --text: ${({ $themeMode }) =>
+      $themeMode === "dark"
+        ? "#e0e6f0"
+        : $themeMode === "elevatedDark"
+        ? "#ffe066"
+        : "#222"};
+
+    display: flex;
+    position: relative;
+    background: var(--bg);
+    color: var(--text);
+    border-radius: 1rem;
+    backdrop-filter: blur(12px);
+    box-shadow: inset 1px 1px 4px rgba(255, 255, 255, 0.2),
+      inset -1px -1px 6px rgba(0, 0, 0, 0.3), 0 4px 12px rgba(0, 0, 0, 0.15);
+    overflow: hidden;
+    width: fit-content;
+  }
+
+  .glass-radio-group input {
+    display: none;
+  }
+
+  .glass-radio-group label {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 70px;
+    font-size: 14px;
+    padding: 0.8rem 1.6rem;
+    cursor: pointer;
+    font-weight: 600;
+    letter-spacing: 0.3px;
+    color: var(--text);
+    position: relative;
+    z-index: 2;
+    transition: color 0.3s ease-in-out;
+  }
+
+  .glass-radio-group label:hover {
+    color: white;
+    background: red;
+  }
+
+  .glass-radio-group input:checked + label {
+    color: #fff;
+  }
+
+  .glass-glider {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: calc(100% / 3);
+    border-radius: 1rem;
+    z-index: 1;
+    transition: transform 0.5s cubic-bezier(0.37, 1.95, 0.66, 0.56),
+      background 0.4s ease-in-out, box-shadow 0.4s ease-in-out;
+  }
+
+  /* Light */
+  #light:checked ~ .glass-glider {
+    transform: translateX(0%);
+    background: linear-gradient(135deg, #c0c0c055, #242121ff);
+    box-shadow: 0 0 18px rgba(192, 192, 192, 0.5),
+      0 0 10px rgba(255, 255, 255, 0.4) inset;
+  }
+
+  /* Gold */
+  #EDark:checked ~ .glass-glider {
+    transform: translateX(100%);
+    background: linear-gradient(135deg, #ffd70055, #ffcc00);
+    box-shadow: 0 0 18px rgba(255, 215, 0, 0.5),
+      0 0 10px rgba(255, 235, 150, 0.4) inset;
+  }
+
+  /* Platinum */
+  #glass-platinum:checked ~ .glass-glider {
+    transform: translateX(200%);
+    background: linear-gradient(135deg, #d0e7ff55, #a0d8ff);
+    box-shadow: 0 0 18px rgba(160, 216, 255, 0.5),
+      0 0 10px rgba(200, 240, 255, 0.4) inset;
+  }
+`;
+
+interface RadioProps {
+  mode: ThemeMode;
+  setMode: (m: ThemeMode) => void;
+}
+
+const Radio = ({ mode, setMode }: RadioProps) => {
+  return (
+    <StyledWrapper $themeMode={mode}>
+      <div className="glass-radio-group">
+        <input
+          type="radio"
+          name="plan"
+          id="light"
+          checked={mode === "light"}
+          onChange={() => setMode("light")}
+        />
+        <label htmlFor="light">Light</label>
+        <input
+          type="radio"
+          name="plan"
+          id="EDark"
+          checked={mode === "elevatedDark"}
+          onChange={() => setMode("elevatedDark")}
+        />
+        <label htmlFor="EDark">EDark</label>
+        <input
+          type="radio"
+          name="plan"
+          id="glass-platinum"
+          checked={mode === "dark"}
+          onChange={() => setMode("dark")}
+        />
+        <label htmlFor="glass-platinum">Dark</label>
+        <div className="glass-glider" />
+      </div>
+    </StyledWrapper>
+  );
+};
 
 const InteractiveNavbar = () => {
   const user = useReactiveVar(userVar);
@@ -32,6 +170,19 @@ const InteractiveNavbar = () => {
   const [isExpanded, setIsExpanded] = useState(false);
   const router = useRouter();
   const { mode, setMode } = useContext(ThemeModeContext);
+  const [logoutAnchor, setLogoutAnchor] = React.useState<null | HTMLElement>(
+    null
+  );
+  const logoutOpen = Boolean(logoutAnchor);
+  const [anchorEl2, setAnchorEl2] = useState<null | HTMLElement>(null);
+  const drop = Boolean(anchorEl2);
+  const roleKey = (user?.memberType || "").toString().toLowerCase();
+  const roleLabel =
+    roleKey === "admin"
+      ? t("role.admin")
+      : roleKey === "agent"
+      ? t("role.agent")
+      : t("role.member");
 
   // language state - initialize with router.locale to match SSR
   const [lang, setLang] = useState<string | null>(router.locale || "en");
@@ -171,7 +322,25 @@ const InteractiveNavbar = () => {
       await router.push(router.asPath, router.asPath, { locale: code });
     } catch {}
   };
+  const langClose = () => {
+    setAnchorEl2(null);
+  };
 
+  const langClick = (e: any) => {
+    setAnchorEl2(e.currentTarget);
+  };
+
+  const langChoice = useCallback(
+    async (e: any) => {
+      setLang(e.target.id);
+      localStorage.setItem("locale", e.target.id);
+      setAnchorEl2(null);
+      await router.push(router.asPath, router.asPath, {
+        locale: e.target.id,
+      });
+    },
+    [router]
+  );
   const currentLangLabel =
     lang === "kr" ? t("Korean") : lang === "ru" ? t("Russian") : t("English");
 
@@ -189,7 +358,64 @@ const InteractiveNavbar = () => {
           <span></span>
         </div>
       </div>
+      <div className="menu-item">
+        <Box component={"div"} className={"user-box"}>
+          {user?._id ? (
+            <>
+              <div
+                className={"login-user"}
+                onClick={(event: any) => setLogoutAnchor(event.currentTarget)}
+              >
+                <img
+                  src={
+                    user?.memberImage
+                      ? `${REACT_APP_API_URL}/${user?.memberImage}`
+                      : "/img/profile/defaultUser.svg"
+                  }
+                  alt=""
+                />
+              </div>
 
+              <Menu
+                id="basic-menu"
+                anchorEl={logoutAnchor}
+                open={logoutOpen}
+                onClose={() => {
+                  setLogoutAnchor(null);
+                }}
+                sx={{ mt: "5px" }}
+              >
+                <MenuItem onClick={() => logOut()}>
+                  <Logout
+                    fontSize="small"
+                    style={{ color: "blue", marginRight: "10px" }}
+                  />
+                  Logout
+                </MenuItem>
+              </Menu>
+
+              <Stack className={"user-info"}>
+                {user?.memberType === "ADMIN" ? (
+                  <a href="/_admin/users" target={"_blank"}>
+                    <Typography className={"view-list"}>{roleLabel}</Typography>
+                  </a>
+                ) : (
+                  <Typography className={"view-list"}>{roleLabel}</Typography>
+                )}
+              </Stack>
+            </>
+          ) : (
+            <Link href={"/account/join"}>
+              <div className={"join-box"}>
+                <AccountCircleOutlinedIcon />
+                <span>
+                  {t("Login")} / {t("Register")}
+                </span>
+              </div>
+            </Link>
+          )}
+        </Box>
+      </div>
       <div className="menu-items">
         <Link href={"/"}>
           <div className="menu-item">
@@ -251,17 +477,8 @@ const InteractiveNavbar = () => {
         </Link>
 
         {/* Theme toggle */}
-        <div className="menu-item" onClick={() => setMode(nextMode())}>
-          <span className="icon">
-            <Brightness4Icon sx={{ fontSize: 28 }} />
-          </span>
-          <span className="label">
-            {mode === "light"
-              ? "Light"
-              : mode === "elevatedDark"
-              ? "Elevated"
-              : "Dark"}
-          </span>
+        <div className="theme-toggle">
+          <Radio mode={mode} setMode={setMode} />
         </div>
 
         {/* Language selector (lan-box) */}

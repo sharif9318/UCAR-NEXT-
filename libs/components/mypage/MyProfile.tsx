@@ -36,7 +36,6 @@ const MyProfile: NextPage = ({ initialValues, ...props }: any) => {
       memberAddress: user.memberAddress,
       memberImage: user.memberImage,
     });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user]);
 
   /** HELPERS **/
