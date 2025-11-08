@@ -142,6 +142,11 @@
 
   "status.sold": "Продан",
   "status.active": "Активен",
+  "status.verified": "Подтверждён",
+
+  "role.admin": "Администратор",
+  "role.agent": "Агент",
+  "role.member": "Пользователь",
 
   "mypage.addCarTitle": "Добавить авто",
   "mypage.editCarTitle": "Редактировать авто",

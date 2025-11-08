@@ -141,6 +141,11 @@
 
   "status.sold": "Sold",
   "status.active": "Active",
+  "status.verified": "Verified",
+
+  "role.admin": "Admin",
+  "role.agent": "Agent",
+  "role.member": "Member",
 
   "car.miles": "miles",
 
