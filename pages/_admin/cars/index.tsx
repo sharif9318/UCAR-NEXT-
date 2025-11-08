@@ -18,6 +18,13 @@ import {
 } from "../../../libs/sweetAlert";
 import { CarUpdate } from "../../../libs/types/car/car.update";
 import withI18n from "../../../libs/i18n/withI18n";
+import {
+  REMOVE_CAR_BY_ADMIN,
+  UPDATE_CAR_BY_ADMIN,
+} from "../../../apollo/admin/mutation";
+import { GET_ALL_CARS_BY_ADMIN } from "../../../apollo/admin/query";
+import { useMutation, useQuery } from "@apollo/client";
+import { T } from "../../../libs/types/common";
 
 const AdminCars: NextPage = ({ initialInquiry, ...props }: any) => {
   const [anchorEl, setAnchorEl] = useState<[] | HTMLElement[]>([]);
@@ -32,8 +39,28 @@ const AdminCars: NextPage = ({ initialInquiry, ...props }: any) => {
 
   /** APOLLO REQUESTS **/
 
+  const [updateCarByAdmin] = useMutation(UPDATE_CAR_BY_ADMIN);
+  const [removeCarByAdmin] = useMutation(REMOVE_CAR_BY_ADMIN);
+
+  const {
+    loading: getAllCarsByAdminLoading,
+    data: getAllCarsByAdminData,
+    error: getAllCarsByAdminError,
+    refetch: getAllCarsRefetch,
+  } = useQuery(GET_ALL_CARS_BY_ADMIN, {
+    fetchPolicy: "network-only",
+    variables: { input: carsInquiry },
+    notifyOnNetworkStatusChange: true,
+    onCompleted: (data: T) => {
+      setCars(data?.getAllCarsByAdmin?.list);
+      setCarsTotal(data?.getAllCarsByAdmin?.metaCounter[0]?.total ?? 0);
+    },
+  });
+
   /** LIFECYCLES **/
-  useEffect(() => {}, [carsInquiry]);
+  useEffect(() => {
+    getAllCarsRefetch({ input: carsInquiry });
+  }, [carsInquiry]);
 
   /** HANDLERS **/
   const changePageHandler = async (event: unknown, newPage: number) => {

@@ -17,6 +17,13 @@ import { serverSideTranslations } from "next-i18next/serverSideTranslations";
 import { Member } from "../../libs/types/member/member";
 import withI18n from "../../libs/i18n/withI18n";
 import { useTranslation } from "react-i18next";
+import { useQuery, useMutation } from "@apollo/client";
+import { GET_AGENTS } from "../../apollo/user/query";
+import { LIKE_TARGET_MEMBER } from "../../apollo/user/mutation";
+import {
+  sweetTopSmallSuccessAlert,
+  sweetMixinErrorAlert,
+} from "../../libs/sweetAlert";
 
 export const getStaticProps = async ({ locale }: any) => ({
   props: {
@@ -45,6 +52,22 @@ const AgentList: NextPage = ({ initialInput, ...props }: any) => {
   const [searchText, setSearchText] = useState<string>("");
 
   /** APOLLO REQUESTS **/
+  const [likeTargetMember] = useMutation(LIKE_TARGET_MEMBER);
+  const {
+    loading: getAgentsLoading,
+    data: getAgentsData,
+    error: getAgentsError,
+    refetch: getAgentsRefetch,
+  } = useQuery(GET_AGENTS, {
+    fetchPolicy: "network-only",
+    variables: { input: searchFilter },
+    notifyOnNetworkStatusChange: true,
+    onCompleted: (data) => {
+      setAgents(data?.getAgents?.list || []);
+      setTotal(data?.getAgents?.metaCounter?.[0]?.total || 0);
+    },
+  });
+
   /** LIFECYCLES **/
   useEffect(() => {
     if (router.query.input) {
@@ -135,6 +158,19 @@ const AgentList: NextPage = ({ initialInput, ...props }: any) => {
       }
     );
     setCurleasePage(value);
+  };
+
+  const likeMemberHandler = async (user: any, id: string) => {
+    try {
+      if (!id) return;
+      if (!user || !user._id) throw new Error("User not logged in");
+      await likeTargetMember({ variables: { input: id } });
+      await getAgentsRefetch({ input: searchFilter });
+      await sweetTopSmallSuccessAlert("success", 800);
+    } catch (err: any) {
+      console.log("ERROR, likeMemberHandler", err.message);
+      sweetMixinErrorAlert(err.message).then();
+    }
   };
 
   if (device === "mobile") {

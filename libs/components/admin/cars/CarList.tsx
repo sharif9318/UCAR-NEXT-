@@ -115,22 +115,21 @@ function EnhancedTableHead(props: EnhancedTableProps) {
 
 interface CarPanelListType {
   cars: Car[];
-  removeCar?: any;
-  updateCar?: any;
   anchorEl: any;
-  handleMenuIconClick?: any;
-  handleMenuIconClose?: any;
-  generateId?: any;
+  menuIconClickHandler: any;
+  menuIconCloseHandler: any;
+  updateCarHandler: any;
+  removeCarHandler: any;
 }
 
 export const CarPanelList = (props: CarPanelListType) => {
   const {
     cars,
     anchorEl,
-    handleMenuIconClick,
-    handleMenuIconClose,
-    updateCar,
-    removeCar,
+    menuIconClickHandler,
+    menuIconCloseHandler,
+    updateCarHandler,
+    removeCarHandler,
   } = props;
 
   return (
@@ -164,8 +163,23 @@ export const CarPanelList = (props: CarPanelListType) => {
                   >
                     <TableCell align="left">{car._id}</TableCell>
                     <TableCell align="left" className={"name"}>
-                      <Stack direction={"row"}>
-                        <Link href={`/car/detail?id=${car?._id}`}>
+                      {car.carStatus === CarStatus.ACTIVE ? (
+                        <Stack direction={"row"}>
+                          <Link href={`/car/detail?id=${car?._id}`}>
+                            <div>
+                              <Avatar
+                                alt="Remy Sharp"
+                                src={carImage}
+                                sx={{ ml: "2px", mr: "10px" }}
+                              />
+                            </div>
+                          </Link>
+                          <Link href={`/car/detail?id=${car?._id}`}>
+                            <div>{car.carTitle}</div>
+                          </Link>
+                        </Stack>
+                      ) : (
+                        <Stack direction={"row"}>
                           <div>
                             <Avatar
                               alt="Remy Sharp"
@@ -173,11 +187,12 @@ export const CarPanelList = (props: CarPanelListType) => {
                               sx={{ ml: "2px", mr: "10px" }}
                             />
                           </div>
-                        </Link>
-                        <Link href={`/car/detail?id=${car?._id}`}>
-                          <div>{car.carTitle}</div>
-                        </Link>
-                      </Stack>
+
+                          <div style={{ marginTop: "10px" }}>
+                            {car.carTitle}
+                          </div>
+                        </Stack>
+                      )}
                     </TableCell>
                     <TableCell align="center">{car.carPrice}</TableCell>
                     <TableCell align="center">
@@ -194,7 +209,7 @@ export const CarPanelList = (props: CarPanelListType) => {
                             border: "none",
                             ":hover": { border: "1px solid #000000" },
                           }}
-                          onClick={() => removeCar(car._id)}
+                          onClick={() => removeCarHandler(car._id)}
                         >
                           <DeleteIcon fontSize="small" />
                         </Button>
@@ -209,7 +224,7 @@ export const CarPanelList = (props: CarPanelListType) => {
                       {car.carStatus === CarStatus.ACTIVE && (
                         <>
                           <Button
-                            onClick={(e: any) => handleMenuIconClick(e, index)}
+                            onClick={(e: any) => menuIconClickHandler(e, index)}
                             className={"badge success"}
                           >
                             {car.carStatus}
@@ -222,7 +237,7 @@ export const CarPanelList = (props: CarPanelListType) => {
                             }}
                             anchorEl={anchorEl[index]}
                             open={Boolean(anchorEl[index])}
-                            onClose={handleMenuIconClose}
+                            onClose={menuIconCloseHandler}
                             TransitionComponent={Fade}
                             sx={{ p: 1 }}
                           >
@@ -231,7 +246,7 @@ export const CarPanelList = (props: CarPanelListType) => {
                               .map((status: string) => (
                                 <MenuItem
                                   onClick={() =>
-                                    updateCar({
+                                    updateCarHandler({
                                       _id: car._id,
                                       carStatus: status,
                                     })
