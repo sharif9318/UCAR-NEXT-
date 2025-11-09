@@ -695,6 +695,9 @@ body {
       flex-direction: column;
       height: calc(100vh - 80px);
     }
+    .theme-toggle {
+      margin: auto;
+    }
     .hamburger {
       span {
         &:nth-child(1) {
@@ -1111,7 +1114,8 @@ body {
     inset: 0;
     background: var(
       --hero-overlay,
-      linear-gradient(180deg, rgba(0, 0, 0, 0.35) 0%, rgba(0, 0, 0, 0.65) 100%)
+      linear-gradient(180deg, rgba(0, 0, 0, 0.15) 0%, rgba(0, 0, 0, 0.35) 100%)
+        // Reduced from 0.35/0.65
     );
     z-index: 0;
     pointer-events: none;
@@ -1435,13 +1439,23 @@ body {
         display: flex;
         flex-direction: column;
 
-        .msg-left {
+        .welcome {
           margin-left: 10px;
           padding: 9px;
           width: auto;
           height: auto;
           display: flex;
           background: #9fa7ac;
+          border-radius: 20px 20px 20px 0px;
+          color: #fff;
+        }
+        .msg-left {
+          margin-left: 10px;
+          padding: 9px;
+          width: auto;
+          height: auto;
+          display: flex;
+          background: #27a6f5;
           border-radius: 20px 20px 20px 0px;
           color: #fff;
         }
