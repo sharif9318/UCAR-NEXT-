@@ -108,7 +108,7 @@ const About: NextPage = () => {
               <div className={"icon-box"}>
                 <img src="/img/icons/keywording.svg" alt="" />
               </div>
-              <div className={"text_-box"}>
+              <div className={"text-box"}>
                 <span>Car Management</span>
                 <p>
                   Nullam sollicitudin blandit eros eu pretium. Nullam maximus

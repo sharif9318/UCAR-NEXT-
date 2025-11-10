@@ -650,11 +650,7 @@ const CarDetail: NextPage = (props: any) => {
                         fill="none"
                       >
                         <path
-                          d="M19 3H5C3.9 3 3 3.9 3 5V19C3 20.1 3.9 21 5 21H19C20.1 21 21 20.1 21 19V5C21 3.9 20.1 3 19 3ZM19 19H5V5H19V19Z"
-                          fill="#181A20"
-                        />
-                        <path
-                          d="M7 17H9V13H7V17ZM11 17H13V7H11V17ZM15 17H17V10H15V17Z"
+                          d="M19 3H5C3.9 3 3 3.9 3 5V19C3 20.1 3.9 21 5 21H19C20.1 21 21 20.1 21 19V5C21 3.9 20.1 3 19 3ZM19 19H5V5H19V19ZM7 17H9V13H7V17ZM11 17H13V7H11V17ZM15 17H17V10H15V17Z"
                           fill="#181A20"
                         />
                       </svg>
@@ -687,9 +683,7 @@ const CarDetail: NextPage = (props: any) => {
                       <Typography className={"title"}>
                         {t("car.fuel")}
                       </Typography>
-                      <Typography className={"option-data"}>
-                        {car?.carYear} L/100km
-                      </Typography>
+                      <Typography className={"option-data"}>N/A</Typography>
                     </Stack>
                   </Stack>
                   <Stack className={"option"}>
@@ -712,7 +706,11 @@ const CarDetail: NextPage = (props: any) => {
                         {t("car.transmission")}
                       </Typography>
                       <Typography className={"option-data"}>
-                        {car?.carSeats === 1 ? "Manual" : "Automatic"}
+                        {car?.carTransmission === "manual"
+                          ? "Manual"
+                          : car?.carTransmission === "automatic"
+                          ? "Automatic"
+                          : "Unknown"}
                       </Typography>
                     </Stack>
                   </Stack>
@@ -753,16 +751,18 @@ const CarDetail: NextPage = (props: any) => {
                             {t("car.transmission")}
                           </Typography>
                           <Typography className={"data"}>
-                            {car?.carSeats === 1 ? "Manual" : "Automatic"}
+                            {car?.carTransmission === "manual"
+                              ? "Manual"
+                              : car?.carTransmission === "automatic"
+                              ? "Automatic"
+                              : "Unknown"}
                           </Typography>
                         </Box>
                         <Box component={"div"} className={"info"}>
                           <Typography className={"title"}>
                             Fuel Economy
                           </Typography>
-                          <Typography className={"data"}>
-                            {car?.carYear} L/100km
-                          </Typography>
+                          <Typography className={"data"}>N/A</Typography>
                         </Box>
                       </Stack>
                       <Stack className={"right"}>

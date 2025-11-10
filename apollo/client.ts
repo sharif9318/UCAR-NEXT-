@@ -99,19 +99,43 @@ function createIsomorphicLink() {
     });
 
     const errorLink = onError(({ graphQLErrors, networkError, response }) => {
+      let unauthenticated = false;
       if (graphQLErrors) {
-        graphQLErrors.map(({ message, locations, path, extensions }) => {
+        graphQLErrors.forEach(({ message, locations, path, extensions }) => {
           console.log(
             `[GraphQL error]: Message: ${message}, Location: ${locations}, Path: ${path}`
           );
-          if (!message.includes("input")) {
+          // Only suppress known validation errors
+          const isValidationError =
+            extensions?.code === "BAD_USER_INPUT" ||
+            extensions?.exception?.type === "ValidationError";
+          if (extensions?.code === "UNAUTHENTICATED") {
+            unauthenticated = true;
+          }
+          if (!isValidationError) {
             sweetErrorAlert(message);
           }
         });
       }
-      if (networkError) console.log(`[Network error]: ${networkError}`);
-      // @ts-ignore
-      if (networkError?.statusCode === 401) {
+      if (networkError) {
+        console.log(`[Network error]: ${networkError}`);
+        // @ts-ignore
+        if (networkError?.statusCode === 401) {
+          unauthenticated = true;
+        }
+      }
+      if (unauthenticated) {
+        // Clear tokens/session, logout, redirect, and alert
+        localStorage.removeItem("accessToken");
+        if (typeof window !== "undefined") {
+          import("../libs/auth").then(({ logOut }) => {
+            logOut();
+            import("next/router").then(({ default: Router }) => {
+              Router.push("/account/join");
+            });
+          });
+        }
+        sweetErrorAlert("Session expired. Please log in again.");
       }
     });
 

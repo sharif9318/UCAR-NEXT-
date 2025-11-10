@@ -680,7 +680,7 @@ export const GET_CS = gql`
         memberDesc
         memberWarnings
         memberBlocks
-        memberProperties
+        memberCars
         memberRank
         memberPoints
         memberLikes
@@ -723,7 +723,7 @@ export const GET_CS_LIST = gql`
           memberDesc
           memberWarnings
           memberBlocks
-          memberProperties
+          memberCars
           memberRank
           memberPoints
           memberLikes

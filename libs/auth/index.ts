@@ -47,7 +47,8 @@ const requestJwtToken = async ({
     });
 
     console.log("---------- login ----------");
-    const { accessToken } = result?.data?.login;
+    const login = result?.data?.login;
+    const accessToken = login?.accessToken;
 
     return { jwtToken: accessToken };
   } catch (err: any) {
@@ -117,7 +118,8 @@ const requestSignUpJwtToken = async ({
     });
 
     console.log("---------- login ----------");
-    const { accessToken } = result?.data?.signup;
+    const signup = result?.data?.signup;
+    const accessToken = signup?.accessToken;
 
     return { jwtToken: accessToken };
   } catch (err: any) {

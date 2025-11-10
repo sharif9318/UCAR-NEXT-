@@ -1,4 +1,5 @@
 import { CarLocation, CarStatus, CarType } from "../../enums/car.enum";
+import { CarTransmission } from "./car";
 
 export interface CarUpdate {
   _id: string;
@@ -11,6 +12,7 @@ export interface CarUpdate {
   carMileage?: number;
   carYear?: number;
   carSeats?: number;
+  carTransmission?: CarTransmission; // NEW FIELD
   carImages?: string[];
   car360Images?: string[];
   carVideos?: string[];

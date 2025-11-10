@@ -1,6 +1,8 @@
 import { CarLocation, CarStatus, CarType } from "../../enums/car.enum";
 import { Member } from "../member/member";
 
+export type CarTransmission = "manual" | "automatic" | "unknown";
+
 export interface MeLiked {
   memberId: string;
   likeRefId: string;
@@ -22,6 +24,7 @@ export interface Car {
   carMileage: number;
   carYear: number;
   carSeats: number;
+  carTransmission?: CarTransmission; // NEW FIELD
   carViews: number;
   carLikes: number;
   carComments: number;

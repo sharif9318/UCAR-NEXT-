@@ -69,29 +69,36 @@ const Chat = () => {
 
   /* LIFECYCLES */
   useEffect(() => {
-    socket.onmessage = (msg) => {
+    if (!socket) return;
+    const handler = (msg: MessageEvent) => {
       const data = JSON.parse(msg.data);
       console.log("WebSocket message:", data);
-
       switch (data.event) {
-        case "info":
+        case "info": {
           const newInfo: InfoPayload = data;
           setOnlineUsers(newInfo.totalClients);
           break;
-        case "getMessages":
+        }
+        case "getMessages": {
           const list: MessagePayload[] = data.list;
           setMessagesList(list);
           break;
-        case "message":
+        }
+        case "message": {
           const newMessage: MessagePayload = data;
           setMessagesList((prevMessages) => [
             ...(prevMessages || []),
             newMessage,
           ]);
           break;
+        }
       }
     };
-  }, [socket, messagesList]);
+    socket.onmessage = handler;
+    return () => {
+      socket.onmessage = null;
+    };
+  }, [socket]);
 
   useEffect(() => {
     const timeoutId = setTimeout(() => {
@@ -169,7 +176,7 @@ const Chat = () => {
               {messagesList?.map((ele: MessagePayload, index: number) => {
                 const { text, memberData } = ele;
                 const memberImage = memberData?.memberImage
-                  ? `${process.env.REACT_APP_API_URL}/${memberData.memberImage}`
+                  ? `${process.env.NEXT_PUBLIC_API_URL}/${memberData.memberImage}`
                   : "/img/profile/defaultUser.svg";
 
                 return memberData?._id === user?._id ? (

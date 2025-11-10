@@ -16,10 +16,11 @@
           padding: 30px 15px 57px 21px;
           margin-top: 100px;
           border-radius: 12px;
-          border: 1px solid #343a46;
+          border: 1px solid var(--border-primary, #343a46);
           background: var(--bg-paper);
-          box-shadow: 0 0 0 1px rgba(229, 9, 20, 0.06) inset,
-            0 6px 18px rgba(0, 0, 0, 0.4);
+          box-shadow: 0 0 0 1px var(--accent-alpha06, rgba(229, 9, 20, 0.06))
+              inset,
+            0 6px 18px var(--shadow, rgba(0, 0, 0, 0.4));
           .image-info {
             width: 100%;
             flex-direction: row;
@@ -33,7 +34,7 @@
             .community-name {
               .name {
                 margin-top: 15px;
-                color: #181a20;
+                color: var(--text-primary, #181a20);
                 font-family: $font;
                 font-size: 15px;
                 font-style: normal;
@@ -49,7 +50,7 @@
             justify-content: center;
             align-items: center;
             border-radius: 6px;
-            border: 1px solid rgba(229, 9, 20, 0.35);
+            border: 1px solid var(--accent-alpha35, rgba(229, 9, 20, 0.35));
             margin-bottom: 10px;
             color: var(--text-primary);
             font-family: $font;
@@ -65,7 +66,7 @@
             padding: 0;
             justify-content: center;
             align-items: center;
-            background: #e50914;
+            background: var(--accent, #e50914);
             color: #fff;
             border: none;
             border-radius: 6px;
@@ -112,7 +113,7 @@
               width: 91px;
               height: 32px;
               border-radius: 4px;
-              background: #e50914;
+              background: var(--accent, #e50914);
               color: #fff;
               font-family: $font;
               font-size: 13px;
@@ -127,17 +128,18 @@
               width: 1012px;
               min-height: 500px;
               border-radius: 8px 8px 0px 0px;
-              border: 1px solid #343a46;
+              border: 1px solid var(--border-primary, #343a46);
               background: var(--bg-paper);
-              box-shadow: 0 0 0 1px rgba(229, 9, 20, 0.06) inset,
-                0 6px 18px rgba(0, 0, 0, 0.4);
+              box-shadow: 0 0 0 1px
+                  var(--accent-alpha06, rgba(229, 9, 20, 0.06)) inset,
+                0 6px 18px var(--shadow, rgba(0, 0, 0, 0.4));
               .content-and-info {
                 width: 100%;
                 height: 126px;
                 padding: 35px 25px;
                 flex-direction: row;
                 justify-content: space-between;
-                border-bottom: 1px solid #343a46;
+                border-bottom: 1px solid var(--border-primary, #343a46);
                 .content {
                   gap: 12px;
                   .content-data {
@@ -172,10 +174,10 @@
                     .divider {
                       width: 1px;
                       height: 16px;
-                      background: #343a46;
+                      background: var(--border-primary, #343a46);
                     }
                     .time-added {
-                      color: #9ea3af;
+                      color: var(--text-tertiary, #9ea3af);
                       font-family: $font;
                       font-size: 12px;
                       font-style: normal;
@@ -202,7 +204,7 @@
                     }
                     .text {
                       padding-top: 2 px;
-                      color: #000;
+                      color: var(--text-primary, #000);
                       font-family: $font;
                       font-size: 11px;
                       font-style: normal;
@@ -214,7 +216,7 @@
                   .divider {
                     width: 1px;
                     height: 21px;
-                    background: #eeeeee;
+                    background: var(--divider, #eeeeee);
                   }
                 }
               }
@@ -237,8 +239,8 @@
                     height: 45px;
                     gap: 5px;
                     border-radius: 2px;
-                    border: 1px solid #eee;
-                    background: #eb6753;
+                    border: 1px solid var(--divider, #eee);
+                    background: var(--danger, #eb6753);
                     p {
                       color: #fff;
                       font-family: $font;
@@ -259,7 +261,7 @@
               gap: 11px;
               .title-text {
                 align-self: flex-start;
-                color: #000;
+                color: var(--text-primary, #000);
                 text-align: center;
                 font-family: $font;
                 font-size: 17px;
@@ -274,9 +276,9 @@
                   height: 61px;
                   outline: none;
                   padding: 22px 17px;
-                  border: 1px solid #eee;
+                  border: 1px solid var(--divider, #eee);
                   ::placeholder {
-                    color: #c0c0c0;
+                    color: var(--text-placeholder, #c0c0c0);
                     font-family: $font;
                     font-size: 14px;
                     font-style: normal;
@@ -292,10 +294,10 @@
                   justify-content: space-between;
                   align-items: center;
                   padding-left: 17px;
-                  border: 1px solid #eee;
+                  border: 1px solid var(--divider, #eee);
                   border-top: none;
                   p {
-                    color: #000;
+                    color: var(--text-primary, #000);
                     font-family: $font;
                     font-size: 14px;
                     font-style: normal;
@@ -307,7 +309,7 @@
                     width: 100.077px;
                     height: 100%;
                     border-radius: 0;
-                    background: #eb6753;
+                    background: var(--danger, #eb6753);
                     color: #fff;
                     font-family: $font;
                     font-size: 14px;
@@ -322,7 +324,7 @@
             .comments {
               width: 100%;
               height: auto;
-              border: 1px solid #efefef;
+              border: 1px solid var(--divider-light, #efefef);
               border-top: none;
               .comments-title {
                 width: 112.087px;
@@ -330,8 +332,8 @@
                 align-items: center;
                 justify-content: center;
                 padding: 16px 15px;
-                border-bottom: 2px solid #eb6753;
-                color: #eb6753;
+                border-bottom: 2px solid var(--danger, #eb6753);
+                color: var(--danger, #eb6753);
                 font-family: $font;
                 font-size: 14px;
                 font-style: normal;
@@ -353,7 +355,7 @@
                 height: auto;
                 padding: 20px 24px;
                 gap: 17px;
-                border: 1px solid #efefef;
+                border: 1px solid var(--divider-light, #efefef);
                 border-top: none;
                 .member-info {
                   width: 100%;
@@ -375,7 +377,7 @@
                     }
                     .name-date-column {
                       .name {
-                        color: #000;
+                        color: var(--text-primary, #000);
                         font-family: $font;
                         font-size: 16px;
                         font-style: normal;
@@ -384,7 +386,7 @@
                         cursor: pointer;
                       }
                       .date {
-                        color: #757575;
+                        color: var(--text-tertiary, #757575);
                         font-family: $font;
                         font-size: 13px;
                         font-style: normal;
@@ -403,7 +405,7 @@
                   width: 100%;
                   height: auto;
                   p {
-                    color: #000;
+                    color: var(--text-primary, #000);
                     font-family: $font;
                     font-size: 16px;
                     font-style: normal;
@@ -423,10 +425,10 @@
         gap: 75px;
         padding: 30px 9px 28px 9px;
         border-radius: 10px;
-        border: 1px solid #c4c4c4;
+        border: 1px solid var(--border-secondary, #c4c4c4);
         .similar-articles-title {
           padding-left: 56px;
-          color: #000;
+          color: var(--text-primary, #000);
           font-family: $font;
           font-size: 30px;
           font-style: normal;

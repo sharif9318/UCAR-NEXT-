@@ -54,112 +54,35 @@ const Filter = (props: FilterType) => {
 
   /** LIFECYCLES **/
   useEffect(() => {
-    if (searchFilter?.search?.locationList?.length == 0) {
-      delete searchFilter.search.locationList;
-      setOpenLocation(false);
+    const keysToCheck = [
+      "locationList",
+      "typeList",
+      "seatsList",
+      "options",
+      "yearsList",
+    ] as const;
+    let updated = false;
+    // Deep clone to avoid mutating props
+    const newSearchFilter = {
+      ...searchFilter,
+      search: { ...searchFilter.search },
+    };
+    keysToCheck.forEach((key) => {
+      const arr = (newSearchFilter.search as Record<typeof key, unknown>)[key];
+      if (Array.isArray(arr) && arr.length === 0) {
+        delete (newSearchFilter.search as Record<typeof key, unknown>)[key];
+        updated = true;
+      }
+    });
+    if (updated) {
       router
         .push(
-          `/car?input=${JSON.stringify({
-            ...searchFilter,
-            search: {
-              ...searchFilter.search,
-            },
-          })}`,
-          `/car?input=${JSON.stringify({
-            ...searchFilter,
-            search: {
-              ...searchFilter.search,
-            },
-          })}`,
+          `/car?input=${JSON.stringify(newSearchFilter)}`,
+          `/car?input=${JSON.stringify(newSearchFilter)}`,
           { scroll: false }
         )
         .then();
     }
-
-    if (searchFilter?.search?.typeList?.length == 0) {
-      delete searchFilter.search.typeList;
-      router
-        .push(
-          `/car?input=${JSON.stringify({
-            ...searchFilter,
-            search: {
-              ...searchFilter.search,
-            },
-          })}`,
-          `/car?input=${JSON.stringify({
-            ...searchFilter,
-            search: {
-              ...searchFilter.search,
-            },
-          })}`,
-          { scroll: false }
-        )
-        .then();
-    }
-
-    if (searchFilter?.search?.seatsList?.length == 0) {
-      delete searchFilter.search.seatsList;
-      router
-        .push(
-          `/car?input=${JSON.stringify({
-            ...searchFilter,
-            search: {
-              ...searchFilter.search,
-            },
-          })}`,
-          `/car?input=${JSON.stringify({
-            ...searchFilter,
-            search: {
-              ...searchFilter.search,
-            },
-          })}`,
-          { scroll: false }
-        )
-        .then();
-    }
-
-    if (searchFilter?.search?.options?.length == 0) {
-      delete searchFilter.search.options;
-      router
-        .push(
-          `/car?input=${JSON.stringify({
-            ...searchFilter,
-            search: {
-              ...searchFilter.search,
-            },
-          })}`,
-          `/car?input=${JSON.stringify({
-            ...searchFilter,
-            search: {
-              ...searchFilter.search,
-            },
-          })}`,
-          { scroll: false }
-        )
-        .then();
-    }
-
-    if (searchFilter?.search?.yearsList?.length == 0) {
-      delete searchFilter.search.yearsList;
-      router
-        .push(
-          `/car?input=${JSON.stringify({
-            ...searchFilter,
-            search: {
-              ...searchFilter.search,
-            },
-          })}`,
-          `/car?input=${JSON.stringify({
-            ...searchFilter,
-            search: {
-              ...searchFilter.search,
-            },
-          })}`,
-          { scroll: false }
-        )
-        .then();
-    }
-
     if (searchFilter?.search?.locationList) setOpenLocation(true);
   }, [searchFilter]);
 

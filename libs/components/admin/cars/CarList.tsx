@@ -93,9 +93,7 @@ interface EnhancedTableProps {
   rowCount: number;
 }
 
-function EnhancedTableHead(props: EnhancedTableProps) {
-  const { onSelectAllClick } = props;
-
+const EnhancedTableHead: React.FC = () => {
   return (
     <TableHead>
       <TableRow>
@@ -111,15 +109,14 @@ function EnhancedTableHead(props: EnhancedTableProps) {
       </TableRow>
     </TableHead>
   );
-}
+};
 
 interface CarPanelListType {
-  cars: Car[];
-  anchorEl: any;
-  menuIconClickHandler: any;
-  menuIconCloseHandler: any;
-  updateCarHandler: any;
-  removeCarHandler: any;
+  anchorEl: HTMLElement | null;
+  menuIconClickHandler: (event: React.MouseEvent<HTMLElement>) => void;
+  menuIconCloseHandler: () => void;
+  updateCarHandler: (car: Car) => void;
+  removeCarHandler: (carId: string) => void;
 }
 
 export const CarPanelList = (props: CarPanelListType) => {
@@ -140,7 +137,6 @@ export const CarPanelList = (props: CarPanelListType) => {
           aria-labelledby="tableTitle"
           size={"medium"}
         >
-          {/*@ts-ignore*/}
           <EnhancedTableHead />
           <TableBody>
             {cars.length === 0 && (
@@ -153,7 +149,10 @@ export const CarPanelList = (props: CarPanelListType) => {
 
             {cars.length !== 0 &&
               cars.map((car: Car, index: number) => {
-                const carImage = `${REACT_APP_API_URL}/${car?.carImages[0]}`;
+                const carImage =
+                  car?.carImages && car.carImages.length > 0
+                    ? `${REACT_APP_API_URL}/${car.carImages[0]}`
+                    : "/img/banner/header1.svg";
 
                 return (
                   <TableRow

@@ -231,7 +231,7 @@ export const GET_ALL_CS = gql`
           memberDesc
           memberWarnings
           memberBlocks
-          memberProperties
+          memberCars
           memberRank
           memberPoints
           memberLikes

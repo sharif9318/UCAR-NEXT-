@@ -85,9 +85,7 @@ interface EnhancedTableProps {
   rowCount: number;
 }
 
-function EnhancedTableHead(props: EnhancedTableProps) {
-  const { onSelectAllClick } = props;
-
+const EnhancedTableHead: React.FC = () => {
   return (
     <TableHead>
       <TableRow>
@@ -103,7 +101,7 @@ function EnhancedTableHead(props: EnhancedTableProps) {
       </TableRow>
     </TableHead>
   );
-}
+};
 
 interface FaqArticlesPanelListType {
   dense?: boolean;
@@ -191,7 +189,6 @@ export const FaqArticlesPanelList = (props: FaqArticlesPanelListType) => {
           aria-labelledby="tableTitle"
           size={dense ? "small" : "medium"}
         >
-          {/*@ts-ignore*/}
           <EnhancedTableHead />
           <TableBody>
             {faqList?.map((faq: any, index: number) => {

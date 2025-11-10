@@ -15,6 +15,82 @@ interface TrendCarCardProps {
   index: number;
 }
 
+const TrendCarCardContent = ({
+  car,
+  index,
+  isVideo,
+  videoRef,
+  mediaFile,
+  pushDetailHandler,
+  likeCarHandler,
+  user,
+  badge,
+  price,
+  iconButtonProps,
+  cardImgClass,
+  priceBadgeClass,
+  setIsVideoLoaded,
+}: any) => (
+  <Stack className="trend-card-box" key={car._id}>
+    <Box className="card-wrapper">
+      <Typography className="rank-number">{index + 1}</Typography>
+      <Box component={"div"} className={cardImgClass}>
+        {isVideo ? (
+          <video
+            ref={videoRef}
+            className="card-video"
+            autoPlay
+            loop
+            muted
+            playsInline
+            onLoadedData={() => setIsVideoLoaded && setIsVideoLoaded(true)}
+            onClick={() => pushDetailHandler(car._id)}
+          >
+            <source
+              src={`${REACT_APP_API_URL}/${mediaFile}`}
+              type="video/mp4"
+            />
+            Your browser does not support the video tag.
+          </video>
+        ) : (
+          <div
+            className="card-image"
+            style={{
+              backgroundImage: `url(${REACT_APP_API_URL}/${mediaFile})`,
+            }}
+            onClick={() => pushDetailHandler(car._id)}
+          />
+        )}
+        {badge}
+        <div className={priceBadgeClass}>{price}</div>
+        <Box className="info">
+          <strong className={"title"}>{car.carTitle}</strong>
+        </Box>
+      </Box>
+    </Box>
+    <Box className="bott">
+      <div className="view-like-box">
+        <IconButton size="small" {...iconButtonProps}>
+          <RemoveRedEyeIcon fontSize="small" />
+        </IconButton>
+        <Typography className="view-cnt">{car?.carViews}</Typography>
+        <IconButton
+          size="small"
+          {...iconButtonProps}
+          onClick={() => likeCarHandler(user, car?._id)}
+        >
+          {car?.meLiked && car?.meLiked[0]?.myFavorite ? (
+            <FavoriteIcon style={{ color: "red" }} fontSize="small" />
+          ) : (
+            <FavoriteIcon fontSize="small" />
+          )}
+        </IconButton>
+        <Typography className="view-cnt">{car?.carLikes}</Typography>
+      </div>
+    </Box>
+  </Stack>
+);
+
 const TrendCarCard = (props: TrendCarCardProps) => {
   const { car, likeCarHandler, index } = props;
   const device = useDeviceDetect();
@@ -25,154 +101,57 @@ const TrendCarCard = (props: TrendCarCardProps) => {
 
   // Check for video in carVideos field
   const videoFile = car.carVideos?.[0];
-
   // Use video if available, otherwise use first image
   const mediaFile = videoFile || car.carImages?.[0];
-  const isVideo = videoFile ? true : false;
+  const isVideo = !!videoFile;
 
   /** HANDLERS **/
-
   const pushDetailHandler = async (carId: string) => {
-    console.log("carId:", carId);
     await router.push({
       pathname: "/car/detail",
       query: { id: carId },
     });
   };
 
-  if (device === "mobile") {
-    return (
-      <Stack className="trend-card-box" key={car._id}>
-        <Box className="card-wrapper">
-          <Typography className="rank-number">{index + 1}</Typography>
-
-          <Box component={"div"} className={"card-img"}>
-            {isVideo ? (
-              <video
-                ref={videoRef}
-                className="card-video"
-                autoPlay
-                loop
-                muted
-                playsInline
-                onLoadedData={() => setIsVideoLoaded(true)}
-                onClick={() => pushDetailHandler(car._id)}
-              >
-                <source
-                  src={`${REACT_APP_API_URL}/${mediaFile}`}
-                  type="video/mp4"
-                />
-                Your browser does not support the video tag.
-              </video>
-            ) : (
-              <div
-                className="card-image"
-                style={{
-                  backgroundImage: `url(${REACT_APP_API_URL}/${mediaFile})`,
-                }}
-                onClick={() => pushDetailHandler(car._id)}
-              />
-            )}
-
-            <Box className="netflix-badge">UCAR</Box>
-            <div className="price-badge">${car.carPrice}</div>
-
-            <Box className="info">
-              <strong className={"title"}>{car.carTitle}</strong>
-            </Box>
-          </Box>
+  return device === "mobile" ? (
+    <TrendCarCardContent
+      car={car}
+      index={index}
+      isVideo={isVideo}
+      videoRef={videoRef}
+      mediaFile={mediaFile}
+      pushDetailHandler={pushDetailHandler}
+      likeCarHandler={likeCarHandler}
+      user={user}
+      badge={<Box className="netflix-badge">UCAR</Box>}
+      price={`$${car.carPrice}`}
+      iconButtonProps={{ color: "default" }}
+      cardImgClass={"card-img"}
+      priceBadgeClass={"price-badge"}
+      setIsVideoLoaded={setIsVideoLoaded}
+    />
+  ) : (
+    <TrendCarCardContent
+      car={car}
+      index={index}
+      isVideo={isVideo}
+      videoRef={videoRef}
+      mediaFile={mediaFile}
+      pushDetailHandler={pushDetailHandler}
+      likeCarHandler={likeCarHandler}
+      user={user}
+      badge={
+        <Box className="logo">
+          <img src="/img/logo/ucar_logo (1)2.svg" />
         </Box>
-
-        <Box className="bott">
-          <div className="view-like-box">
-            <IconButton size="small" color={"default"}>
-              <RemoveRedEyeIcon fontSize="small" />
-            </IconButton>
-            <Typography className="view-cnt">{car?.carViews}</Typography>
-            <IconButton
-              size="small"
-              color={"default"}
-              onClick={() => likeCarHandler(user, car?._id)}
-            >
-              {car?.meLiked && car?.meLiked[0]?.myFavorite ? (
-                <FavoriteIcon style={{ color: "red" }} fontSize="small" />
-              ) : (
-                <FavoriteIcon fontSize="small" />
-              )}
-            </IconButton>
-            <Typography className="view-cnt">{car?.carLikes}</Typography>
-          </div>
-        </Box>
-      </Stack>
-    );
-  } else {
-    return (
-      <Stack className="trend-card-box" key={car._id}>
-        <Box className="card-wrapper">
-          <Typography className="rank-number">{index + 1}</Typography>
-
-          <Box component={"div"} className={"card-img"}>
-            {isVideo ? (
-              <video
-                ref={videoRef}
-                className="card-video"
-                autoPlay
-                loop
-                muted
-                playsInline
-                onLoadedData={() => setIsVideoLoaded(true)}
-                onClick={() => pushDetailHandler(car._id)}
-              >
-                <source
-                  src={`${REACT_APP_API_URL}/${mediaFile}`}
-                  type="video/mp4"
-                />
-                Your browser does not support the video tag.
-              </video>
-            ) : (
-              <div
-                className="card-image"
-                style={{
-                  backgroundImage: `url(${REACT_APP_API_URL}/${mediaFile})`,
-                }}
-                onClick={() => pushDetailHandler(car._id)}
-              />
-            )}
-
-            <Box className="logo">
-              <img src="/img/logo/ucar_logo (1)2.svg" />
-            </Box>
-            <div className="price-badge">{car.carPrice}₩</div>
-
-            <Box className="info">
-              <strong className={"title"}>{car.carTitle}</strong>
-            </Box>
-          </Box>
-        </Box>
-
-        <Box className="bott">
-          <div className="view-like-box">
-            <IconButton size="small" sx={{ color: "white" }}>
-              <RemoveRedEyeIcon fontSize="small" />
-            </IconButton>
-            <Typography className="view-cnt">{car?.carViews}</Typography>
-            <IconButton
-              size="small"
-              sx={{ color: "white" }}
-              onClick={() => likeCarHandler(user, car?._id)}
-            >
-              {car?.meLiked && car?.meLiked[0]?.myFavorite ? (
-                <FavoriteIcon style={{ color: "red" }} fontSize="small" />
-              ) : (
-                <FavoriteIcon fontSize="small" />
-              )}
-            </IconButton>
-            <Typography className="view-cnt">{car?.carLikes}</Typography>
-          </div>
-        </Box>
-      </Stack>
-    );
-  }
+      }
+      price={`${car.carPrice}₩`}
+      iconButtonProps={{ sx: { color: "white" } }}
+      cardImgClass={"card-img"}
+      priceBadgeClass={"price-badge"}
+      setIsVideoLoaded={setIsVideoLoaded}
+    />
+  );
 };
 
 export default TrendCarCard;

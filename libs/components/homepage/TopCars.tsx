@@ -44,10 +44,11 @@ const TopCars = (props: TopCarsProps) => {
     variables: { input: initialInput },
     notifyOnNetworkStatusChange: true,
     onCompleted: (data: T) => {
-      setTopCars(data?.getCars?.list);
+      const freshTopCars = data?.getCars?.list || [];
+      setTopCars(freshTopCars);
 
-      if (onCarsLoaded && topCars?.length > 0) {
-        const carsWithVideo = topCars.filter(
+      if (onCarsLoaded && freshTopCars.length > 0) {
+        const carsWithVideo = freshTopCars.filter(
           (car: Car) => car.carVideos && car.carVideos.length > 0
         );
 
@@ -59,9 +60,11 @@ const TopCars = (props: TopCarsProps) => {
           const curleaseIndex = parseInt(
             localStorage.getItem("videoRotationIndex") || "0"
           );
-
-          const selectedCar =
-            sortedVideoCars[curleaseIndex % sortedVideoCars.length];
+          const safeIndex =
+            sortedVideoCars.length > 0
+              ? curleaseIndex % sortedVideoCars.length
+              : 0;
+          const selectedCar = sortedVideoCars[safeIndex];
 
           localStorage.setItem(
             "videoRotationIndex",
@@ -70,7 +73,7 @@ const TopCars = (props: TopCarsProps) => {
 
           onCarsLoaded(selectedCar);
         } else {
-          onCarsLoaded(topCars[0]);
+          onCarsLoaded(freshTopCars[0]);
         }
       }
     },

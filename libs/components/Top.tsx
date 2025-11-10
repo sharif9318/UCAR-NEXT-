@@ -144,13 +144,17 @@ const Top = ({ trendingCar }: TopProps) => {
     [router]
   );
 
-  const changeNavbarColor = () => {
-    if (window.scrollY >= 50) {
-      setColorChange(true);
-    } else {
-      setColorChange(false);
-    }
-  };
+  useEffect(() => {
+    const changeNavbarColor = () => {
+      if (window.scrollY >= 50) {
+        setColorChange(true);
+      } else {
+        setColorChange(false);
+      }
+    };
+    window.addEventListener("scroll", changeNavbarColor);
+    return () => window.removeEventListener("scroll", changeNavbarColor);
+  }, []);
 
   const handleClose = () => {
     setAnchorEl(null);
@@ -213,10 +217,6 @@ const Top = ({ trendingCar }: TopProps) => {
       },
     },
   }));
-
-  if (typeof window !== "undefined") {
-    window.addEventListener("scroll", changeNavbarColor);
-  }
 
   // helper to rotate modes
   const nextMode = useCallback((): ThemeMode => {
@@ -485,17 +485,12 @@ const Top = ({ trendingCar }: TopProps) => {
                     />
                     {t("English")}
                   </MenuItem>
-                  <MenuItem
-                    disableRipple
-                    onClick={langChoice}
-                    id="kr"
-                    suppressHydrationWarning
-                  >
+                  <MenuItem disableRipple onClick={langChoice} id="kr">
                     <img
                       className="img-flag"
                       src={"/img/flag/langkr.png"}
                       onClick={langChoice}
-                      id="uz"
+                      id="kr"
                       alt={"koreanFlag"}
                     />
                     {t("Korean")}

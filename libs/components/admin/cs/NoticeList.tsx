@@ -173,8 +173,15 @@ const EnhancedTableToolbar = (props: EnhancedTableToolbarProps) => {
                 key={headCell.id}
                 align={headCell.numeric ? "left" : "right"}
                 padding={headCell.disablePadding ? "none" : "normal"}
+                sortDirection={orderBy === headCell.id ? order : false}
+                onClick={(event) => onRequestSort(event, headCell.id)}
               >
-                {headCell.label}
+                <TableSortLabel
+                  active={orderBy === headCell.id}
+                  direction={orderBy === headCell.id ? order : "asc"}
+                >
+                  {headCell.label}
+                </TableSortLabel>
               </TableCell>
             ))}
           </TableRow>
@@ -270,8 +277,11 @@ export const NoticeList = (props: NoticeListType) => {
           aria-labelledby="tableTitle"
           size={dense ? "small" : "medium"}
         >
-          {/*@ts-ignore*/}
-          <EnhancedTableToolbar />
+          <EnhancedTableToolbar
+            order={order}
+            orderBy={orderBy}
+            onRequestSort={onRequestSort}
+          />
           <TableBody>
             {noticeList?.map((notice: any, index: number) => {
               const member_image =

@@ -1,5 +1,6 @@
 import { CarLocation, CarStatus, CarType } from "../../enums/car.enum";
 import { Direction } from "../../enums/common.enum";
+import { CarTransmission } from "./car";
 
 export interface CarInput {
   carType: CarType;
@@ -10,6 +11,7 @@ export interface CarInput {
   carMileage: number;
   carYear: number;
   carSeats: number;
+  carTransmission?: CarTransmission; // NEW FIELD
   carImages: string[];
   car360Images?: string[];
   carVideos?: string[];

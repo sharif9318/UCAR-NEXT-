@@ -72,7 +72,81 @@ const UserInquiryList = () => {
   };
 
   if (device === "mobile") {
-    return <div>Inquiry List MOBILE</div>;
+    // TODO: Implement mobile-friendly inquiry list UI. See issue #1234.
+    return (
+      <Stack className="inquiry-list-mobile" spacing={3} sx={{ p: 2 }}>
+        <Typography variant="h5" sx={{ fontWeight: 600, mb: 1 }}>
+          My Inquiries
+        </Typography>
+        <Typography variant="body2" color="textSecondary" sx={{ mb: 2 }}>
+          Track your inquiries and view responses from our support team
+        </Typography>
+        {getInquiriesLoading ? (
+          <Alert severity="info" sx={{ borderRadius: 2 }}>
+            Loading your inquiries...
+          </Alert>
+        ) : inquiryList.length === 0 ? (
+          <Paper
+            elevation={0}
+            sx={{
+              p: 4,
+              textAlign: "center",
+              bgcolor: "grey.50",
+              borderRadius: 2,
+            }}
+          >
+            <Typography variant="h6" color="textSecondary" gutterBottom>
+              No Inquiries Yet
+            </Typography>
+            <Typography variant="body2" color="textSecondary">
+              You haven't submitted any inquiries. Visit the "Submit Inquiry"
+              tab to ask a question.
+            </Typography>
+          </Paper>
+        ) : (
+          <Stack spacing={2}>
+            {inquiryList.map((inquiry: any) => (
+              <Paper
+                key={inquiry._id}
+                elevation={2}
+                sx={{
+                  p: 2,
+                  borderRadius: 2,
+                  mb: 1,
+                  cursor: "pointer",
+                  border: "1px solid",
+                  borderColor: "grey.200",
+                  "&:active": { bgcolor: "grey.100" },
+                }}
+                onClick={() => handleInquiryClick(inquiry)}
+              >
+                <Stack direction="row" alignItems="center" spacing={2}>
+                  <Chip
+                    label={inquiry.inquiryStatus || "PENDING"}
+                    color={getStatusColor(inquiry.inquiryStatus)}
+                    size="small"
+                    sx={{ fontWeight: 600 }}
+                  />
+                  <Typography
+                    variant="body2"
+                    color="textSecondary"
+                    sx={{
+                      flex: 1,
+                      overflow: "hidden",
+                      textOverflow: "ellipsis",
+                      whiteSpace: "nowrap",
+                    }}
+                  >
+                    {inquiry.csTitle}
+                  </Typography>
+                </Stack>
+              </Paper>
+            ))}
+          </Stack>
+        )}
+        {/* TODO: Add pagination/infinite-scroll and filters for mobile. */}
+      </Stack>
+    );
   }
 
   return (

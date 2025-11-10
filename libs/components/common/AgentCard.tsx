@@ -52,10 +52,11 @@ const AgentCard = (props: AgentCardProps) => {
         <Stack className={"agent-desc"}>
           <Box component={"div"} className={"agent-info"}>
             <Link
-              href={{
-                pathname: "/agent/detail",
-                query: { agentId: "id" },
-              }}
+              href={
+                agent?._id
+                  ? { pathname: "/agent/detail", query: { agentId: agent._id } }
+                  : "/agent/detail"
+              }
             >
               <strong>{agent?.memberFullName ?? agent?.memberNick}</strong>
             </Link>

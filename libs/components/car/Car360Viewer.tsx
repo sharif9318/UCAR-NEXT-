@@ -15,6 +15,12 @@ const Car360Viewer: React.FC<Car360ViewerProps> = ({
 }) => {
   const [showModal, setShowModal] = useState(false);
 
+  const apiUrl = process.env.REACT_APP_API_URL || "";
+  const imageSrc =
+    car360Images && car360Images[0]
+      ? `${apiUrl}/${car360Images[0]}`
+      : "/img/banner/header1.svg";
+
   if (!car360Images || car360Images.length === 0) {
     return null;
   }
@@ -34,7 +40,7 @@ const Car360Viewer: React.FC<Car360ViewerProps> = ({
           }}
         >
           <img
-            src={`${process.env.REACT_APP_API_URL}/${car360Images[0]}`}
+            src={imageSrc}
             alt="360° Preview"
             style={{
               width: "100%",

@@ -31,6 +31,16 @@ export const getStaticProps = async ({ locale }: any) => ({
   },
 });
 
+// Helper to safely parse JSON
+function safeParseInput(input: any, fallback: any) {
+  try {
+    return JSON.parse(input);
+  } catch (e) {
+    console.error("Failed to parse router.query.input:", e);
+    return fallback;
+  }
+}
+
 const AgentList: NextPage = ({ initialInput, ...props }: any) => {
   const device = useDeviceDetect();
   const router = useRouter();
@@ -43,7 +53,7 @@ const AgentList: NextPage = ({ initialInput, ...props }: any) => {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [searchFilter, setSearchFilter] = useState<any>(
     router?.query?.input
-      ? JSON.parse(router?.query?.input as string)
+      ? safeParseInput(router?.query?.input, initialInput)
       : initialInput
   );
   const [agents, setAgents] = useState<Member[]>([]);
