@@ -21,7 +21,6 @@ import { useTranslation } from "next-i18next";
 import useDeviceDetect from "../../hooks/useDeviceDetect";
 import Top from "../Top";
 import Footer from "../Footer";
-import Chat from "../Chat";
 import InteractiveNavbar from "../InteractiveNavbar";
 import { getJwtToken, logOut, updateUserInfo } from "../../auth";
 import { userVar } from "../../../apollo/store";
@@ -359,8 +358,6 @@ const withLayoutBasic = (Component: any) => {
           <Stack id="main">
             <Component {...props} />
           </Stack>
-
-          <Chat />
 
           <Stack id="footer">
             <Footer />

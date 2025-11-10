@@ -8,13 +8,15 @@ import {
   MenuItem,
   MenuProps,
   Typography,
+  Avatar,
 } from "@mui/material";
-import { userVar } from "../../apollo/store";
-import { useEffect, useState, useContext, useCallback } from "react";
+import { userVar, socketVar } from "../../apollo/store";
+import { useEffect, useState, useContext, useCallback, useRef } from "react";
 import { useTranslation } from "next-i18next";
 import { useRouter } from "next/router";
 import { styled, alpha } from "@mui/material/styles";
 import React from "react";
+import ScrollableFeed from "react-scrollable-feed";
 
 // Icons
 import DirectionsCarIcon from "@mui/icons-material/DirectionsCar";
@@ -24,6 +26,8 @@ import PersonIcon from "@mui/icons-material/Person";
 import HelpIcon from "@mui/icons-material/Help";
 import LoginIcon from "@mui/icons-material/Login";
 import LogoutIcon from "@mui/icons-material/Logout";
+import SendIcon from "@mui/icons-material/Send";
+import CloseFullscreenIcon from "@mui/icons-material/CloseFullscreen";
 import { Logout } from "@mui/icons-material";
 import Brightness4Icon from "@mui/icons-material/Brightness4";
 import AccountCircleOutlinedIcon from "@mui/icons-material/AccountCircleOutlined";
@@ -31,14 +35,24 @@ import NotificationsOutlinedIcon from "@mui/icons-material/NotificationsOutlined
 import { CaretDown } from "phosphor-react";
 
 // Utilities
-import { sweetConfirmAlert, sweetTopSmallSuccessAlert } from "./../sweetAlert";
+import {
+  sweetConfirmAlert,
+  sweetTopSmallSuccessAlert,
+  sweetErrorAlert,
+} from "./../sweetAlert";
 import { ThemeModeContext, ThemeMode } from "../../pages/_app";
 import { REACT_APP_API_URL } from "../config";
 import { getJwtToken, logOut, updateUserInfo } from "../auth";
+import { Messages } from "../config";
+import { Member } from "../types/member/member";
+import { RippleBadge } from "../../scss/MaterialTheme/styled";
+
+// Icons continued
+import HomeIcon from "@mui/icons-material/Home";
 
 // Constants
 const NAV_ITEMS = [
-  { href: "/", icon: "logo", label: "Home", customIcon: true },
+  { href: "/", icon: HomeIcon, label: "Home" },
   { href: "/car", icon: DirectionsCarIcon, label: "Cars" },
   { href: "/agent", icon: PeopleIcon, label: "Agents" },
   {
@@ -55,6 +69,20 @@ const LANGUAGES = [
   { code: "kr" as const, label: "Korean", flag: "/img/flag/langkr.png" },
   { code: "ru" as const, label: "Russian", flag: "/img/flag/langru.png" },
 ];
+
+// Types
+interface MessagePayload {
+  event: string;
+  text: string;
+  memberData: Member;
+}
+
+interface InfoPayload {
+  event: string;
+  totalClients: number;
+  memberData: Member;
+  action: string;
+}
 
 // Styled Components
 const StyledWrapper = styled("div")<{ $themeMode?: ThemeMode }>`
@@ -234,9 +262,11 @@ const UserProfile = ({ user, roleLabel, onLogoutClick }: UserProfileProps) => {
   if (!user?._id) {
     return (
       <Link href={"/account/join"}>
-        <div className={"join-box"}>
-          <AccountCircleOutlinedIcon />
-          <span>
+        <div className="user-profile-item">
+          <span className="icon">
+            <AccountCircleOutlinedIcon sx={{ fontSize: 32 }} />
+          </span>
+          <span className="label">
             {t("Login")} / {t("Register")}
           </span>
         </div>
@@ -245,8 +275,8 @@ const UserProfile = ({ user, roleLabel, onLogoutClick }: UserProfileProps) => {
   }
 
   return (
-    <>
-      <div className={"login-user"} onClick={onLogoutClick}>
+    <div className="user-profile-item" onClick={onLogoutClick}>
+      <span className="icon user-avatar">
         <img
           src={
             user?.memberImage
@@ -254,18 +284,19 @@ const UserProfile = ({ user, roleLabel, onLogoutClick }: UserProfileProps) => {
               : "/img/profile/defaultUser.svg"
           }
           alt="User profile"
+          style={{
+            width: "40px",
+            height: "40px",
+            objectFit: "cover",
+            borderRadius: "50%",
+          }}
         />
-      </div>
-      <Stack className={"user-info"}>
-        {user?.memberType === "ADMIN" ? (
-          <a href="/_admin/users" target={"_blank"} rel="noopener noreferrer">
-            <Typography className={"view-list"}>{roleLabel}</Typography>
-          </a>
-        ) : (
-          <Typography className={"view-list"}>{roleLabel}</Typography>
-        )}
-      </Stack>
-    </>
+      </span>
+      <span className="label user-info-label">
+        <span className="user-name">{user?.memberNick || "User"}</span>
+        <span className="user-role">{roleLabel}</span>
+      </span>
+    </div>
   );
 };
 
@@ -338,7 +369,6 @@ interface NavigationItemProps {
   href: string;
   icon: any;
   label: string;
-  customIcon?: boolean;
   requiresAuth?: boolean;
   user?: any;
 }
@@ -347,13 +377,11 @@ const NavigationItem = ({
   href,
   icon: Icon,
   label,
-  customIcon = false,
   requiresAuth = false,
   user,
 }: NavigationItemProps) => {
   const { t } = useTranslation("common");
 
-  // Don't render auth-required items if user is not logged in
   if (requiresAuth && !user?._id) {
     return null;
   }
@@ -362,19 +390,194 @@ const NavigationItem = ({
     <Link href={href}>
       <div className="menu-item">
         <span className="icon">
-          {customIcon ? (
-            <img
-              src="/img/logo/ucar_logo (1).svg"
-              alt="Home"
-              className="custom-logo"
-            />
-          ) : (
-            <Icon sx={{ fontSize: 32 }} />
-          )}
+          <Icon sx={{ fontSize: 32 }} />
         </span>
         <span className="label">{t(label)}</span>
       </div>
     </Link>
+  );
+};
+
+interface ChatButtonProps {
+  isExpanded: boolean;
+}
+
+const ChatButton = ({ isExpanded }: ChatButtonProps) => {
+  const { t } = useTranslation("common");
+  const user = useReactiveVar(userVar);
+  const socket = useReactiveVar(socketVar);
+  const [chatOpen, setChatOpen] = useState(false);
+  const [messagesList, setMessagesList] = useState<MessagePayload[]>([]);
+  const [onlineUsers, setOnlineUsers] = useState<number>(0);
+  const [messageInput, setMessageInput] = useState<string>("");
+  const chatContentRef = useRef<HTMLDivElement>(null);
+  const textInput = useRef(null);
+
+  useEffect(() => {
+    if (!socket) return;
+    const handler = (msg: MessageEvent) => {
+      const data = JSON.parse(msg.data);
+      switch (data.event) {
+        case "info": {
+          const newInfo: InfoPayload = data;
+          setOnlineUsers(newInfo.totalClients);
+          break;
+        }
+        case "getMessages": {
+          const list: MessagePayload[] = data.list;
+          setMessagesList(list);
+          break;
+        }
+        case "message": {
+          const newMessage: MessagePayload = data;
+          setMessagesList((prevMessages) => [
+            ...(prevMessages || []),
+            newMessage,
+          ]);
+          break;
+        }
+      }
+    };
+    socket.onmessage = handler;
+    return () => {
+      socket.onmessage = null;
+    };
+  }, [socket]);
+
+  const handleOpenChat = () => {
+    setChatOpen((prev) => !prev);
+  };
+
+  const getInputMessageHandler = useCallback(
+    (e: any) => {
+      const text = e.target.value;
+      setMessageInput(text);
+    },
+    [messageInput]
+  );
+
+  const getKeyHandler = (e: any) => {
+    try {
+      if (e.key === "Enter") {
+        onClickHandler();
+      }
+    } catch (err: any) {
+      console.log(err);
+    }
+  };
+
+  const onClickHandler = () => {
+    if (!messageInput) sweetErrorAlert(Messages.error4);
+    else {
+      socket.send(JSON.stringify({ event: "message", data: messageInput }));
+      setMessageInput("");
+    }
+  };
+
+  return (
+    <>
+      <div className={`chat-button-wrapper ${chatOpen ? "chat-open" : ""}`}>
+        <button
+          className={`chat-button ${chatOpen ? "open" : ""}`}
+          onClick={handleOpenChat}
+        >
+          {chatOpen ? (
+            <CloseFullscreenIcon style={{ color: "white" }} />
+          ) : (
+            <>
+              <svg
+                height="1.6em"
+                fill="white"
+                xmlSpace="preserve"
+                viewBox="0 0 1000 1000"
+                y="0px"
+                x="0px"
+                version="1.1"
+              >
+                <path d="M881.1,720.5H434.7L173.3,941V720.5h-54.4C58.8,720.5,10,671.1,10,610.2v-441C10,108.4,58.8,59,118.9,59h762.2C941.2,59,990,108.4,990,169.3v441C990,671.1,941.2,720.5,881.1,720.5L881.1,720.5z M935.6,169.3c0-30.4-24.4-55.2-54.5-55.2H118.9c-30.1,0-54.5,24.7-54.5,55.2v441c0,30.4,24.4,55.1,54.5,55.1h54.4h54.4v110.3l163.3-110.2H500h381.1c30.1,0,54.5-24.7,54.5-55.1V169.3L935.6,169.3z M717.8,444.8c-30.1,0-54.4-24.7-54.4-55.1c0-30.4,24.3-55.2,54.4-55.2c30.1,0,54.5,24.7,54.5,55.2C772.2,420.2,747.8,444.8,717.8,444.8L717.8,444.8z M500,444.8c-30.1,0-54.4-24.7-54.4-55.1c0-30.4,24.3-55.2,54.4-55.2c30.1,0,54.4,24.7,54.4,55.2C554.4,420.2,530.1,444.8,500,444.8L500,444.8z M282.2,444.8c-30.1,0-54.5-24.7-54.5-55.1c0-30.4,24.4-55.2,54.5-55.2c30.1,0,54.4,24.7,54.4,55.2C336.7,420.2,312.3,444.8,282.2,444.8L282.2,444.8z"></path>
+              </svg>
+              <span className="tooltip">Chat</span>
+            </>
+          )}
+        </button>
+        {isExpanded && <span className="label">{t("Live Chat")}</span>}
+      </div>
+
+      <Stack className={`chat-frame ${chatOpen ? "open" : ""}`}>
+        <Box className={"chat-top"} component={"div"}>
+          <div style={{ fontFamily: "Nunito" }}>Online Chat</div>
+          <RippleBadge
+            style={{ margin: "-18px 0 0 21px" }}
+            badgeContent={onlineUsers}
+          />
+        </Box>
+        <Box
+          className={"chat-content"}
+          id="chat-content"
+          ref={chatContentRef}
+          component={"div"}
+        >
+          <ScrollableFeed>
+            <Stack className={"chat-main"}>
+              <Box
+                flexDirection={"row"}
+                style={{ display: "flex" }}
+                sx={{ m: "10px 0px" }}
+                component={"div"}
+              >
+                <div className={"welcome"}>Welcome to Live chat!</div>
+              </Box>
+              {messagesList?.map((ele: MessagePayload, index: number) => {
+                const { text, memberData } = ele;
+                const memberImage = memberData?.memberImage
+                  ? `${process.env.NEXT_PUBLIC_API_URL}/${memberData.memberImage}`
+                  : "/img/profile/defaultUser.svg";
+
+                return memberData?._id === user?._id ? (
+                  <Box
+                    key={index}
+                    component={"div"}
+                    flexDirection={"row"}
+                    style={{ display: "flex" }}
+                    alignItems={"flex-end"}
+                    justifyContent={"flex-end"}
+                    sx={{ m: "10px 0px" }}
+                  >
+                    <div className={"msg-right"}>{text}</div>
+                  </Box>
+                ) : (
+                  <Box
+                    key={index}
+                    flexDirection={"row"}
+                    style={{ display: "flex" }}
+                    sx={{ m: "10px 0px" }}
+                    component={"div"}
+                  >
+                    <Avatar alt={"join"} src={memberImage} />
+                    <div className={"msg-left"}>{text}</div>
+                  </Box>
+                );
+              })}
+            </Stack>
+          </ScrollableFeed>
+        </Box>
+        <Box className={"chat-bott"} component={"div"}>
+          <input
+            ref={textInput}
+            type={"text"}
+            name={"message"}
+            className={"msg-input"}
+            placeholder={"Type message"}
+            value={messageInput}
+            onChange={getInputMessageHandler}
+            onKeyDown={getKeyHandler}
+          />
+          <button className={"send-msg-btn"} onClick={onClickHandler}>
+            <SendIcon style={{ color: "#fff" }} />
+          </button>
+        </Box>
+      </Stack>
+    </>
   );
 };
 
@@ -426,7 +629,6 @@ const InteractiveNavbar = () => {
   const [mounted, setMounted] = useState(false);
   const [currentLang, setCurrentLang] = useState<string>(router.locale || "en");
 
-  // User role calculation
   const roleKey = (user?.memberType || "").toString().toLowerCase();
   const roleLabel =
     roleKey === "admin"
@@ -435,7 +637,6 @@ const InteractiveNavbar = () => {
       ? t("role.agent")
       : t("role.member");
 
-  // Effects
   useEffect(() => {
     const jwt = getJwtToken();
     if (jwt) updateUserInfo(jwt);
@@ -455,7 +656,6 @@ const InteractiveNavbar = () => {
     }
   }, [router.locale, mounted, currentLang]);
 
-  // Handlers
   const initializeLanguage = () => {
     if (typeof window !== "undefined") {
       const savedLang = localStorage.getItem("locale");
@@ -483,7 +683,6 @@ const InteractiveNavbar = () => {
       if (result) {
         localStorage.removeItem("accessToken");
 
-        // Reset user state
         userVar({
           _id: "",
           memberType: "",
@@ -539,16 +738,32 @@ const InteractiveNavbar = () => {
       onMouseEnter={() => setIsExpanded(true)}
       onMouseLeave={() => setIsExpanded(false)}
     >
-      <div className="menu-toggle" onClick={toggleNavbar}>
-        <div className="hamburger">
-          <span></span>
-          <span></span>
-          <span></span>
-        </div>
-      </div>
+      <button className="menu-toggle-btn" onClick={toggleNavbar}>
+        <span className="icon">
+          <svg viewBox="0 0 175 80" width="40" height="40">
+            <rect width="80" height="15" fill="currentColor" rx="10"></rect>
+            <rect
+              y="30"
+              width="80"
+              height="15"
+              fill="currentColor"
+              rx="10"
+            ></rect>
+            <rect
+              y="60"
+              width="80"
+              height="15"
+              fill="currentColor"
+              rx="10"
+            ></rect>
+          </svg>
+        </span>
+        <span className="text">MENU</span>
+      </button>
 
-      <div className="menu-item">
-        <Box component={"div"} className={"user-box"}>
+      <div className="menu-items">
+        {/* User Profile Section */}
+        <Box component={"div"} className={"user-section"}>
           <UserProfile
             user={user}
             roleLabel={roleLabel}
@@ -571,33 +786,31 @@ const InteractiveNavbar = () => {
             {t("Logout")}
           </MenuItem>
         </Menu>
-      </div>
 
-      <div className="menu-items">
+        {/* Navigation Items */}
         {NAV_ITEMS.map((item) => (
           <NavigationItem
             key={item.href}
             href={item.href}
             icon={item.icon}
             label={item.label}
-            customIcon={item.customIcon}
             requiresAuth={item.requiresAuth}
             user={user}
           />
         ))}
 
-        {/* Theme Toggle */}
         <div className="theme-toggle">
           <ThemeRadio mode={mode} setMode={setMode} />
         </div>
 
-        {/* Language Selector */}
         <LanguageSelector
           currentLang={currentLang}
           onLanguageChange={handleLanguageChange}
         />
 
-        {/* Authentication Section */}
+        {/* Chat Button - Above Authentication */}
+        <ChatButton isExpanded={isExpanded} />
+
         <AuthSection
           isAuthenticated={!!user?._id}
           onLogin={handleLogin}
