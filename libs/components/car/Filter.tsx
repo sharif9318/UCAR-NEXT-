@@ -12,10 +12,10 @@ import {
   Tooltip,
   IconButton,
   Chip,
-  Collapse,
+  Box,
+  Slider,
+  styled,
 } from "@mui/material";
-import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
-import ExpandLessIcon from "@mui/icons-material/ExpandLess";
 import ClearAllIcon from "@mui/icons-material/ClearAll";
 import useDeviceDetect from "../../hooks/useDeviceDetect";
 import { CarLocation, CarType } from "../../enums/car.enum";
@@ -25,14 +25,167 @@ import CancelRoundedIcon from "@mui/icons-material/CancelRounded";
 import { carMileage } from "../../config";
 import RefreshIcon from "@mui/icons-material/Refresh";
 import { useTranslation } from "react-i18next";
+import TuneIcon from "@mui/icons-material/Tune";
+import SpeedIcon from "@mui/icons-material/Speed";
+import LocationOnIcon from "@mui/icons-material/LocationOn";
+import DirectionsCarIcon from "@mui/icons-material/DirectionsCar";
+import EventSeatIcon from "@mui/icons-material/EventSeat";
+import CalendarTodayIcon from "@mui/icons-material/CalendarToday";
+import AttachMoneyIcon from "@mui/icons-material/AttachMoney";
 
 const MenuProps = {
   PaperProps: {
     style: {
       maxHeight: "200px",
+      background: "var(--bg-paper)",
+      border: "1px solid rgba(229, 9, 20, 0.3)",
     },
   },
 };
+
+// Styled components for futuristic look
+const DashboardPanel = styled(Box)(({ theme }) => ({
+  background:
+    "linear-gradient(135deg, rgba(229, 9, 20, 0.05) 0%, rgba(0, 0, 0, 0.3) 100%)",
+  backdropFilter: "blur(20px)",
+  border: "1px solid rgba(229, 9, 20, 0.2)",
+  borderRadius: "16px",
+  padding: "24px 32px",
+  boxShadow:
+    "0 8px 32px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(229, 9, 20, 0.1)",
+  position: "relative",
+  overflow: "hidden",
+
+  "&::before": {
+    content: '""',
+    position: "absolute",
+    top: 0,
+    left: 0,
+    right: 0,
+    height: "2px",
+    background: "linear-gradient(90deg, transparent, #E50914, transparent)",
+    animation: "scan 3s linear infinite",
+  },
+
+  "@keyframes scan": {
+    "0%": { transform: "translateX(-100%)" },
+    "100%": { transform: "translateX(100%)" },
+  },
+}));
+
+const FilterSection = styled(Box)({
+  display: "flex",
+  flexDirection: "column",
+  gap: "8px",
+  minWidth: "140px",
+});
+
+const SectionLabel = styled(Typography)({
+  color: "rgba(229, 9, 20, 0.9)",
+  fontSize: "11px",
+  fontWeight: 700,
+  letterSpacing: "1.5px",
+  textTransform: "uppercase",
+  display: "flex",
+  alignItems: "center",
+  gap: "6px",
+  marginBottom: "4px",
+
+  "& .MuiSvgIcon-root": {
+    fontSize: "14px",
+  },
+});
+
+const StyledButton = styled(Button)({
+  minWidth: "60px",
+  height: "36px",
+  borderRadius: "8px",
+  border: "1px solid rgba(229, 9, 20, 0.3)",
+  background: "rgba(0, 0, 0, 0.3)",
+  color: "var(--text-primary)",
+  fontSize: "12px",
+  fontWeight: 600,
+  textTransform: "none",
+  transition: "all 0.3s ease",
+
+  "&:hover": {
+    background: "rgba(229, 9, 20, 0.15)",
+    border: "1px solid rgba(229, 9, 20, 0.6)",
+    boxShadow: "0 0 20px rgba(229, 9, 20, 0.3)",
+  },
+
+  "&.active": {
+    background:
+      "linear-gradient(135deg, rgba(229, 9, 20, 0.4) 0%, rgba(229, 9, 20, 0.2) 100%)",
+    border: "1px solid #E50914",
+    boxShadow:
+      "0 0 15px rgba(229, 9, 20, 0.5), inset 0 0 10px rgba(229, 9, 20, 0.2)",
+  },
+});
+
+const StyledSelect = styled(Select)({
+  height: "36px",
+  borderRadius: "8px",
+  background: "rgba(0, 0, 0, 0.4)",
+  color: "var(--text-primary)",
+  fontSize: "13px",
+
+  "& .MuiOutlinedInput-notchedOutline": {
+    borderColor: "rgba(229, 9, 20, 0.3)",
+  },
+
+  "&:hover .MuiOutlinedInput-notchedOutline": {
+    borderColor: "rgba(229, 9, 20, 0.6)",
+  },
+
+  "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
+    borderColor: "#E50914",
+    boxShadow: "0 0 15px rgba(229, 9, 20, 0.4)",
+  },
+});
+
+const StyledInput = styled(OutlinedInput)({
+  height: "36px",
+  borderRadius: "8px",
+  background: "rgba(0, 0, 0, 0.4)",
+  color: "var(--text-primary)",
+  fontSize: "13px",
+
+  "& .MuiOutlinedInput-notchedOutline": {
+    borderColor: "rgba(229, 9, 20, 0.3)",
+  },
+
+  "&:hover .MuiOutlinedInput-notchedOutline": {
+    borderColor: "rgba(229, 9, 20, 0.6)",
+  },
+
+  "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
+    borderColor: "#E50914",
+    boxShadow: "0 0 15px rgba(229, 9, 20, 0.4)",
+  },
+});
+
+const StyledSlider = styled(Slider)({
+  color: "#E50914",
+  height: 4,
+
+  "& .MuiSlider-track": {
+    border: "none",
+    background: "linear-gradient(90deg, #E50914, #ff4444)",
+  },
+
+  "& .MuiSlider-thumb": {
+    height: 16,
+    width: 16,
+    backgroundColor: "#E50914",
+    border: "2px solid currentColor",
+    boxShadow: "0 0 10px rgba(229, 9, 20, 0.8)",
+
+    "&:hover, &.Mui-focusVisible": {
+      boxShadow: "0 0 20px rgba(229, 9, 20, 1)",
+    },
+  },
+});
 
 interface FilterType {
   searchFilter: CarsInquiry;
@@ -50,9 +203,15 @@ const Filter = (props: FilterType) => {
   );
   const [carType, setCarType] = useState<CarType[]>(Object.values(CarType));
   const [searchText, setSearchText] = useState<string>("");
-  const [openLocation, setOpenLocation] = useState<boolean>(false);
+  const [priceRange, setPriceRange] = useState<number[]>([
+    searchFilter?.search?.pricesRange?.start ?? 0,
+    searchFilter?.search?.pricesRange?.end ?? 200000,
+  ]);
+  const [mileageRange, setMileageRange] = useState<number[]>([
+    searchFilter?.search?.mileageRange?.start ?? 0,
+    searchFilter?.search?.mileageRange?.end ?? 500,
+  ]);
 
-  /** LIFECYCLES **/
   useEffect(() => {
     const keysToCheck = [
       "locationList",
@@ -62,7 +221,6 @@ const Filter = (props: FilterType) => {
       "yearsList",
     ] as const;
     let updated = false;
-    // Deep clone to avoid mutating props
     const newSearchFilter = {
       ...searchFilter,
       search: { ...searchFilter.search },
@@ -83,605 +241,187 @@ const Filter = (props: FilterType) => {
         )
         .then();
     }
-    if (searchFilter?.search?.locationList) setOpenLocation(true);
   }, [searchFilter]);
 
-  // Active filters helpers
-  const removeLocation = useCallback(
-    async (value: string) => {
-      if (!searchFilter?.search?.locationList) return;
-      const next = searchFilter.search.locationList.filter(
-        (v: string) => v !== value
-      );
+  const handleLocationToggle = useCallback(
+    async (location: string) => {
+      const currentList = searchFilter?.search?.locationList || [];
+      const newList = currentList.includes(location as CarLocation)
+        ? currentList.filter((l: string) => l !== location)
+        : [...currentList, location];
+
       await router.push(
         `/car?input=${JSON.stringify({
           ...searchFilter,
           search: {
             ...searchFilter.search,
-            locationList: next.length ? next : undefined,
+            locationList: newList.length ? newList : undefined,
           },
         })}`,
         `/car?input=${JSON.stringify({
           ...searchFilter,
           search: {
             ...searchFilter.search,
-            locationList: next.length ? next : undefined,
+            locationList: newList.length ? newList : undefined,
           },
         })}`,
         { scroll: false }
       );
     },
-    [searchFilter]
+    [searchFilter, router]
   );
 
-  const removeType = useCallback(
-    async (value: string) => {
-      if (!searchFilter?.search?.typeList) return;
-      const next = searchFilter.search.typeList.filter(
-        (v: string) => v !== value
-      );
+  const handleTypeToggle = useCallback(
+    async (type: string) => {
+      const currentList = searchFilter?.search?.typeList || [];
+      const newList = currentList.includes(type as CarType)
+        ? currentList.filter((t: string) => t !== type)
+        : [...currentList, type];
+
       await router.push(
         `/car?input=${JSON.stringify({
           ...searchFilter,
           search: {
             ...searchFilter.search,
-            typeList: next.length ? next : undefined,
+            typeList: newList.length ? newList : undefined,
           },
         })}`,
         `/car?input=${JSON.stringify({
           ...searchFilter,
           search: {
             ...searchFilter.search,
-            typeList: next.length ? next : undefined,
+            typeList: newList.length ? newList : undefined,
           },
         })}`,
         { scroll: false }
       );
     },
-    [searchFilter]
+    [searchFilter, router]
   );
 
-  const removeSeats = useCallback(
-    async (num: Number) => {
-      if (!searchFilter?.search?.seatsList) return;
-      if (searchFilter.search.seatsList.includes(num)) {
-        const next = searchFilter.search.seatsList.filter(
-          (n: Number) => n !== num
-        );
-        await router.push(
-          `/car?input=${JSON.stringify({
-            ...searchFilter,
-            search: {
-              ...searchFilter.search,
-              seatsList: next.length ? next : undefined,
-            },
-          })}`,
-          `/car?input=${JSON.stringify({
-            ...searchFilter,
-            search: {
-              ...searchFilter.search,
-              seatsList: next.length ? next : undefined,
-            },
-          })}`,
-          { scroll: false }
-        );
-      }
-    },
-    [searchFilter]
-  );
+  const handleSeatsToggle = useCallback(
+    async (seats: number) => {
+      const currentList = searchFilter?.search?.seatsList || [];
+      const newList = currentList.includes(seats)
+        ? currentList.filter((s: number) => s !== seats)
+        : [...currentList, seats];
 
-  const removeYear = useCallback(
-    async (num: Number) => {
-      if (!searchFilter?.search?.yearsList) return;
-      const next = searchFilter.search.yearsList.filter(
-        (n: Number) => n !== num
-      );
       await router.push(
         `/car?input=${JSON.stringify({
           ...searchFilter,
           search: {
             ...searchFilter.search,
-            yearsList: next.length ? next : undefined,
+            seatsList: newList.length ? newList : undefined,
           },
         })}`,
         `/car?input=${JSON.stringify({
           ...searchFilter,
           search: {
             ...searchFilter.search,
-            yearsList: next.length ? next : undefined,
+            seatsList: newList.length ? newList : undefined,
           },
         })}`,
         { scroll: false }
       );
     },
-    [searchFilter]
+    [searchFilter, router]
   );
 
-  const removeOption = useCallback(
-    async (value: string) => {
-      if (!searchFilter?.search?.options) return;
-      const next = searchFilter.search.options.filter(
-        (v: string) => v !== value
-      );
+  const handleYearToggle = useCallback(
+    async (year: number) => {
+      const currentList = searchFilter?.search?.yearsList || [];
+      const newList = currentList.includes(year)
+        ? currentList.filter((y: number) => y !== year)
+        : [...currentList, year];
+
       await router.push(
         `/car?input=${JSON.stringify({
           ...searchFilter,
           search: {
             ...searchFilter.search,
-            options: next.length ? next : undefined,
+            yearsList: newList.length ? newList : undefined,
           },
         })}`,
         `/car?input=${JSON.stringify({
           ...searchFilter,
           search: {
             ...searchFilter.search,
-            options: next.length ? next : undefined,
+            yearsList: newList.length ? newList : undefined,
           },
         })}`,
         { scroll: false }
       );
     },
-    [searchFilter]
+    [searchFilter, router]
   );
 
-  const resetMileage = useCallback(async () => {
-    await router.push(
-      `/car?input=${JSON.stringify({
-        ...searchFilter,
-        search: { ...searchFilter.search, mileageRange: {} },
-      })}`,
-      `/car?input=${JSON.stringify({
-        ...searchFilter,
-        search: { ...searchFilter.search, mileageRange: {} },
-      })}`,
-      { scroll: false }
-    );
-  }, [searchFilter]);
-
-  const resetPrice = useCallback(async () => {
-    const { pricesRange, ...rest } = searchFilter.search || ({} as any);
-    await router.push(
-      `/car?input=${JSON.stringify({
-        ...searchFilter,
-        search: { ...rest },
-      })}`,
-      `/car?input=${JSON.stringify({
-        ...searchFilter,
-        search: { ...rest },
-      })}`,
-      { scroll: false }
-    );
-  }, [searchFilter]);
-
-  /** HANDLERS **/
-  const carLocationSelectHandler = useCallback(
-    async (e: any) => {
-      try {
-        const isChecked = e.target.checked;
-        const value = e.target.value;
-        if (isChecked) {
-          await router.push(
-            `/car?input=${JSON.stringify({
-              ...searchFilter,
-              search: {
-                ...searchFilter.search,
-                locationList: [
-                  ...(searchFilter?.search?.locationList || []),
-                  value,
-                ],
-              },
-            })}`,
-            `/car?input=${JSON.stringify({
-              ...searchFilter,
-              search: {
-                ...searchFilter.search,
-                locationList: [
-                  ...(searchFilter?.search?.locationList || []),
-                  value,
-                ],
-              },
-            })}`,
-            { scroll: false }
-          );
-        } else if (searchFilter?.search?.locationList?.includes(value)) {
-          await router.push(
-            `/car?input=${JSON.stringify({
-              ...searchFilter,
-              search: {
-                ...searchFilter.search,
-                locationList: searchFilter?.search?.locationList?.filter(
-                  (item: string) => item !== value
-                ),
-              },
-            })}`,
-            `/car?input=${JSON.stringify({
-              ...searchFilter,
-              search: {
-                ...searchFilter.search,
-                locationList: searchFilter?.search?.locationList?.filter(
-                  (item: string) => item !== value
-                ),
-              },
-            })}`,
-            { scroll: false }
-          );
-        }
-      } catch (err: any) {
-        console.error("ERROR, carLocationSelectHandler:", err);
-      }
+  const handlePriceChange = useCallback(
+    (event: Event, newValue: number | number[]) => {
+      setPriceRange(newValue as number[]);
     },
-    [searchFilter]
+    []
   );
 
-  const carTypeSelectHandler = useCallback(
-    async (e: any) => {
-      try {
-        const isChecked = e.target.checked;
-        const value = e.target.value;
-        if (isChecked) {
-          await router.push(
-            `/car?input=${JSON.stringify({
-              ...searchFilter,
-              search: {
-                ...searchFilter.search,
-                typeList: [...(searchFilter?.search?.typeList || []), value],
-              },
-            })}`,
-            `/car?input=${JSON.stringify({
-              ...searchFilter,
-              search: {
-                ...searchFilter.search,
-                typeList: [...(searchFilter?.search?.typeList || []), value],
-              },
-            })}`,
-            { scroll: false }
-          );
-        } else if (searchFilter?.search?.typeList?.includes(value)) {
-          await router.push(
-            `/car?input=${JSON.stringify({
-              ...searchFilter,
-              search: {
-                ...searchFilter.search,
-                typeList: searchFilter?.search?.typeList?.filter(
-                  (item: string) => item !== value
-                ),
-              },
-            })}`,
-            `/car?input=${JSON.stringify({
-              ...searchFilter,
-              search: {
-                ...searchFilter.search,
-                typeList: searchFilter?.search?.typeList?.filter(
-                  (item: string) => item !== value
-                ),
-              },
-            })}`,
-            { scroll: false }
-          );
-        }
-      } catch (err: any) {
-        console.error("ERROR, carTypeSelectHandler:", err);
-      }
+  const handlePriceCommit = useCallback(
+    async (event: any, newValue: number | number[]) => {
+      const [start, end] = newValue as number[];
+      await router.push(
+        `/car?input=${JSON.stringify({
+          ...searchFilter,
+          search: {
+            ...searchFilter.search,
+            pricesRange: { start, end },
+          },
+        })}`,
+        `/car?input=${JSON.stringify({
+          ...searchFilter,
+          search: {
+            ...searchFilter.search,
+            pricesRange: { start, end },
+          },
+        })}`,
+        { scroll: false }
+      );
     },
-    [searchFilter]
+    [searchFilter, router]
   );
 
-  const carSeatsSelectHandler = useCallback(
-    async (number: Number) => {
-      try {
-        if (number != 0) {
-          if (searchFilter?.search?.seatsList?.includes(number)) {
-            await router.push(
-              `/car?input=${JSON.stringify({
-                ...searchFilter,
-                search: {
-                  ...searchFilter.search,
-                  seatsList: searchFilter?.search?.seatsList?.filter(
-                    (item: Number) => item !== number
-                  ),
-                },
-              })}`,
-              `/car?input=${JSON.stringify({
-                ...searchFilter,
-                search: {
-                  ...searchFilter.search,
-                  seatsList: searchFilter?.search?.seatsList?.filter(
-                    (item: Number) => item !== number
-                  ),
-                },
-              })}`,
-              { scroll: false }
-            );
-          } else {
-            await router.push(
-              `/car?input=${JSON.stringify({
-                ...searchFilter,
-                search: {
-                  ...searchFilter.search,
-                  seatsList: [
-                    ...(searchFilter?.search?.seatsList || []),
-                    number,
-                  ],
-                },
-              })}`,
-              `/car?input=${JSON.stringify({
-                ...searchFilter,
-                search: {
-                  ...searchFilter.search,
-                  seatsList: [
-                    ...(searchFilter?.search?.seatsList || []),
-                    number,
-                  ],
-                },
-              })}`,
-              { scroll: false }
-            );
-          }
-        } else {
-          delete searchFilter?.search.seatsList;
-          setSearchFilter({ ...searchFilter });
-          await router.push(
-            `/car?input=${JSON.stringify({
-              ...searchFilter,
-              search: {
-                ...searchFilter.search,
-              },
-            })}`,
-            `/car?input=${JSON.stringify({
-              ...searchFilter,
-              search: {
-                ...searchFilter.search,
-              },
-            })}`,
-            { scroll: false }
-          );
-        }
-      } catch (err: any) {
-        console.error("ERROR, carSeatsSelectHandler:", err);
-      }
+  const handleMileageChange = useCallback(
+    (event: Event, newValue: number | number[]) => {
+      setMileageRange(newValue as number[]);
     },
-    [searchFilter]
+    []
   );
 
-  const carOptionSelectHandler = useCallback(
-    async (e: any) => {
-      try {
-        const isChecked = e.target.checked;
-        const value = e.target.value;
-        if (isChecked) {
-          await router.push(
-            `/car?input=${JSON.stringify({
-              ...searchFilter,
-              search: {
-                ...searchFilter.search,
-                options: [...(searchFilter?.search?.options || []), value],
-              },
-            })}`,
-            `/car?input=${JSON.stringify({
-              ...searchFilter,
-              search: {
-                ...searchFilter.search,
-                options: [...(searchFilter?.search?.options || []), value],
-              },
-            })}`,
-            { scroll: false }
-          );
-        } else if (searchFilter?.search?.options?.includes(value)) {
-          await router.push(
-            `/car?input=${JSON.stringify({
-              ...searchFilter,
-              search: {
-                ...searchFilter.search,
-                options: searchFilter?.search?.options?.filter(
-                  (item: string) => item !== value
-                ),
-              },
-            })}`,
-            `/car?input=${JSON.stringify({
-              ...searchFilter,
-              search: {
-                ...searchFilter.search,
-                options: searchFilter?.search?.options?.filter(
-                  (item: string) => item !== value
-                ),
-              },
-            })}`,
-            { scroll: false }
-          );
-        }
-      } catch (err: any) {
-        console.error("ERROR, carOptionSelectHandler:", err);
-      }
+  const handleMileageCommit = useCallback(
+    async (event: any, newValue: number | number[]) => {
+      const [start, end] = newValue as number[];
+      await router.push(
+        `/car?input=${JSON.stringify({
+          ...searchFilter,
+          search: {
+            ...searchFilter.search,
+            mileageRange: { start, end },
+          },
+        })}`,
+        `/car?input=${JSON.stringify({
+          ...searchFilter,
+          search: {
+            ...searchFilter.search,
+            mileageRange: { start, end },
+          },
+        })}`,
+        { scroll: false }
+      );
     },
-    [searchFilter]
-  );
-
-  const carYearSelectHandler = useCallback(
-    async (number: Number) => {
-      try {
-        if (number != 0) {
-          if (searchFilter?.search?.yearsList?.includes(number)) {
-            await router.push(
-              `/car?input=${JSON.stringify({
-                ...searchFilter,
-                search: {
-                  ...searchFilter.search,
-                  yearsList: searchFilter?.search?.yearsList?.filter(
-                    (item: Number) => item !== number
-                  ),
-                },
-              })}`,
-              `/car?input=${JSON.stringify({
-                ...searchFilter,
-                search: {
-                  ...searchFilter.search,
-                  yearsList: searchFilter?.search?.yearsList?.filter(
-                    (item: Number) => item !== number
-                  ),
-                },
-              })}`,
-              { scroll: false }
-            );
-          } else {
-            await router.push(
-              `/car?input=${JSON.stringify({
-                ...searchFilter,
-                search: {
-                  ...searchFilter.search,
-                  yearsList: [
-                    ...(searchFilter?.search?.yearsList || []),
-                    number,
-                  ],
-                },
-              })}`,
-              `/car?input=${JSON.stringify({
-                ...searchFilter,
-                search: {
-                  ...searchFilter.search,
-                  yearsList: [
-                    ...(searchFilter?.search?.yearsList || []),
-                    number,
-                  ],
-                },
-              })}`,
-              { scroll: false }
-            );
-          }
-        } else {
-          delete searchFilter?.search.yearsList;
-          setSearchFilter({ ...searchFilter });
-          await router.push(
-            `/car?input=${JSON.stringify({
-              ...searchFilter,
-              search: {
-                ...searchFilter.search,
-              },
-            })}`,
-            `/car?input=${JSON.stringify({
-              ...searchFilter,
-              search: {
-                ...searchFilter.search,
-              },
-            })}`,
-            { scroll: false }
-          );
-        }
-      } catch (err: any) {
-        console.error("ERROR, carYearSelectHandler:", err);
-      }
-    },
-    [searchFilter]
-  );
-
-  const carMileageHandler = useCallback(
-    async (e: any, type: string) => {
-      const value = e.target.value;
-
-      if (type == "start") {
-        await router.push(
-          `/car?input=${JSON.stringify({
-            ...searchFilter,
-            search: {
-              ...searchFilter.search,
-              mileageRange: {
-                ...searchFilter.search.mileageRange,
-                start: value,
-              },
-            },
-          })}`,
-          `/car?input=${JSON.stringify({
-            ...searchFilter,
-            search: {
-              ...searchFilter.search,
-              mileageRange: {
-                ...searchFilter.search.mileageRange,
-                start: value,
-              },
-            },
-          })}`,
-          { scroll: false }
-        );
-      } else {
-        await router.push(
-          `/car?input=${JSON.stringify({
-            ...searchFilter,
-            search: {
-              ...searchFilter.search,
-              mileageRange: { ...searchFilter.search.mileageRange, end: value },
-            },
-          })}`,
-          `/car?input=${JSON.stringify({
-            ...searchFilter,
-            search: {
-              ...searchFilter.search,
-              mileageRange: { ...searchFilter.search.mileageRange, end: value },
-            },
-          })}`,
-          { scroll: false }
-        );
-      }
-    },
-    [searchFilter]
-  );
-
-  const carPriceHandler = useCallback(
-    async (value: number, type: string) => {
-      if (type == "start") {
-        await router.push(
-          `/car?input=${JSON.stringify({
-            ...searchFilter,
-            search: {
-              ...searchFilter.search,
-              pricesRange: {
-                ...searchFilter.search.pricesRange,
-                start: value * 1,
-              },
-            },
-          })}`,
-          `/car?input=${JSON.stringify({
-            ...searchFilter,
-            search: {
-              ...searchFilter.search,
-              pricesRange: {
-                ...searchFilter.search.pricesRange,
-                start: value * 1,
-              },
-            },
-          })}`,
-          { scroll: false }
-        );
-      } else {
-        await router.push(
-          `/car?input=${JSON.stringify({
-            ...searchFilter,
-            search: {
-              ...searchFilter.search,
-              pricesRange: {
-                ...searchFilter.search.pricesRange,
-                end: value * 1,
-              },
-            },
-          })}`,
-          `/car?input=${JSON.stringify({
-            ...searchFilter,
-            search: {
-              ...searchFilter.search,
-              pricesRange: {
-                ...searchFilter.search.pricesRange,
-                end: value * 1,
-              },
-            },
-          })}`,
-          { scroll: false }
-        );
-      }
-    },
-    [searchFilter]
+    [searchFilter, router]
   );
 
   const refreshHandler = useCallback(async () => {
     try {
       setSearchText("");
+      setPriceRange([0, 200000]);
+      setMileageRange([0, 500]);
       await router.push(
         `/car?input=${JSON.stringify(initialInput)}`,
         `/car?input=${JSON.stringify(initialInput)}`,
@@ -694,524 +434,225 @@ const Filter = (props: FilterType) => {
 
   if (device === "mobile") {
     return <div>CARS FILTER</div>;
-  } else {
-    const chips: React.ReactNode[] = [];
-    (searchFilter?.search?.locationList || []).forEach((loc: string) =>
-      chips.push(
-        <Chip
-          key={`loc-${loc}`}
-          label={loc}
-          onDelete={() => removeLocation(loc)}
-          size="small"
-          color="error"
-          variant="outlined"
-        />
-      )
-    );
-    (searchFilter?.search?.typeList || []).forEach((tItem: string) =>
-      chips.push(
-        <Chip
-          key={`type-${tItem}`}
-          label={tItem}
-          onDelete={() => removeType(tItem)}
-          size="small"
-          color="error"
-          variant="outlined"
-        />
-      )
-    );
-    (searchFilter?.search?.seatsList || []).forEach((n: Number) =>
-      chips.push(
-        <Chip
-          key={`seats-${n}`}
-          label={`${n} ${t("car.seats")}`}
-          onDelete={() => removeSeats(n)}
-          size="small"
-          color="error"
-          variant="outlined"
-        />
-      )
-    );
-    (searchFilter?.search?.yearsList || []).forEach((n: Number) =>
-      chips.push(
-        <Chip
-          key={`years-${n}`}
-          label={`${n} yrs`}
-          onDelete={() => removeYear(n)}
-          size="small"
-          color="error"
-          variant="outlined"
-        />
-      )
-    );
-    const hasMileage =
-      searchFilter?.search?.mileageRange?.start != null ||
-      searchFilter?.search?.mileageRange?.end != null;
-    if (hasMileage) {
-      chips.push(
-        <Chip
-          key={`mileage`}
-          label={`${t("car.km")} ${
-            searchFilter?.search?.mileageRange?.start ?? 0
-          } - ${searchFilter?.search?.mileageRange?.end ?? 500}`}
-          onDelete={resetMileage}
-          size="small"
-          color="error"
-          variant="outlined"
-        />
-      );
-    }
-    const hasPrice =
-      searchFilter?.search?.pricesRange?.start != null ||
-      searchFilter?.search?.pricesRange?.end != null;
-    if (hasPrice) {
-      chips.push(
-        <Chip
-          key={`price`}
-          label={`$ ${searchFilter?.search?.pricesRange?.start ?? 0} - ${
-            searchFilter?.search?.pricesRange?.end ?? 0
-          }`}
-          onDelete={resetPrice}
-          size="small"
-          color="error"
-          variant="outlined"
-        />
-      );
-    }
-
-    return (
-      <Stack className={"filter-main"}>
-        <Stack className={"find-your-home"} mb={"40px"}>
-          <Typography className={"title-main"}>
-            {t("filter.findCar")}
-          </Typography>
-          <Stack className={"input-box"}>
-            <OutlinedInput
-              value={searchText}
-              type={"text"}
-              className={"search-input"}
-              placeholder={t("filter.placeholder")}
-              onChange={(e: any) => setSearchText(e.target.value)}
-              onKeyDown={(event: any) => {
-                if (event.key == "Enter") {
-                  setSearchFilter({
-                    ...searchFilter,
-                    search: { ...searchFilter.search, text: searchText },
-                  });
-                }
-              }}
-              endAdornment={
-                <>
-                  <CancelRoundedIcon
-                    onClick={() => {
-                      setSearchText("");
-                      setSearchFilter({
-                        ...searchFilter,
-                        search: { ...searchFilter.search, text: "" },
-                      });
-                    }}
-                  />
-                </>
-              }
-            />
-            <img src={"/img/icons/search_icon.png"} alt={""} />
-            <Tooltip title={t("filter.reset")}>
-              <IconButton onClick={refreshHandler}>
-                <RefreshIcon />
-              </IconButton>
-            </Tooltip>
-          </Stack>
-          {chips.length > 0 && (
-            <Stack
-              direction="row"
-              gap={1}
-              mt={2}
-              flexWrap="wrap"
-              alignItems="center"
-            >
-              {chips}
-              <Tooltip title={t("filter.clearAll")}>
-                <IconButton onClick={refreshHandler} size="small">
-                  <ClearAllIcon />
-                </IconButton>
-              </Tooltip>
-            </Stack>
-          )}
-        </Stack>
-        <Stack className={"find-your-home"} mb={"30px"}>
-          <Stack
-            direction="row"
-            alignItems="center"
-            justifyContent="space-between"
-          >
-            <p
-              className={"title"}
-              style={{ textShadow: "0px 3px 4px #b9b9b9" }}
-            >
-              {t("filter.location")}
-            </p>
-            <Stack direction="row" alignItems="center" gap={1}>
-              {(searchFilter?.search?.locationList || []).length > 0 && (
-                <Button
-                  size="small"
-                  onClick={() =>
-                    router.push(
-                      `/car?input=${JSON.stringify({
-                        ...searchFilter,
-                        search: {
-                          ...searchFilter.search,
-                          locationList: undefined,
-                        },
-                      })}`,
-                      `/car?input=${JSON.stringify({
-                        ...searchFilter,
-                        search: {
-                          ...searchFilter.search,
-                          locationList: undefined,
-                        },
-                      })}`,
-                      { scroll: false }
-                    )
-                  }
-                >
-                  {t("filter.clear")}
-                </Button>
-              )}
-              <IconButton
-                size="small"
-                onClick={() => setOpenLocation(!openLocation)}
-              >
-                {openLocation ? <ExpandLessIcon /> : <ExpandMoreIcon />}
-              </IconButton>
-            </Stack>
-          </Stack>
-          <Collapse in={openLocation}>
-            <Stack className={`car-location`}>
-              {carLocation.map((location: string) => {
-                return (
-                  <Stack className={"input-box"} key={location}>
-                    <Checkbox
-                      id={location}
-                      className="car-checkbox"
-                      color="default"
-                      size="small"
-                      value={location}
-                      checked={(
-                        searchFilter?.search?.locationList || []
-                      ).includes(location as CarLocation)}
-                      onChange={carLocationSelectHandler}
-                    />
-                    <label htmlFor={location} style={{ cursor: "pointer" }}>
-                      <Typography className="car-type">{location}</Typography>
-                    </label>
-                  </Stack>
-                );
-              })}
-            </Stack>
-          </Collapse>
-        </Stack>
-        <Stack className={"find-your-home"} mb={"30px"}>
-          <Stack
-            direction="row"
-            alignItems="center"
-            justifyContent="space-between"
-          >
-            <Typography className={"title"}>{t("filter.carType")}</Typography>
-            {(searchFilter?.search?.typeList || []).length > 0 && (
-              <Button
-                size="small"
-                onClick={() =>
-                  router.push(
-                    `/car?input=${JSON.stringify({
-                      ...searchFilter,
-                      search: { ...searchFilter.search, typeList: undefined },
-                    })}`,
-                    `/car?input=${JSON.stringify({
-                      ...searchFilter,
-                      search: { ...searchFilter.search, typeList: undefined },
-                    })}`,
-                    { scroll: false }
-                  )
-                }
-              >
-                {t("filter.clear")}
-              </Button>
-            )}
-          </Stack>
-          {carType.map((type: string) => (
-            <Stack className={"input-box"} key={type}>
-              <Checkbox
-                id={type}
-                className="car-checkbox"
-                color="default"
-                size="small"
-                value={type}
-                onChange={carTypeSelectHandler}
-                checked={(searchFilter?.search?.typeList || []).includes(
-                  type as CarType
-                )}
-              />
-              <label style={{ cursor: "pointer" }}>
-                <Typography className="car_type">{type}</Typography>
-              </label>
-            </Stack>
-          ))}
-        </Stack>
-        <Stack className={"find-your-home"} mb={"30px"}>
-          <Stack
-            direction="row"
-            alignItems="center"
-            justifyContent="space-between"
-          >
-            <Typography className={"title"}>{t("car.seats")}</Typography>
-            {(searchFilter?.search?.seatsList || []).length > 0 && (
-              <Button size="small" onClick={() => carSeatsSelectHandler(0)}>
-                {t("filter.clear")}
-              </Button>
-            )}
-          </Stack>
-          <Stack className="button-group">
-            <Button
-              sx={{
-                borderRadius: "12px 0 0 12px",
-                border: !searchFilter?.search?.seatsList
-                  ? "2px solid #E50914"
-                  : "1px solid #b9b9b9",
-              }}
-              onClick={() => carSeatsSelectHandler(0)}
-            >
-              Any
-            </Button>
-            {[1, 2, 3, 4, 5].map((n, idx) => (
-              <Button
-                key={n}
-                sx={{
-                  borderRadius: idx === 4 ? "0 12px 12px 0" : 0,
-                  border: searchFilter?.search?.seatsList?.includes(n)
-                    ? "2px solid #E50914"
-                    : "1px solid #b9b9b9",
-                  borderLeft: searchFilter?.search?.seatsList?.includes(n)
-                    ? undefined
-                    : "none",
-                }}
-                onClick={() => carSeatsSelectHandler(n as unknown as Number)}
-              >
-                {n === 5 ? "5+" : n}
-              </Button>
-            ))}
-          </Stack>
-        </Stack>
-        <Stack className={"find-your-home"} mb={"30px"}>
-          <Stack
-            direction="row"
-            alignItems="center"
-            justifyContent="space-between"
-          >
-            <Typography className={"title"}>{t("filter.yearRange")}</Typography>
-            {(searchFilter?.search?.yearsList || []).length > 0 && (
-              <Button size="small" onClick={() => carYearSelectHandler(0)}>
-                {t("filter.clear")}
-              </Button>
-            )}
-          </Stack>
-          <Stack className="button-group">
-            <Button
-              sx={{
-                borderRadius: "12px 0 0 12px",
-                border: !searchFilter?.search?.yearsList
-                  ? "2px solid #E50914"
-                  : "1px solid #b9b9b9",
-              }}
-              onClick={() => carYearSelectHandler(0)}
-            >
-              Any
-            </Button>
-            {[1, 2, 3, 4, 5].map((n, idx) => (
-              <Button
-                key={n}
-                sx={{
-                  borderRadius: idx === 4 ? "0 12px 12px 0" : 0,
-                  border: searchFilter?.search?.yearsList?.includes(n)
-                    ? "2px solid #E50914"
-                    : "1px solid #b9b9b9",
-                  borderLeft: searchFilter?.search?.yearsList?.includes(n)
-                    ? undefined
-                    : "none",
-                }}
-                onClick={() => carYearSelectHandler(n as unknown as Number)}
-              >
-                {n === 5 ? "5+" : n}
-              </Button>
-            ))}
-          </Stack>
-        </Stack>
-        <Stack className={"find-your-home"} mb={"30px"}>
-          <Stack
-            direction="row"
-            alignItems="center"
-            justifyContent="space-between"
-          >
-            <Typography className={"title"}>{t("filter.options")}</Typography>
-            {(searchFilter?.search?.options || []).length > 0 && (
-              <Button
-                size="small"
-                onClick={() =>
-                  router.push(
-                    `/car?input=${JSON.stringify({
-                      ...searchFilter,
-                      search: { ...searchFilter.search, options: undefined },
-                    })}`,
-                    `/car?input=${JSON.stringify({
-                      ...searchFilter,
-                      search: { ...searchFilter.search, options: undefined },
-                    })}`,
-                    { scroll: false }
-                  )
-                }
-              >
-                {t("filter.clear")}
-              </Button>
-            )}
-          </Stack>
-          <Stack className={"input-box"}>
-            <Checkbox
-              id={"Trade-In"}
-              className="car-checkbox"
-              color="default"
-              size="small"
-              value={"carTradeIn"}
-              checked={(searchFilter?.search?.options || []).includes(
-                "carTradeIn"
-              )}
-              onChange={carOptionSelectHandler}
-            />
-            <label htmlFor={"Trade-In"} style={{ cursor: "pointer" }}>
-              <Typography className="car-type">{t("car.sale")}</Typography>
-            </label>
-          </Stack>
-          <Stack className={"input-box"}>
-            <Checkbox
-              id={"Lease"}
-              className="car-checkbox"
-              color="default"
-              size="small"
-              value={"carLease"}
-              checked={(searchFilter?.search?.options || []).includes(
-                "carLease"
-              )}
-              onChange={carOptionSelectHandler}
-            />
-            <label htmlFor={"Lease"} style={{ cursor: "pointer" }}>
-              <Typography className="car-type">{t("car.lease")}</Typography>
-            </label>
-          </Stack>
-        </Stack>
-        <Stack className={"find-your-home"} mb={"30px"}>
-          <Stack
-            direction="row"
-            alignItems="center"
-            justifyContent="space-between"
-          >
-            <Typography className={"title"}>{t("filter.mileage")}</Typography>
-            {hasMileage && (
-              <Button size="small" onClick={resetMileage}>
-                {t("filter.reset")}
-              </Button>
-            )}
-          </Stack>
-          <Stack className="square-year-input">
-            <FormControl>
-              <InputLabel id="demo-simple-select-label">Min</InputLabel>
-              <Select
-                labelId="demo-simple-select-label"
-                id="demo-simple-select"
-                value={searchFilter?.search?.mileageRange?.start ?? 0}
-                label="Min"
-                onChange={(e: any) => carMileageHandler(e, "start")}
-                MenuProps={MenuProps}
-              >
-                {carMileage.map((square: number) => (
-                  <MenuItem
-                    value={square}
-                    disabled={
-                      (searchFilter?.search?.mileageRange?.end || 0) < square
-                    }
-                    key={square}
-                  >
-                    {square}
-                  </MenuItem>
-                ))}
-              </Select>
-            </FormControl>
-            <div className="central-divider"></div>
-            <FormControl>
-              <InputLabel id="demo-simple-select-label">Max</InputLabel>
-              <Select
-                labelId="demo-simple-select-label"
-                id="demo-simple-select"
-                value={searchFilter?.search?.mileageRange?.end ?? 500}
-                label="Max"
-                onChange={(e: any) => carMileageHandler(e, "end")}
-                MenuProps={MenuProps}
-              >
-                {carMileage.map((square: number) => (
-                  <MenuItem
-                    value={square}
-                    disabled={
-                      (searchFilter?.search?.mileageRange?.start || 0) > square
-                    }
-                    key={square}
-                  >
-                    {square}
-                  </MenuItem>
-                ))}
-              </Select>
-            </FormControl>
-          </Stack>
-        </Stack>
-        <Stack className={"find-your-home"}>
-          <Stack
-            direction="row"
-            alignItems="center"
-            justifyContent="space-between"
-          >
-            <Typography className={"title"}>
-              {t("filter.priceRange")}
-            </Typography>
-            {hasPrice && (
-              <Button size="small" onClick={resetPrice}>
-                {t("filter.reset")}
-              </Button>
-            )}
-          </Stack>
-          <Stack className="square-year-input">
-            <input
-              type="number"
-              placeholder="$ min"
-              min={0}
-              value={searchFilter?.search?.pricesRange?.start ?? 0}
-              onChange={(e: any) => {
-                if (e.target.value >= 0) {
-                  carPriceHandler(e.target.value, "start");
-                }
-              }}
-            />
-            <div className="central-divider"></div>
-            <input
-              type="number"
-              placeholder="$ max"
-              value={searchFilter?.search?.pricesRange?.end ?? 0}
-              onChange={(e: any) => {
-                if (e.target.value >= 0) {
-                  carPriceHandler(e.target.value, "end");
-                }
-              }}
-            />
-          </Stack>
-        </Stack>
-      </Stack>
-    );
   }
+
+  return (
+    <DashboardPanel className="futuristic-filter">
+      <Stack
+        direction="row"
+        spacing={3}
+        alignItems="flex-start"
+        flexWrap="wrap"
+      >
+        {/* Search Section */}
+        <FilterSection sx={{ minWidth: "240px", flex: 1 }}>
+          <SectionLabel>
+            <TuneIcon /> {t("filter.search")}
+          </SectionLabel>
+          <StyledInput
+            value={searchText}
+            type="text"
+            placeholder={t("filter.placeholder")}
+            onChange={(e: any) => setSearchText(e.target.value)}
+            onKeyDown={(event: any) => {
+              if (event.key === "Enter") {
+                setSearchFilter({
+                  ...searchFilter,
+                  search: { ...searchFilter.search, text: searchText },
+                });
+              }
+            }}
+            endAdornment={
+              <IconButton size="small" onClick={() => setSearchText("")}>
+                <CancelRoundedIcon
+                  sx={{ fontSize: "18px", color: "#E50914" }}
+                />
+              </IconButton>
+            }
+          />
+        </FilterSection>
+
+        {/* Location Section */}
+        <FilterSection>
+          <SectionLabel>
+            <LocationOnIcon /> {t("filter.location")}
+          </SectionLabel>
+          <Stack direction="row" gap={0.5} flexWrap="wrap">
+            {carLocation.slice(0, 4).map((location: string) => (
+              <StyledButton
+                key={location}
+                size="small"
+                className={
+                  (searchFilter?.search?.locationList || []).includes(
+                    location as CarLocation
+                  )
+                    ? "active"
+                    : ""
+                }
+                onClick={() => handleLocationToggle(location)}
+              >
+                {location}
+              </StyledButton>
+            ))}
+          </Stack>
+        </FilterSection>
+
+        {/* Car Type Section */}
+        <FilterSection>
+          <SectionLabel>
+            <DirectionsCarIcon /> {t("filter.carType")}
+          </SectionLabel>
+          <Stack direction="row" gap={0.5} flexWrap="wrap">
+            {carType.slice(0, 4).map((type: string) => (
+              <StyledButton
+                key={type}
+                size="small"
+                className={
+                  (searchFilter?.search?.typeList || []).includes(
+                    type as CarType
+                  )
+                    ? "active"
+                    : ""
+                }
+                onClick={() => handleTypeToggle(type)}
+              >
+                {type}
+              </StyledButton>
+            ))}
+          </Stack>
+        </FilterSection>
+
+        {/* Seats Section */}
+        <FilterSection>
+          <SectionLabel>
+            <EventSeatIcon /> {t("car.seats")}
+          </SectionLabel>
+          <Stack direction="row" gap={0.5}>
+            {[2, 4, 5, 7].map((seats) => (
+              <StyledButton
+                key={seats}
+                size="small"
+                className={
+                  (searchFilter?.search?.seatsList || []).includes(seats)
+                    ? "active"
+                    : ""
+                }
+                onClick={() => handleSeatsToggle(seats)}
+              >
+                {seats}+
+              </StyledButton>
+            ))}
+          </Stack>
+        </FilterSection>
+
+        {/* Year Section */}
+        <FilterSection>
+          <SectionLabel>
+            <CalendarTodayIcon /> {t("filter.yearRange")}
+          </SectionLabel>
+          <Stack direction="row" gap={0.5}>
+            {[1, 2, 3, 5].map((year) => (
+              <StyledButton
+                key={year}
+                size="small"
+                className={
+                  (searchFilter?.search?.yearsList || []).includes(year)
+                    ? "active"
+                    : ""
+                }
+                onClick={() => handleYearToggle(year)}
+              >
+                {year}y
+              </StyledButton>
+            ))}
+          </Stack>
+        </FilterSection>
+
+        {/* Price Range Section */}
+        <FilterSection sx={{ minWidth: "200px" }}>
+          <SectionLabel>
+            <AttachMoneyIcon /> {t("filter.priceRange")}
+          </SectionLabel>
+          <Box sx={{ px: 1 }}>
+            <StyledSlider
+              value={priceRange}
+              onChange={handlePriceChange}
+              onChangeCommitted={handlePriceCommit}
+              valueLabelDisplay="auto"
+              min={0}
+              max={200000}
+              step={5000}
+              valueLabelFormat={(value) => `$${value.toLocaleString()}`}
+            />
+            <Stack direction="row" justifyContent="space-between" mt={0.5}>
+              <Typography
+                sx={{ fontSize: "10px", color: "rgba(229, 9, 20, 0.7)" }}
+              >
+                ${priceRange[0].toLocaleString()}
+              </Typography>
+              <Typography
+                sx={{ fontSize: "10px", color: "rgba(229, 9, 20, 0.7)" }}
+              >
+                ${priceRange[1].toLocaleString()}
+              </Typography>
+            </Stack>
+          </Box>
+        </FilterSection>
+
+        {/* Mileage Range Section */}
+        <FilterSection sx={{ minWidth: "200px" }}>
+          <SectionLabel>
+            <SpeedIcon /> {t("filter.mileage")}
+          </SectionLabel>
+          <Box sx={{ px: 1 }}>
+            <StyledSlider
+              value={mileageRange}
+              onChange={handleMileageChange}
+              onChangeCommitted={handleMileageCommit}
+              valueLabelDisplay="auto"
+              min={0}
+              max={500}
+              step={10}
+              valueLabelFormat={(value) => `${value}k km`}
+            />
+            <Stack direction="row" justifyContent="space-between" mt={0.5}>
+              <Typography
+                sx={{ fontSize: "10px", color: "rgba(229, 9, 20, 0.7)" }}
+              >
+                {mileageRange[0]}k km
+              </Typography>
+              <Typography
+                sx={{ fontSize: "10px", color: "rgba(229, 9, 20, 0.7)" }}
+              >
+                {mileageRange[1]}k km
+              </Typography>
+            </Stack>
+          </Box>
+        </FilterSection>
+
+        {/* Reset Button */}
+        <FilterSection sx={{ minWidth: "auto", justifyContent: "flex-end" }}>
+          <Tooltip title={t("filter.reset")}>
+            <IconButton
+              onClick={refreshHandler}
+              sx={{
+                color: "#E50914",
+                border: "1px solid rgba(229, 9, 20, 0.3)",
+                borderRadius: "8px",
+                mt: "20px",
+                "&:hover": {
+                  background: "rgba(229, 9, 20, 0.15)",
+                  boxShadow: "0 0 20px rgba(229, 9, 20, 0.3)",
+                },
+              }}
+            >
+              <RefreshIcon />
+            </IconButton>
+          </Tooltip>
+        </FilterSection>
+      </Stack>
+    </DashboardPanel>
+  );
 };
 
 export default Filter;

@@ -1,4 +1,4 @@
-// index.tsx - Updated with view toggle
+// index.tsx - Updated with reordered layout and theme-aware sorting panel
 import React, {
   ChangeEvent,
   MouseEvent,
@@ -253,91 +253,73 @@ const CarList: NextPage = ({ initialInput, ...props }: any) => {
             }),
           }}
         >
+          {/* Sorting Panel - Top Right */}
           <Box component={"div"} className={"right"}>
-            <ToggleButtonGroup
-              value={viewMode}
-              exclusive
-              onChange={handleViewChange}
-              aria-label="view mode"
-              sx={{ marginRight: "20px" }}
-            >
-              <ToggleButton value="grid" aria-label="grid view">
-                <ViewModuleIcon />
-              </ToggleButton>
-              <ToggleButton value="holographic" aria-label="holographic view">
-                <ViewComfyIcon />
-              </ToggleButton>
-            </ToggleButtonGroup>
-            <span>{t("filter.sortBy")}</span>
-            <div>
+            <Box className="sorting-panel">
+              <ToggleButtonGroup
+                value={viewMode}
+                exclusive
+                onChange={handleViewChange}
+                aria-label="view mode"
+              >
+                <ToggleButton value="grid" aria-label="grid view">
+                  <ViewModuleIcon />
+                </ToggleButton>
+                <ToggleButton value="holographic" aria-label="holographic view">
+                  <ViewComfyIcon />
+                </ToggleButton>
+              </ToggleButtonGroup>
+              <span>{t("filter.sortBy")}</span>
               <Button
                 onClick={sortingClickHandler}
                 endIcon={<KeyboardArrowDownRoundedIcon />}
               >
                 {sortLabel}
               </Button>
-              <Menu
-                anchorEl={anchorEl}
-                open={sortingOpen}
-                onClose={sortingCloseHandler}
-                sx={{ paddingTop: "5px" }}
+            </Box>
+            <Menu
+              anchorEl={anchorEl}
+              open={sortingOpen}
+              onClose={sortingCloseHandler}
+              sx={{ paddingTop: "5px" }}
+            >
+              <MenuItem
+                onClick={sortingHandler}
+                id={"new"}
+                disableRipple
+                sx={{ boxShadow: "rgba(149, 157, 165, 0.2) 0px 8px 24px" }}
               >
-                <MenuItem
-                  onClick={sortingHandler}
-                  id={"new"}
-                  disableRipple
-                  sx={{ boxShadow: "rgba(149, 157, 165, 0.2) 0px 8px 24px" }}
-                >
-                  {t("filter.newest")}
-                </MenuItem>
-                <MenuItem
-                  onClick={sortingHandler}
-                  id={"lowest"}
-                  disableRipple
-                  sx={{ boxShadow: "rgba(149, 157, 165, 0.2) 0px 8px 24px" }}
-                >
-                  {t("filter.priceAsc")}
-                </MenuItem>
-                <MenuItem
-                  onClick={sortingHandler}
-                  id={"highest"}
-                  disableRipple
-                  sx={{ boxShadow: "rgba(149, 157, 165, 0.2) 0px 8px 24px" }}
-                >
-                  {t("filter.priceDesc")}
-                </MenuItem>
-              </Menu>
-            </div>
+                {t("filter.newest")}
+              </MenuItem>
+              <MenuItem
+                onClick={sortingHandler}
+                id={"lowest"}
+                disableRipple
+                sx={{ boxShadow: "rgba(149, 157, 165, 0.2) 0px 8px 24px" }}
+              >
+                {t("filter.priceAsc")}
+              </MenuItem>
+              <MenuItem
+                onClick={sortingHandler}
+                id={"highest"}
+                disableRipple
+                sx={{ boxShadow: "rgba(149, 157, 165, 0.2) 0px 8px 24px" }}
+              >
+                {t("filter.priceDesc")}
+              </MenuItem>
+            </Menu>
           </Box>
+
           <Stack
             className={"car-page"}
             sx={{
-              flexDirection: viewMode === "holographic" ? "column" : "row",
-              gap: viewMode === "holographic" ? "0" : "25px",
+              flexDirection: "column",
             }}
           >
-            {viewMode === "grid" && (
-              <Stack className={"filter-config"}>
-                <Filter
-                  searchFilter={searchFilter}
-                  setSearchFilter={setSearchFilter}
-                  initialInput={initialInput}
-                />
-              </Stack>
-            )}
-            <Stack
-              className="main-config"
-              mb={viewMode === "holographic" ? "0" : "76px"}
-              sx={{
-                width: viewMode === "holographic" ? "100vw" : "936px",
-                maxWidth: viewMode === "holographic" ? "100vw" : "936px",
-                marginLeft: viewMode === "holographic" ? "-50vw" : "0",
-                left: viewMode === "holographic" ? "50%" : "auto",
-                position: viewMode === "holographic" ? "relative" : "static",
-              }}
-            >
-              {viewMode === "grid" ? (
-                <>
+            {viewMode === "grid" ? (
+              <>
+                {/* 1. Main content area - Car Cards */}
+                <Stack className="main-config" mb="0">
                   <Stack className={"list-config"}>
                     {getCarsLoading ? (
                       <Stack
@@ -369,39 +351,52 @@ const CarList: NextPage = ({ initialInput, ...props }: any) => {
                       </>
                     )}
                   </Stack>
-                  <Stack className="pagination-config">
-                    {hasCars && (
-                      <>
-                        <Stack className="pagination-box">
-                          <Pagination
-                            page={currentPage}
-                            count={totalPages}
-                            onChange={handlePaginationChange}
-                            shape="circular"
-                            color="primary"
-                          />
-                        </Stack>
-                        <Stack className="total-result">
-                          <Typography>
-                            {t("car.totalAvailable", { count: total })}
-                          </Typography>
-                        </Stack>
-                      </>
-                    )}
+                </Stack>
+
+                {/* 2. Filter Panel - Below car cards */}
+                {hasCars && (
+                  <Stack className={"filter-config"}>
+                    <Filter
+                      searchFilter={searchFilter}
+                      setSearchFilter={setSearchFilter}
+                      initialInput={initialInput}
+                    />
                   </Stack>
-                </>
-              ) : (
-                <HolographicCarCard
-                  cars={cars}
-                  loading={getCarsLoading}
-                  error={getCarsError}
-                  likeCarHandler={likeCarHandler}
-                  searchFilter={searchFilter}
-                  setSearchFilter={setSearchFilter}
-                  t={t}
-                />
-              )}
-            </Stack>
+                )}
+
+                {/* 3. Pagination - Below filter */}
+                <Stack className="pagination-config">
+                  {hasCars && (
+                    <>
+                      <Stack className="pagination-box">
+                        <Pagination
+                          page={currentPage}
+                          count={totalPages}
+                          onChange={handlePaginationChange}
+                          shape="circular"
+                          color="primary"
+                        />
+                      </Stack>
+                      <Stack className="total-result">
+                        <Typography>
+                          {t("car.totalAvailable", { count: total })}
+                        </Typography>
+                      </Stack>
+                    </>
+                  )}
+                </Stack>
+              </>
+            ) : (
+              <HolographicCarCard
+                cars={cars}
+                loading={getCarsLoading}
+                error={getCarsError}
+                likeCarHandler={likeCarHandler}
+                searchFilter={searchFilter}
+                setSearchFilter={setSearchFilter}
+                t={t}
+              />
+            )}
           </Stack>
         </div>
       </div>
