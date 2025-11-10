@@ -758,11 +758,10 @@ const InteractiveNavbar = () => {
             ></rect>
           </svg>
         </span>
-        <span className="text">MENU</span>
+        <span className="text"> MENU</span>
       </button>
 
       <div className="menu-items">
-        {/* User Profile Section */}
         <Box component={"div"} className={"user-section"}>
           <UserProfile
             user={user}
@@ -787,7 +786,6 @@ const InteractiveNavbar = () => {
           </MenuItem>
         </Menu>
 
-        {/* Navigation Items */}
         {NAV_ITEMS.map((item) => (
           <NavigationItem
             key={item.href}
