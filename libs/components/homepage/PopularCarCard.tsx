@@ -56,20 +56,36 @@ const PopularCarCard = (props: PopularCarCardProps) => {
     setIsDragging(false);
   };
 
-  // Background scene and car image
-  const backgroundScene = car?.carImages[1] || car?.carImages[0] || "";
-  const carForeground = car?.carImages[0] || "";
+  // Get real API images - using the same pattern as AddNewCar.tsx
+  const carPngImage = car?.carPngImage
+    ? `${REACT_APP_API_URL}/${car.carPngImage}`
+    : "/img/car/sampleCar.png"; // fallback image
+
+  const carBackgroundImage = car?.carBackgroundImage
+    ? `${REACT_APP_API_URL}/${car.carBackgroundImage}`
+    : "/img/car/background.jpg"; // fallback image
+
+  // Alternative: If carPngImage/carBackgroundImage don't exist, use carImages array
+  const backgroundScene =
+    carBackgroundImage ||
+    (car?.carBackgroundImage
+      ? `${REACT_APP_API_URL}/${car.carBackgroundImage}`
+      : "/img/car/background.jpg");
+
+  const carForeground =
+    carPngImage ||
+    (car?.carPngImage
+      ? `${REACT_APP_API_URL}/${car.carPngImage}`
+      : "/img/car/sampleCar.png");
+  console.log("carForeground:", carForeground);
+  console.log("backgroundScene:", backgroundScene);
 
   if (device === "mobile") {
     return (
       <Stack className="popular-card-box">
+        <img src={backgroundScene} alt={car.carTitle} className="card-img" />
         <img
-          src="/img/car/background.jpg"
-          alt={car.carTitle}
-          className="card-img"
-        />
-        <img
-          src="/img/car/sampleCar.png"
+          src={carForeground}
           alt={car.carTitle}
           className="car-foreground"
           draggable="true"
@@ -123,13 +139,9 @@ const PopularCarCard = (props: PopularCarCardProps) => {
   } else {
     return (
       <Stack className="popular-card-box">
+        <img src={backgroundScene} alt={car.carTitle} className="card-img" />
         <img
-          src="/img/car/background.jpg"
-          alt={car.carTitle}
-          className="card-img"
-        />
-        <img
-          src="/img/car/sampleCar.png"
+          src={carForeground}
           alt={car.carTitle}
           className="car-foreground"
           draggable="true"

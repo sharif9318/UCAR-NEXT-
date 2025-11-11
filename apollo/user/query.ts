@@ -101,6 +101,8 @@ export const GET_CAR = gql`
       carImages
       car360Images
       carVideos
+      carPngImage
+      carBackgroundImage
       carDesc
       carTradeIn
       carLease
@@ -161,6 +163,8 @@ export const GET_CARS = gql`
         carImages
         car360Images
         carVideos
+        carPngImage
+        carBackgroundImage
         carDesc
         carTradeIn
         carLease
