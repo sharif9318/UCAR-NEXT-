@@ -866,39 +866,6 @@
               }
             }
           }
-
-          // Mobile styles
-          @media (max-width: 768px) {
-            .popular-card-box {
-              width: 100%;
-              max-width: 400px;
-
-              .card-img {
-                height: 240px;
-              }
-
-              .car-foreground {
-                top: 150px;
-                width: 85%;
-              }
-
-              .info {
-                padding-top: 100px;
-
-                .title-section {
-                  .model-title {
-                    font-size: 20px;
-                  }
-                  .starting-text {
-                    font-size: 12px;
-                  }
-                  .msrp-text {
-                    font-size: 10px;
-                  }
-                }
-              }
-            }
-          }
         }
       }
     }

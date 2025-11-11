@@ -63,28 +63,16 @@ const PopularCarCard = (props: PopularCarCardProps) => {
   if (device === "mobile") {
     return (
       <Stack className="popular-card-box">
-        <Box
-          component={"div"}
-          className={"card-img"}
-          style={{
-            backgroundImage: `url(${REACT_APP_API_URL}/${backgroundScene})`,
-          }}
-          onClick={() => pushDetailHandler(car._id)}
-        >
-          {car && car?.carRank >= topCarRank && (
-            <div className={"status"}>
-              <img src="/img/icons/electricity.svg" alt="" />
-              <span>top</span>
-            </div>
-          )}
-        </Box>
-
-        {/* Car foreground image - draggable */}
         <img
-          src={`${REACT_APP_API_URL}/${carForeground}`}
+          src="/img/car/background.jpg"
+          alt={car.carTitle}
+          className="card-img"
+        />
+        <img
+          src="/img/car/sampleCar.png"
           alt={car.carTitle}
           className="car-foreground"
-          draggable="false"
+          draggable="true"
           onMouseDown={handleMouseDown}
           onMouseMove={handleMouseMove}
           onMouseUp={handleMouseUp}
@@ -103,28 +91,23 @@ const PopularCarCard = (props: PopularCarCardProps) => {
             <Typography variant="caption" className="starting-text">
               Starting at ${car.carPrice}
             </Typography>
-            <Typography variant="caption" className="msrp-text">
-              As shown ${car.carPrice}
-            </Typography>
           </div>
-
-          <strong className={"address"}>{car.carAddress}</strong>
 
           <div className={"options"}>
             <div>
-              <img src="/img/icons/year.svg" alt="" />
-              <span>{car?.carYear} year</span>
+              <img src="/img/icons/year.svg" alt="Year" />
+              <span>{car?.carYear || "N/A"} year</span>
             </div>
             <div>
               <EventSeatIcon sx={{ fontSize: 18 }} />
-              <span>{car?.carSeats} seats</span>
+              <span>{car?.carSeats || "N/A"} seats</span>
             </div>
             <div>
               <SpeedIcon sx={{ fontSize: 18 }} />
-              <span>{car?.carMileage} km</span>
+              <span>{car?.carMileage || "N/A"} km</span>
             </div>
           </div>
-          <Divider sx={{ mt: "15px", mb: "17px" }} />
+
           <div className={"bott"}>
             <p>{car?.carLease ? "lease" : "sale"}</p>
             <div className="view-like-box">
