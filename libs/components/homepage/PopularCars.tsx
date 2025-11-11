@@ -13,6 +13,7 @@ import { useQuery } from "@apollo/client";
 import { GET_CARS } from "../../../apollo/user/query";
 import { T } from "../../types/common";
 import { useTranslation } from "next-i18next";
+import Slider from "react-slick";
 
 interface PopularCarsProps {
   initialInput: CarsInquiry;
