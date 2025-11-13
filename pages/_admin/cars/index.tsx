@@ -15,6 +15,7 @@ import { CarLocation, CarStatus } from "../../../libs/enums/car.enum";
 import {
   sweetConfirmAlert,
   sweetErrorHandling,
+  sweetTopSmallSuccessAlert,
 } from "../../../libs/sweetAlert";
 import { CarUpdate } from "../../../libs/types/car/car.update";
 import withI18n from "../../../libs/i18n/withI18n";
@@ -27,7 +28,7 @@ import { useMutation, useQuery } from "@apollo/client";
 import { T } from "../../../libs/types/common";
 
 const AdminCars: NextPage = ({ initialInquiry, ...props }: any) => {
-  const [anchorEl, setAnchorEl] = useState<[] | HTMLElement[]>([]);
+  const [anchorEl, setAnchorEl] = useState<(HTMLElement | null)[]>([]);
   const [carsInquiry, setCarsInquiry] =
     useState<AllCarsInquiry>(initialInquiry);
   const [cars, setCars] = useState<Car[]>([]);
@@ -38,7 +39,6 @@ const AdminCars: NextPage = ({ initialInquiry, ...props }: any) => {
   const [searchType, setSearchType] = useState("ALL");
 
   /** APOLLO REQUESTS **/
-
   const [updateCarByAdmin] = useMutation(UPDATE_CAR_BY_ADMIN);
   const [removeCarByAdmin] = useMutation(REMOVE_CAR_BY_ADMIN);
 
@@ -52,7 +52,7 @@ const AdminCars: NextPage = ({ initialInquiry, ...props }: any) => {
     variables: { input: carsInquiry },
     notifyOnNetworkStatusChange: true,
     onCompleted: (data: T) => {
-      setCars(data?.getAllCarsByAdmin?.list);
+      setCars(data?.getAllCarsByAdmin?.list || []);
       setCarsTotal(data?.getAllCarsByAdmin?.metaCounter[0]?.total ?? 0);
     },
   });
@@ -64,21 +64,25 @@ const AdminCars: NextPage = ({ initialInquiry, ...props }: any) => {
 
   /** HANDLERS **/
   const changePageHandler = async (event: unknown, newPage: number) => {
-    carsInquiry.page = newPage + 1;
-    setCarsInquiry({ ...carsInquiry });
+    setCarsInquiry({ ...carsInquiry, page: newPage + 1 });
   };
 
   const changeRowsPerPageHandler = async (
     event: React.ChangeEvent<HTMLInputElement>
   ) => {
-    carsInquiry.limit = parseInt(event.target.value, 10);
-    carsInquiry.page = 1;
-    setCarsInquiry({ ...carsInquiry });
+    setCarsInquiry({
+      ...carsInquiry,
+      limit: parseInt(event.target.value, 10),
+      page: 1,
+    });
   };
 
-  const menuIconClickHandler = (e: any, index: number) => {
-    const tempAnchor = anchorEl.slice();
-    tempAnchor[index] = e.curleaseTarget;
+  const menuIconClickHandler = (
+    e: React.MouseEvent<HTMLElement>,
+    index: number
+  ) => {
+    const tempAnchor = [...anchorEl];
+    tempAnchor[index] = e.currentTarget;
     setAnchorEl(tempAnchor);
   };
 
@@ -88,38 +92,36 @@ const AdminCars: NextPage = ({ initialInquiry, ...props }: any) => {
 
   const tabChangeHandler = async (event: any, newValue: string) => {
     setValue(newValue);
-
-    setCarsInquiry({ ...carsInquiry, page: 1, sort: "createdAt" });
+    const newInquiry = { ...carsInquiry, page: 1, sort: "createdAt" };
 
     switch (newValue) {
       case "ACTIVE":
-        setCarsInquiry({
-          ...carsInquiry,
-          search: { carStatus: CarStatus.ACTIVE },
-        });
+        newInquiry.search = { carStatus: CarStatus.ACTIVE };
         break;
       case "SOLD":
-        setCarsInquiry({
-          ...carsInquiry,
-          search: { carStatus: CarStatus.SOLD },
-        });
+        newInquiry.search = { carStatus: CarStatus.SOLD };
         break;
       case "DELETE":
-        setCarsInquiry({
-          ...carsInquiry,
-          search: { carStatus: CarStatus.DELETE },
-        });
+        newInquiry.search = { carStatus: CarStatus.DELETE };
         break;
       default:
-        delete carsInquiry?.search?.carStatus;
-        setCarsInquiry({ ...carsInquiry });
+        newInquiry.search = {};
         break;
     }
+
+    setCarsInquiry(newInquiry);
   };
 
   const removeCarHandler = async (id: string) => {
     try {
-      if (await sweetConfirmAlert("Are you sure to remove?")) {
+      if (
+        await sweetConfirmAlert("Are you sure you want to remove this car?")
+      ) {
+        await removeCarByAdmin({
+          variables: { carId: id },
+        });
+        await sweetTopSmallSuccessAlert("Car removed successfully!", 800);
+        await getAllCarsRefetch({ input: carsInquiry });
       }
       menuIconCloseHandler();
     } catch (err: any) {
@@ -130,21 +132,18 @@ const AdminCars: NextPage = ({ initialInquiry, ...props }: any) => {
   const searchTypeHandler = async (newValue: string) => {
     try {
       setSearchType(newValue);
+      const newInquiry = { ...carsInquiry, page: 1, sort: "createdAt" };
 
       if (newValue !== "ALL") {
-        setCarsInquiry({
-          ...carsInquiry,
-          page: 1,
-          sort: "createdAt",
-          search: {
-            ...carsInquiry.search,
-            carLocationList: [newValue as CarLocation],
-          },
-        });
+        newInquiry.search = {
+          ...carsInquiry.search,
+          carLocationList: [newValue as CarLocation],
+        };
       } else {
-        delete carsInquiry?.search?.carLocationList;
-        setCarsInquiry({ ...carsInquiry });
+        delete newInquiry.search?.carLocationList;
       }
+
+      setCarsInquiry(newInquiry);
     } catch (err: any) {
       console.log("searchTypeHandler: ", err.message);
     }
@@ -152,7 +151,11 @@ const AdminCars: NextPage = ({ initialInquiry, ...props }: any) => {
 
   const updateCarHandler = async (updateData: CarUpdate) => {
     try {
-      console.log("+updateData: ", updateData);
+      await updateCarByAdmin({
+        variables: { input: updateData },
+      });
+      await sweetTopSmallSuccessAlert("Car updated successfully!", 800);
+      await getAllCarsRefetch({ input: carsInquiry });
       menuIconCloseHandler();
     } catch (err: any) {
       menuIconCloseHandler();
@@ -172,28 +175,24 @@ const AdminCars: NextPage = ({ initialInquiry, ...props }: any) => {
               <List className={"tab-menu"}>
                 <ListItem
                   onClick={(e) => tabChangeHandler(e, "ALL")}
-                  value="ALL"
                   className={value === "ALL" ? "li on" : "li"}
                 >
                   All
                 </ListItem>
                 <ListItem
                   onClick={(e) => tabChangeHandler(e, "ACTIVE")}
-                  value="ACTIVE"
                   className={value === "ACTIVE" ? "li on" : "li"}
                 >
                   Active
                 </ListItem>
                 <ListItem
                   onClick={(e) => tabChangeHandler(e, "SOLD")}
-                  value="SOLD"
                   className={value === "SOLD" ? "li on" : "li"}
                 >
                   Sold
                 </ListItem>
                 <ListItem
                   onClick={(e) => tabChangeHandler(e, "DELETE")}
-                  value="DELETE"
                   className={value === "DELETE" ? "li on" : "li"}
                 >
                   Delete
@@ -224,10 +223,10 @@ const AdminCars: NextPage = ({ initialInquiry, ...props }: any) => {
             <CarPanelList
               cars={cars}
               anchorEl={anchorEl}
-              handleMenuIconClick={menuIconClickHandler}
-              handleMenuIconClose={menuIconCloseHandler}
-              updateCar={updateCarHandler}
-              removeCar={removeCarHandler}
+              menuIconClickHandler={menuIconClickHandler}
+              menuIconCloseHandler={menuIconCloseHandler}
+              updateCarHandler={updateCarHandler}
+              removeCarHandler={removeCarHandler}
             />
 
             <TablePagination

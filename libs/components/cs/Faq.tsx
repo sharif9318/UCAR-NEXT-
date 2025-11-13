@@ -609,37 +609,36 @@ const Faq = () => {
           </div>
         </Box>
         <Box className={"wrap"} component={"div"}>
-          {(faqData[category] || fallbackData[category]) &&
-            (faqData[category] || fallbackData[category]).map((ele: any) => (
-              <Accordion
-                expanded={expanded === (ele?._id || ele?.id)}
-                onChange={handleChange(ele?._id || ele?.id)}
-                key={ele?._id || ele?.id}
+          {(faqData[category] || fallbackData[category])?.map((ele: any) => (
+            <Accordion
+              expanded={expanded === (ele?._id || ele?.id)}
+              onChange={handleChange(ele?._id || ele?.id)}
+              key={ele?._id || ele?.id}
+            >
+              <AccordionSummary
+                id="panel1d-header"
+                className="question"
+                aria-controls="panel1d-content"
               >
-                <AccordionSummary
-                  id="panel1d-header"
-                  className="question"
-                  aria-controls="panel1d-content"
-                >
-                  <Typography className="badge" variant={"h4"}>
-                    Q
+                <Typography className="badge" variant={"h4"}>
+                  Q
+                </Typography>
+                <Typography> {ele?.csTitle || ele?.subject}</Typography>
+              </AccordionSummary>
+              <AccordionDetails>
+                <Stack className={"answer flex-box"}>
+                  <Typography
+                    className="badge"
+                    variant={"h4"}
+                    color={"primary"}
+                  >
+                    A
                   </Typography>
-                  <Typography> {ele?.csTitle || ele?.subject}</Typography>
-                </AccordionSummary>
-                <AccordionDetails>
-                  <Stack className={"answer flex-box"}>
-                    <Typography
-                      className="badge"
-                      variant={"h4"}
-                      color={"primary"}
-                    >
-                      A
-                    </Typography>
-                    <Typography> {ele?.csContent || ele?.content}</Typography>
-                  </Stack>
-                </AccordionDetails>
-              </Accordion>
-            ))}
+                  <Typography> {ele?.csContent || ele?.content}</Typography>
+                </Stack>
+              </AccordionDetails>
+            </Accordion>
+          ))}
         </Box>
       </Stack>
     );

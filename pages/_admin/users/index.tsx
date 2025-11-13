@@ -116,7 +116,11 @@ const AdminUsers: NextPage = ({ initialInquiry, ...props }: any) => {
 
   const updateMemberHandler = async (updateData: MemberUpdate) => {
     try {
+      await updateMemberByAdmin({
+        variables: { input: updateData },
+      });
       menuIconCloseHandler();
+      await getAllMembersRefetch({ input: membersInquiry });
     } catch (err: any) {
       sweetErrorHandling(err).then();
     }

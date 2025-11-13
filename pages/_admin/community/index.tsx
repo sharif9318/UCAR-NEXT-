@@ -21,6 +21,12 @@ import {
 } from "../../../libs/sweetAlert";
 import { BoardArticleUpdate } from "../../../libs/types/board-article/board-article.update";
 import withI18n from "../../../libs/i18n/withI18n";
+import { useMutation, useQuery } from "@apollo/client";
+import { GET_ALL_BOARD_ARTICLES_BY_ADMIN } from "../../../apollo/admin/query";
+import {
+  UPDATE_BOARD_ARTICLE_BY_ADMIN,
+  REMOVE_BOARD_ARTICLE_BY_ADMIN,
+} from "../../../apollo/admin/mutation";
 
 const AdminCommunity: NextPage = ({ initialInquiry, ...props }: any) => {
   const [anchorEl, setAnchorEl] = useState<any>([]);
@@ -37,8 +43,34 @@ const AdminCommunity: NextPage = ({ initialInquiry, ...props }: any) => {
 
   /** APOLLO REQUESTS **/
 
+  const {
+    loading: getAllArticlesLoading,
+    data: getAllArticlesData,
+    error: getAllArticlesError,
+    refetch: getAllArticlesRefetch,
+  } = useQuery(GET_ALL_BOARD_ARTICLES_BY_ADMIN, {
+    fetchPolicy: "network-only",
+    variables: { input: communityInquiry },
+    notifyOnNetworkStatusChange: true,
+    onCompleted: (data) => {
+      setArticles(data?.getAllBoardArticlesByAdmin?.list || []);
+      setArticleTotal(
+        data?.getAllBoardArticlesByAdmin?.metaCounter[0]?.total ?? 0
+      );
+    },
+  });
+
+  const [updateBoardArticleByAdmin] = useMutation(
+    UPDATE_BOARD_ARTICLE_BY_ADMIN
+  );
+  const [removeBoardArticleByAdmin] = useMutation(
+    REMOVE_BOARD_ARTICLE_BY_ADMIN
+  );
+
   /** LIFECYCLES **/
-  useEffect(() => {}, [communityInquiry]);
+  useEffect(() => {
+    getAllArticlesRefetch({ input: communityInquiry }).then();
+  }, [communityInquiry]);
 
   /** HANDLERS **/
   const changePageHandler = async (event: unknown, newPage: number) => {
@@ -56,7 +88,7 @@ const AdminCommunity: NextPage = ({ initialInquiry, ...props }: any) => {
 
   const menuIconClickHandler = (e: any, index: number) => {
     const tempAnchor = anchorEl.slice();
-    tempAnchor[index] = e.curleaseTarget;
+    tempAnchor[index] = e.currentTarget;
     setAnchorEl(tempAnchor);
   };
 
@@ -114,9 +146,14 @@ const AdminCommunity: NextPage = ({ initialInquiry, ...props }: any) => {
 
   const updateArticleHandler = async (updateData: BoardArticleUpdate) => {
     try {
-      console.log("+updateData: ", updateData);
+      await updateBoardArticleByAdmin({
+        variables: {
+          input: updateData,
+        },
+      });
 
       menuIconCloseHandler();
+      await getAllArticlesRefetch({ input: communityInquiry });
     } catch (err: any) {
       menuIconCloseHandler();
       sweetErrorHandling(err).then();
@@ -125,7 +162,14 @@ const AdminCommunity: NextPage = ({ initialInquiry, ...props }: any) => {
 
   const removeArticleHandler = async (id: string) => {
     try {
-      if (await sweetConfirmAlert("are you sure to remove?")) {
+      if (await sweetConfirmAlert("Are you sure to remove?")) {
+        await removeBoardArticleByAdmin({
+          variables: {
+            input: id,
+          },
+        });
+
+        await getAllArticlesRefetch({ input: communityInquiry });
       }
     } catch (err: any) {
       sweetErrorHandling(err).then();
@@ -138,7 +182,7 @@ const AdminCommunity: NextPage = ({ initialInquiry, ...props }: any) => {
   return (
     <Box component={"div"} className={"content"}>
       <Typography variant={"h2"} className={"tit"} sx={{ mb: "24px" }}>
-        Arricle List
+        Article List
       </Typography>
       <Box component={"div"} className={"table-wrap"}>
         <Box component={"div"} sx={{ width: "100%", typography: "body1" }}>

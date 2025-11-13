@@ -84,15 +84,6 @@ const headCells: readonly HeadCell[] = [
   },
 ];
 
-interface EnhancedTableProps {
-  numSelected: number;
-  onRequestSort: (event: React.MouseEvent<unknown>, car: keyof Data) => void;
-  onSelectAllClick: (event: React.ChangeEvent<HTMLInputElement>) => void;
-  order: Order;
-  orderBy: string;
-  rowCount: number;
-}
-
 const EnhancedTableHead: React.FC = () => {
   return (
     <TableHead>
@@ -112,22 +103,42 @@ const EnhancedTableHead: React.FC = () => {
 };
 
 interface CarPanelListType {
-  anchorEl: HTMLElement | null;
-  menuIconClickHandler: (event: React.MouseEvent<HTMLElement>) => void;
-  menuIconCloseHandler: () => void;
-  updateCarHandler: (car: Car) => void;
-  removeCarHandler: (carId: string) => void;
+  cars: Car[];
+  anchorEl: (HTMLElement | null)[];
+  handleMenuIconClick?: (
+    event: React.MouseEvent<HTMLElement>,
+    index: number
+  ) => void;
+  menuIconClickHandler?: (
+    event: React.MouseEvent<HTMLElement>,
+    index: number
+  ) => void;
+  handleMenuIconClose?: () => void;
+  menuIconCloseHandler?: () => void;
+  updateCar?: (car: Car) => void;
+  updateCarHandler?: (car: Car) => void;
+  removeCar?: (carId: string) => void;
+  removeCarHandler?: (carId: string) => void;
 }
 
 export const CarPanelList = (props: CarPanelListType) => {
   const {
     cars,
     anchorEl,
+    handleMenuIconClick,
     menuIconClickHandler,
+    handleMenuIconClose,
     menuIconCloseHandler,
+    updateCar,
     updateCarHandler,
+    removeCar,
     removeCarHandler,
   } = props;
+
+  const onMenuClick = handleMenuIconClick || menuIconClickHandler;
+  const onMenuClose = handleMenuIconClose || menuIconCloseHandler;
+  const onUpdateCar = updateCar || updateCarHandler;
+  const onRemoveCar = removeCar || removeCarHandler;
 
   return (
     <Stack>
@@ -141,8 +152,8 @@ export const CarPanelList = (props: CarPanelListType) => {
           <TableBody>
             {cars.length === 0 && (
               <TableRow>
-                <TableCell align="center" colSpan={8}>
-                  <span className={"no-data"}>data not found!</span>
+                <TableCell align="center" colSpan={7}>
+                  <span className={"no-data"}>No data found!</span>
                 </TableCell>
               </TableRow>
             )}
@@ -163,39 +174,36 @@ export const CarPanelList = (props: CarPanelListType) => {
                     <TableCell align="left">{car._id}</TableCell>
                     <TableCell align="left" className={"name"}>
                       {car.carStatus === CarStatus.ACTIVE ? (
-                        <Stack direction={"row"}>
+                        <Stack direction={"row"} alignItems="center">
                           <Link href={`/car/detail?id=${car?._id}`}>
-                            <div>
-                              <Avatar
-                                alt="Remy Sharp"
-                                src={carImage}
-                                sx={{ ml: "2px", mr: "10px" }}
-                              />
-                            </div>
+                            <Avatar
+                              alt={car.carTitle}
+                              src={carImage}
+                              className={"car-avatar"}
+                            />
                           </Link>
                           <Link href={`/car/detail?id=${car?._id}`}>
-                            <div>{car.carTitle}</div>
+                            <div className={"car-title-link"}>
+                              {car.carTitle}
+                            </div>
                           </Link>
                         </Stack>
                       ) : (
-                        <Stack direction={"row"}>
-                          <div>
-                            <Avatar
-                              alt="Remy Sharp"
-                              src={carImage}
-                              sx={{ ml: "2px", mr: "10px" }}
-                            />
-                          </div>
-
-                          <div style={{ marginTop: "10px" }}>
-                            {car.carTitle}
-                          </div>
+                        <Stack direction={"row"} alignItems="center">
+                          <Avatar
+                            alt={car.carTitle}
+                            src={carImage}
+                            className={"car-avatar"}
+                          />
+                          <div>{car.carTitle}</div>
                         </Stack>
                       )}
                     </TableCell>
-                    <TableCell align="center">{car.carPrice}</TableCell>
                     <TableCell align="center">
-                      {car.memberData?.memberNick}
+                      ${car.carPrice?.toLocaleString()}
+                    </TableCell>
+                    <TableCell align="center">
+                      {car.memberData?.memberNick || "N/A"}
                     </TableCell>
                     <TableCell align="center">{car.carLocation}</TableCell>
                     <TableCell align="center">{car.carType}</TableCell>
@@ -203,12 +211,8 @@ export const CarPanelList = (props: CarPanelListType) => {
                       {car.carStatus === CarStatus.DELETE && (
                         <Button
                           variant="outlined"
-                          sx={{
-                            p: "3px",
-                            border: "none",
-                            ":hover": { border: "1px solid #000000" },
-                          }}
-                          onClick={() => removeCarHandler(car._id)}
+                          className={"car-delete-btn"}
+                          onClick={() => onRemoveCar && onRemoveCar(car._id)}
                         >
                           <DeleteIcon fontSize="small" />
                         </Button>
@@ -223,7 +227,9 @@ export const CarPanelList = (props: CarPanelListType) => {
                       {car.carStatus === CarStatus.ACTIVE && (
                         <>
                           <Button
-                            onClick={(e: any) => menuIconClickHandler(e, index)}
+                            onClick={(e: React.MouseEvent<HTMLElement>) =>
+                              onMenuClick && onMenuClick(e, index)
+                            }
                             className={"badge success"}
                           >
                             {car.carStatus}
@@ -236,7 +242,7 @@ export const CarPanelList = (props: CarPanelListType) => {
                             }}
                             anchorEl={anchorEl[index]}
                             open={Boolean(anchorEl[index])}
-                            onClose={menuIconCloseHandler}
+                            onClose={onMenuClose}
                             TransitionComponent={Fade}
                             sx={{ p: 1 }}
                           >
@@ -244,12 +250,15 @@ export const CarPanelList = (props: CarPanelListType) => {
                               .filter((ele) => ele !== car.carStatus)
                               .map((status: string) => (
                                 <MenuItem
-                                  onClick={() =>
-                                    updateCarHandler({
-                                      _id: car._id,
-                                      carStatus: status,
-                                    })
-                                  }
+                                  onClick={() => {
+                                    if (onUpdateCar) {
+                                      onUpdateCar({
+                                        _id: car._id,
+                                        carStatus: status,
+                                      } as Car);
+                                    }
+                                    if (onMenuClose) onMenuClose();
+                                  }}
                                   key={status}
                                 >
                                   <Typography

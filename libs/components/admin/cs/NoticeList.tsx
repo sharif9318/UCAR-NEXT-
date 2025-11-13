@@ -9,12 +9,9 @@ import {
   Table,
   TableContainer,
   Button,
-  Menu,
-  Fade,
-  MenuItem,
   Box,
   Checkbox,
-  Toolbar,
+  TableSortLabel,
 } from "@mui/material";
 import Avatar from "@mui/material/Avatar";
 import { IconButton, Tooltip } from "@mui/material";
@@ -42,6 +39,7 @@ interface Data {
   view: number;
   action: string;
 }
+
 interface HeadCell {
   disablePadding: boolean;
   id: keyof Data;
@@ -84,7 +82,7 @@ const headCells: readonly HeadCell[] = [
     id: "view",
     numeric: true,
     disablePadding: false,
-    label: "VIEW",
+    label: "TYPE",
   },
   {
     id: "action",
@@ -94,26 +92,19 @@ const headCells: readonly HeadCell[] = [
   },
 ];
 
-interface EnhancedTableProps {
+interface EnhancedTableHeadProps {
   numSelected: number;
-  onRequestSort: (event: React.MouseEvent<unknown>, car: keyof Data) => void;
+  onRequestSort: (
+    event: React.MouseEvent<unknown>,
+    property: keyof Data
+  ) => void;
   onSelectAllClick: (event: React.ChangeEvent<HTMLInputElement>) => void;
   order: Order;
   orderBy: string;
   rowCount: number;
 }
 
-interface EnhancedTableToolbarProps {
-  numSelected: number;
-  onRequestSort: (event: React.MouseEvent<unknown>, car: keyof Data) => void;
-  onSelectAllClick: (event: React.ChangeEvent<HTMLInputElement>) => void;
-  order: Order;
-  orderBy: string;
-  rowCount: number;
-}
-
-const EnhancedTableToolbar = (props: EnhancedTableToolbarProps) => {
-  const [select, setSelect] = useState("");
+const EnhancedTableHead = (props: EnhancedTableHeadProps) => {
   const {
     onSelectAllClick,
     order,
@@ -123,72 +114,43 @@ const EnhancedTableToolbar = (props: EnhancedTableToolbarProps) => {
     onRequestSort,
   } = props;
 
+  const createSortHandler =
+    (property: keyof Data) => (event: React.MouseEvent<unknown>) => {
+      onRequestSort(event, property);
+    };
+
   return (
-    <>
-      {numSelected > 0 ? (
-        <>
-          <Toolbar>
-            <Box component={"div"}>
-              <Box component={"div"} className="flex_box">
-                <Checkbox
-                  color="primary"
-                  indeterminate={numSelected > 0 && numSelected < rowCount}
-                  checked={rowCount > 0 && numSelected === rowCount}
-                  onChange={onSelectAllClick}
-                  inputProps={{
-                    "aria-label": "select all",
-                  }}
-                />
-                <Typography
-                  sx={{ flex: "1 1 100%" }}
-                  color="inherit"
-                  variant="h6"
-                  component="div"
-                >
-                  {numSelected} selected
-                </Typography>
-              </Box>
-              <Button variant={"text"} size={"large"}>
-                Delete
-              </Button>
-            </Box>
-          </Toolbar>
-        </>
-      ) : (
-        <TableHead>
-          <TableRow>
-            <TableCell padding="checkbox">
-              <Checkbox
-                color="primary"
-                indeterminate={numSelected > 0 && numSelected < rowCount}
-                checked={rowCount > 0 && numSelected === rowCount}
-                onChange={onSelectAllClick}
-                inputProps={{
-                  "aria-label": "select all",
-                }}
-              />
-            </TableCell>
-            {headCells.map((headCell) => (
-              <TableCell
-                key={headCell.id}
-                align={headCell.numeric ? "left" : "right"}
-                padding={headCell.disablePadding ? "none" : "normal"}
-                sortDirection={orderBy === headCell.id ? order : false}
-                onClick={(event) => onRequestSort(event, headCell.id)}
-              >
-                <TableSortLabel
-                  active={orderBy === headCell.id}
-                  direction={orderBy === headCell.id ? order : "asc"}
-                >
-                  {headCell.label}
-                </TableSortLabel>
-              </TableCell>
-            ))}
-          </TableRow>
-        </TableHead>
-      )}
-      {numSelected > 0 ? null : null}
-    </>
+    <TableHead>
+      <TableRow>
+        <TableCell padding="checkbox">
+          <Checkbox
+            color="primary"
+            indeterminate={numSelected > 0 && numSelected < rowCount}
+            checked={rowCount > 0 && numSelected === rowCount}
+            onChange={onSelectAllClick}
+            inputProps={{
+              "aria-label": "select all notices",
+            }}
+          />
+        </TableCell>
+        {headCells.map((headCell) => (
+          <TableCell
+            key={headCell.id}
+            align={headCell.numeric ? "left" : "right"}
+            padding={headCell.disablePadding ? "none" : "normal"}
+            sortDirection={orderBy === headCell.id ? order : false}
+          >
+            <TableSortLabel
+              active={orderBy === headCell.id}
+              direction={orderBy === headCell.id ? order : "asc"}
+              onClick={createSortHandler(headCell.id)}
+            >
+              {headCell.label}
+            </TableSortLabel>
+          </TableCell>
+        ))}
+      </TableRow>
+    </TableHead>
   );
 };
 
@@ -201,6 +163,9 @@ export const NoticeList = (props: NoticeListType) => {
   const { dense, searchNotices } = props;
   const router = useRouter();
   const [noticeList, setNoticeList] = useState<any[]>([]);
+  const [order, setOrder] = useState<Order>("desc");
+  const [orderBy, setOrderBy] = useState<keyof Data>("date");
+  const [selected, setSelected] = useState<readonly string[]>([]);
 
   /** APOLLO REQUESTS **/
   const {
@@ -249,6 +214,43 @@ export const NoticeList = (props: NoticeListType) => {
   }, [searchNotices]);
 
   /** HANDLERS **/
+  const handleRequestSort = (
+    event: React.MouseEvent<unknown>,
+    property: keyof Data
+  ) => {
+    const isAsc = orderBy === property && order === "asc";
+    setOrder(isAsc ? "desc" : "asc");
+    setOrderBy(property);
+  };
+
+  const handleSelectAllClick = (event: React.ChangeEvent<HTMLInputElement>) => {
+    if (event.target.checked) {
+      const newSelected = noticeList.map((n) => n._id);
+      setSelected(newSelected);
+      return;
+    }
+    setSelected([]);
+  };
+
+  const handleClick = (event: React.MouseEvent<unknown>, id: string) => {
+    const selectedIndex = selected.indexOf(id);
+    let newSelected: readonly string[] = [];
+
+    if (selectedIndex === -1) {
+      newSelected = newSelected.concat(selected, id);
+    } else if (selectedIndex === 0) {
+      newSelected = newSelected.concat(selected.slice(1));
+    } else if (selectedIndex === selected.length - 1) {
+      newSelected = newSelected.concat(selected.slice(0, -1));
+    } else if (selectedIndex > 0) {
+      newSelected = newSelected.concat(
+        selected.slice(0, selectedIndex),
+        selected.slice(selectedIndex + 1)
+      );
+    }
+    setSelected(newSelected);
+  };
+
   const handleEditClick = (noticeId: string) => {
     router.push(`/_admin/cs/notice_create?id=${noticeId}`);
   };
@@ -269,6 +271,8 @@ export const NoticeList = (props: NoticeListType) => {
     }
   };
 
+  const isSelected = (id: string) => selected.indexOf(id) !== -1;
+
   return (
     <Stack>
       <TableContainer>
@@ -277,13 +281,17 @@ export const NoticeList = (props: NoticeListType) => {
           aria-labelledby="tableTitle"
           size={dense ? "small" : "medium"}
         >
-          <EnhancedTableToolbar
+          <EnhancedTableHead
+            numSelected={selected.length}
             order={order}
             orderBy={orderBy}
-            onRequestSort={onRequestSort}
+            onSelectAllClick={handleSelectAllClick}
+            onRequestSort={handleRequestSort}
+            rowCount={noticeList.length}
           />
           <TableBody>
             {noticeList?.map((notice: any, index: number) => {
+              const isItemSelected = isSelected(notice._id);
               const member_image =
                 notice?.memberData?.memberImage ||
                 "/img/profile/defaultUser.svg";
@@ -291,11 +299,22 @@ export const NoticeList = (props: NoticeListType) => {
               return (
                 <TableRow
                   hover
+                  onClick={(event) => handleClick(event, notice._id)}
+                  role="checkbox"
+                  aria-checked={isItemSelected}
+                  tabIndex={-1}
                   key={notice._id}
+                  selected={isItemSelected}
                   sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
                 >
                   <TableCell padding="checkbox">
-                    <Checkbox color="primary" />
+                    <Checkbox
+                      color="primary"
+                      checked={isItemSelected}
+                      inputProps={{
+                        "aria-labelledby": `notice-${notice._id}`,
+                      }}
+                    />
                   </TableCell>
                   <TableCell align="left">{notice.csCategory}</TableCell>
                   <TableCell align="left">
@@ -324,12 +343,22 @@ export const NoticeList = (props: NoticeListType) => {
                   </TableCell>
                   <TableCell align="right">
                     <Tooltip title={"delete"}>
-                      <IconButton onClick={() => handleDeleteClick(notice._id)}>
+                      <IconButton
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleDeleteClick(notice._id);
+                        }}
+                      >
                         <DeleteRoundedIcon />
                       </IconButton>
                     </Tooltip>
                     <Tooltip title="edit">
-                      <IconButton onClick={() => handleEditClick(notice._id)}>
+                      <IconButton
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleEditClick(notice._id);
+                        }}
+                      >
                         <NotePencil size={24} weight="fill" />
                       </IconButton>
                     </Tooltip>
