@@ -16,16 +16,28 @@ import { GET_CAR } from "../../../apollo/user/query";
 import Panorama360Modal from "../common/Panorama360Modal";
 import { useTranslation } from "react-i18next";
 
-const AddNewCar = ({ initialValues, ...props }: any) => {
+interface AddNewCarProps {
+  initialValues: Partial<CarInput> & {
+    carType?: CarType;
+    carLocation?: CarLocation;
+  };
+}
+
+const AddNewCar: React.FC<AddNewCarProps> = ({ initialValues, ...props }) => {
   const device = useDeviceDetect();
   const router = useRouter();
   const { t } = useTranslation("common");
-  const inputRef = useRef<any>(null);
-  const [insertCarData, setInsertCarData] = useState<CarInput>(initialValues);
-  const car360Ref = useRef<any>(null);
-  const videoRef = useRef<any>(null);
-  const pngRef = useRef<any>(null);
-  const backgroundRef = useRef<any>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
+  const [insertCarData, setInsertCarData] = useState<
+    Partial<CarInput> & {
+      carType?: CarType;
+      carLocation?: CarLocation;
+    }
+  >(initialValues);
+  const car360Ref = useRef<HTMLInputElement>(null);
+  const videoRef = useRef<HTMLInputElement>(null);
+  const pngRef = useRef<HTMLInputElement>(null);
+  const backgroundRef = useRef<HTMLInputElement>(null);
   const [carType, setCarType] = useState<CarType[]>(Object.values(CarType));
   const [carLocation, setCarLocation] = useState<CarLocation[]>(
     Object.values(CarLocation)
@@ -92,8 +104,8 @@ const AddNewCar = ({ initialValues, ...props }: any) => {
       setInsertCarData({
         carTitle: carData.carTitle || "",
         carPrice: carData.carPrice || 0,
-        carType: carData.carType || "",
-        carLocation: carData.carLocation || "",
+        carType: carData.carType as CarType | undefined,
+        carLocation: carData.carLocation as CarLocation | undefined,
         carAddress: carData.carAddress || "",
         carTradeIn: carData.carTradeIn || false,
         carLease: carData.carLease || false,
@@ -140,7 +152,7 @@ const AddNewCar = ({ initialValues, ...props }: any) => {
         })
       );
 
-      const mapObject: any = {};
+      const mapObject: Record<string, string[]> = {};
       for (let i = 0; i < selectedFiles.length; i++) {
         mapObject[i.toString()] = [`variables.files.${i}`];
       }
@@ -161,7 +173,7 @@ const AddNewCar = ({ initialValues, ...props }: any) => {
         {
           headers: {
             "Content-Type": "multipart/form-data",
-            "apollo-require-preflight": true,
+            "apollo-require-preflight": "true",
             Authorization: `Bearer ${token}`,
           },
         }
@@ -184,8 +196,9 @@ const AddNewCar = ({ initialValues, ...props }: any) => {
         ...prevData,
         carImages: responseImages,
       }));
-    } catch (err: any) {
-      await sweetMixinErrorAlert(err.message);
+    } catch (err: unknown) {
+      const error = err as Error;
+      await sweetMixinErrorAlert(error.message);
     } finally {
       setIsUploading(false);
     }
@@ -223,7 +236,7 @@ const AddNewCar = ({ initialValues, ...props }: any) => {
         })
       );
 
-      const mapObject: any = {};
+      const mapObject: Record<string, string[]> = {};
       for (let i = 0; i < selectedFiles.length; i++) {
         mapObject[i.toString()] = [`variables.files.${i}`];
       }
@@ -244,7 +257,7 @@ const AddNewCar = ({ initialValues, ...props }: any) => {
         {
           headers: {
             "Content-Type": "multipart/form-data",
-            "apollo-require-preflight": true,
+            "apollo-require-preflight": "true",
             Authorization: `Bearer ${token}`,
           },
         }
@@ -267,8 +280,9 @@ const AddNewCar = ({ initialValues, ...props }: any) => {
         ...prevData,
         car360Images: responseImages,
       }));
-    } catch (err: any) {
-      await sweetMixinErrorAlert(err.message);
+    } catch (err: unknown) {
+      const error = err as Error;
+      await sweetMixinErrorAlert(error.message);
     } finally {
       setIsUploading360(false);
     }
@@ -306,7 +320,7 @@ const AddNewCar = ({ initialValues, ...props }: any) => {
         })
       );
 
-      const mapObject: any = {};
+      const mapObject: Record<string, string[]> = {};
       for (let i = 0; i < selectedFiles.length; i++) {
         mapObject[i.toString()] = [`variables.files.${i}`];
       }
@@ -327,7 +341,7 @@ const AddNewCar = ({ initialValues, ...props }: any) => {
         {
           headers: {
             "Content-Type": "multipart/form-data",
-            "apollo-require-preflight": true,
+            "apollo-require-preflight": "true",
             Authorization: `Bearer ${token}`,
           },
         }
@@ -350,8 +364,9 @@ const AddNewCar = ({ initialValues, ...props }: any) => {
         ...prevData,
         carVideos: responseVideos,
       }));
-    } catch (err: any) {
-      await sweetMixinErrorAlert(err.message);
+    } catch (err: unknown) {
+      const error = err as Error;
+      await sweetMixinErrorAlert(error.message);
     } finally {
       setIsUploadingVideo(false);
     }
@@ -398,7 +413,7 @@ const AddNewCar = ({ initialValues, ...props }: any) => {
         {
           headers: {
             "Content-Type": "multipart/form-data",
-            "apollo-require-preflight": true,
+            "apollo-require-preflight": "true",
             Authorization: `Bearer ${token}`,
           },
         }
@@ -421,8 +436,9 @@ const AddNewCar = ({ initialValues, ...props }: any) => {
         ...prevData,
         carPngImage: responseImage,
       }));
-    } catch (err: any) {
-      await sweetMixinErrorAlert(err.message);
+    } catch (err: unknown) {
+      const error = err as Error;
+      await sweetMixinErrorAlert(error.message);
     } finally {
       setIsUploadingPng(false);
     }
@@ -469,7 +485,7 @@ const AddNewCar = ({ initialValues, ...props }: any) => {
         {
           headers: {
             "Content-Type": "multipart/form-data",
-            "apollo-require-preflight": true,
+            "apollo-require-preflight": "true",
             Authorization: `Bearer ${token}`,
           },
         }
@@ -492,8 +508,9 @@ const AddNewCar = ({ initialValues, ...props }: any) => {
         ...prevData,
         carBackgroundImage: responseImage,
       }));
-    } catch (err: any) {
-      await sweetMixinErrorAlert(err.message);
+    } catch (err: unknown) {
+      const error = err as Error;
+      await sweetMixinErrorAlert(error.message);
     } finally {
       setIsUploadingBackground(false);
     }
@@ -557,9 +574,7 @@ const AddNewCar = ({ initialValues, ...props }: any) => {
         !insertCarData.carImages || insertCarData.carImages.length === 0,
     };
 
-    const failedChecks = Object.entries(checks).filter(
-      ([key, failed]) => failed
-    );
+    const failedChecks = Object.entries(checks).filter(([, failed]) => failed);
 
     return failedChecks.length > 0;
   };
@@ -568,19 +583,24 @@ const AddNewCar = ({ initialValues, ...props }: any) => {
     try {
       if (doDisabledCheck()) return;
 
+      if (!insertCarData.carType || !insertCarData.carLocation) {
+        await sweetMixinErrorAlert("Please select car type and location");
+        return;
+      }
+
       const input: CarInput = {
-        carTitle: insertCarData.carTitle,
-        carPrice: insertCarData.carPrice,
-        carType: insertCarData.carType as CarType,
-        carLocation: insertCarData.carLocation as CarLocation,
-        carAddress: insertCarData.carAddress,
-        carTradeIn: insertCarData.carTradeIn,
-        carLease: insertCarData.carLease,
-        carSeats: insertCarData.carSeats,
-        carYear: insertCarData.carYear,
-        carMileage: insertCarData.carMileage,
+        carTitle: insertCarData.carTitle || "",
+        carPrice: insertCarData.carPrice || 0,
+        carType: insertCarData.carType,
+        carLocation: insertCarData.carLocation,
+        carAddress: insertCarData.carAddress || "",
+        carTradeIn: insertCarData.carTradeIn || false,
+        carLease: insertCarData.carLease || false,
+        carSeats: insertCarData.carSeats || 0,
+        carYear: insertCarData.carYear || 0,
+        carMileage: insertCarData.carMileage || 0,
         carDesc: insertCarData.carDesc || "",
-        carImages: insertCarData.carImages,
+        carImages: insertCarData.carImages || [],
         car360Images: insertCarData.car360Images || [],
         carVideos: insertCarData.carVideos || [],
         carPngImage: insertCarData.carPngImage || "",
@@ -596,8 +616,9 @@ const AddNewCar = ({ initialValues, ...props }: any) => {
         await sweetMixinSuccessAlert(t("mypage.create.success"));
         await router.push(`/car/detail?id=${result.data.createCar._id}`);
       }
-    } catch (err: any) {
-      await sweetMixinErrorAlert(err.message || t("mypage.create.fail"));
+    } catch (err: unknown) {
+      const error = err as Error;
+      await sweetMixinErrorAlert(error.message || t("mypage.create.fail"));
     }
   }, [insertCarData, createCar, router, t]);
 
@@ -607,20 +628,25 @@ const AddNewCar = ({ initialValues, ...props }: any) => {
         throw new Error(t("mypage.update.noId"));
       }
 
+      if (!insertCarData.carType || !insertCarData.carLocation) {
+        await sweetMixinErrorAlert("Please select car type and location");
+        return;
+      }
+
       const input: CarUpdate = {
         _id: carId,
-        carTitle: insertCarData.carTitle,
-        carPrice: insertCarData.carPrice,
-        carType: insertCarData.carType as CarType,
-        carLocation: insertCarData.carLocation as CarLocation,
-        carAddress: insertCarData.carAddress,
-        carTradeIn: insertCarData.carTradeIn,
-        carLease: insertCarData.carLease,
-        carSeats: insertCarData.carSeats,
-        carYear: insertCarData.carYear,
-        carMileage: insertCarData.carMileage,
+        carTitle: insertCarData.carTitle || "",
+        carPrice: insertCarData.carPrice || 0,
+        carType: insertCarData.carType,
+        carLocation: insertCarData.carLocation,
+        carAddress: insertCarData.carAddress || "",
+        carTradeIn: insertCarData.carTradeIn || false,
+        carLease: insertCarData.carLease || false,
+        carSeats: insertCarData.carSeats || 0,
+        carYear: insertCarData.carYear || 0,
+        carMileage: insertCarData.carMileage || 0,
         carDesc: insertCarData.carDesc || "",
-        carImages: insertCarData.carImages,
+        carImages: insertCarData.carImages || [],
         car360Images: insertCarData.car360Images || [],
         carVideos: insertCarData.carVideos || [],
         carPngImage: insertCarData.carPngImage || "",
@@ -638,8 +664,9 @@ const AddNewCar = ({ initialValues, ...props }: any) => {
       } else {
         throw new Error(t("mypage.update.noData"));
       }
-    } catch (err: any) {
-      await sweetMixinErrorAlert(err.message || t("mypage.update.fail"));
+    } catch (err: unknown) {
+      const error = err as Error;
+      await sweetMixinErrorAlert(error.message || t("mypage.update.fail"));
     }
   }, [insertCarData, updateCar, router, carId, t]);
 
@@ -731,6 +758,11 @@ const AddNewCar = ({ initialValues, ...props }: any) => {
                             ...prevData,
                             carType: value as CarType,
                           }));
+                        } else {
+                          setInsertCarData((prevData) => ({
+                            ...prevData,
+                            carType: undefined,
+                          }));
                         }
                       }}
                     >
@@ -738,7 +770,7 @@ const AddNewCar = ({ initialValues, ...props }: any) => {
                         <option disabled={true} value={"select"}>
                           {t("mypage.carForm.select")}
                         </option>
-                        {carType.map((type: any) => (
+                        {carType.map((type: CarType) => (
                           <option value={`${type}`} key={type}>
                             {type}
                           </option>
@@ -767,148 +799,10 @@ const AddNewCar = ({ initialValues, ...props }: any) => {
                             ...prevData,
                             carLocation: value as CarLocation,
                           }));
-                        }
-                      }}
-                    >
-                      <>
-                        <option disabled={true} value={"select"}>
-                          {t("mypage.carForm.select")}
-                        </option>
-                        {carLocation.map((location: any) => (
-                          <option value={`${location}`} key={location}>
-                            {location}
-                          </option>
-                        ))}
-                      </>
-                    </select>
-                    <div className={"divider"}></div>
-                    <img
-                      src={"/img/icons/Vector.svg"}
-                      className={"arrow-down"}
-                    />
-                  </Stack>
-                  <Stack className="price-year-after-price">
-                    <Typography className="title">
-                      {t("mypage.carForm.address")}
-                    </Typography>
-                    <input
-                      type="text"
-                      className="description-input"
-                      placeholder={t("mypage.carForm.address")}
-                      value={insertCarData.carAddress}
-                      onChange={({ target: { value } }) =>
-                        setInsertCarData((prevData) => ({
-                          ...prevData,
-                          carAddress: value,
-                        }))
-                      }
-                    />
-                  </Stack>
-                </Stack>
-
-                <Stack className="config-row">
-                  <Stack className="price-year-after-price">
-                    <Typography className="title">
-                      {t("mypage.carForm.tradeIn")}
-                    </Typography>
-                    <div className="toggle-group">
-                      <button
-                        type="button"
-                        className={`toggle-button ${
-                          insertCarData.carTradeIn ? "active" : ""
-                        }`}
-                        onClick={() =>
-                          setInsertCarData((prev) => ({
-                            ...prev,
-                            carTradeIn: true,
-                          }))
-                        }
-                      >
-                        {t("mypage.common.yes")}
-                      </button>
-                      <button
-                        type="button"
-                        className={`toggle-button ${
-                          !insertCarData.carTradeIn ? "active" : ""
-                        }`}
-                        onClick={() =>
-                          setInsertCarData((prev) => ({
-                            ...prev,
-                            carTradeIn: false,
-                          }))
-                        }
-                      >
-                        {t("mypage.common.no")}
-                      </button>
-                    </div>
-                  </Stack>
-                  <Stack className="price-year-after-price">
-                    <Typography className="title">
-                      {t("mypage.carForm.lease")}
-                    </Typography>
-                    <div className="toggle-group">
-                      <button
-                        type="button"
-                        className={`toggle-button ${
-                          insertCarData.carLease ? "active" : ""
-                        }`}
-                        onClick={() =>
-                          setInsertCarData((prev) => ({
-                            ...prev,
-                            carLease: true,
-                          }))
-                        }
-                      >
-                        {t("mypage.common.yes")}
-                      </button>
-                      <button
-                        type="button"
-                        className={`toggle-button ${
-                          !insertCarData.carLease ? "active" : ""
-                        }`}
-                        onClick={() =>
-                          setInsertCarData((prev) => ({
-                            ...prev,
-                            carLease: false,
-                          }))
-                        }
-                      >
-                        {t("mypage.common.no")}
-                      </button>
-                    </div>
-                  </Stack>
-                </Stack>
-
-                <Stack className="config-row">
-                  <Stack className="price-year-after-price">
-                    <Typography className="title">
-                      {t("mypage.carForm.price")}
-                    </Typography>
-                    <input
-                      type="text"
-                      className="description-input"
-                      placeholder={t("mypage.carForm.price")}
-                      value={insertCarData.carPrice}
-                      onChange={({ target: { value } }) =>
-                        setInsertCarData((prevData) => ({
-                          ...prevData,
-                          carPrice: parseInt(value) || 0,
-                        }))
-                      }
-                    />
-                  </Stack>
-                  <Stack className="price-year-after-price">
-                    <Typography className="title">
-                      {t("mypage.carForm.selectType")}
-                    </Typography>
-                    <select
-                      className={"select-description"}
-                      value={insertCarData.carType || "select"}
-                      onChange={({ target: { value } }) => {
-                        if (value !== "select") {
+                        } else {
                           setInsertCarData((prevData) => ({
                             ...prevData,
-                            carType: value as CarType,
+                            carLocation: undefined,
                           }));
                         }
                       }}
@@ -917,43 +811,7 @@ const AddNewCar = ({ initialValues, ...props }: any) => {
                         <option disabled={true} value={"select"}>
                           {t("mypage.carForm.select")}
                         </option>
-                        {carType.map((type: any) => (
-                          <option value={`${type}`} key={type}>
-                            {type}
-                          </option>
-                        ))}
-                      </>
-                    </select>
-                    <div className={"divider"}></div>
-                    <img
-                      src={"/img/icons/Vector.svg"}
-                      className={"arrow-down"}
-                    />
-                  </Stack>
-                </Stack>
-
-                <Stack className="config-row">
-                  <Stack className="price-year-after-price">
-                    <Typography className="title">
-                      {t("mypage.carForm.selectLocation")}
-                    </Typography>
-                    <select
-                      className={"select-description"}
-                      value={insertCarData.carLocation || "select"}
-                      onChange={({ target: { value } }) => {
-                        if (value !== "select") {
-                          setInsertCarData((prevData) => ({
-                            ...prevData,
-                            carLocation: value as CarLocation,
-                          }));
-                        }
-                      }}
-                    >
-                      <>
-                        <option disabled={true} value={"select"}>
-                          {t("mypage.carForm.select")}
-                        </option>
-                        {carLocation.map((location: any) => (
+                        {carLocation.map((location: CarLocation) => (
                           <option value={`${location}`} key={location}>
                             {location}
                           </option>
@@ -1145,6 +1003,7 @@ const AddNewCar = ({ initialValues, ...props }: any) => {
                             </option>
                           );
                         }
+                        return null;
                       })}
                     </select>
                     <div className={"divider"}></div>
@@ -1217,7 +1076,7 @@ const AddNewCar = ({ initialValues, ...props }: any) => {
                   />
                   <div className="price-chip">
                     {insertCarData.carPrice
-                      ? `$${(insertCarData.carPrice || 0).toLocaleString()}`
+                      ? `${(insertCarData.carPrice || 0).toLocaleString()}`
                       : t("mypage.preview.setPrice")}
                   </div>
                 </div>
@@ -1268,22 +1127,21 @@ const AddNewCar = ({ initialValues, ...props }: any) => {
           <Stack className="images-box">
             <Stack
               className={`upload-box ${isDragOver ? "drag-over" : ""}`}
-              onDragOver={(e) => {
+              onDragOver={(e: React.DragEvent<HTMLDivElement>) => {
                 e.preventDefault();
                 e.stopPropagation();
                 if (!isDragOver) {
                   setIsDragOver(true);
                 }
               }}
-              onDragEnter={(e) => {
+              onDragEnter={(e: React.DragEvent<HTMLDivElement>) => {
                 e.preventDefault();
                 e.stopPropagation();
                 setIsDragOver(true);
               }}
-              onDragLeave={(e) => {
+              onDragLeave={(e: React.DragEvent<HTMLDivElement>) => {
                 e.preventDefault();
                 e.stopPropagation();
-                // Only set to false if we're leaving the upload box entirely
                 const rect = e.currentTarget.getBoundingClientRect();
                 const x = e.clientX;
                 const y = e.clientY;
@@ -1297,7 +1155,7 @@ const AddNewCar = ({ initialValues, ...props }: any) => {
                   setIsDragOver(false);
                 }
               }}
-              onDrop={async (e) => {
+              onDrop={async (e: React.DragEvent<HTMLDivElement>) => {
                 e.preventDefault();
                 e.stopPropagation();
                 setIsDragOver(false);
@@ -1312,7 +1170,7 @@ const AddNewCar = ({ initialValues, ...props }: any) => {
                     return;
                   }
 
-                  const validFiles = files.filter((file) => {
+                  const validFiles = files.filter((file: File) => {
                     return (
                       file.type === "image/jpeg" ||
                       file.type === "image/jpg" ||
@@ -1321,7 +1179,7 @@ const AddNewCar = ({ initialValues, ...props }: any) => {
                     );
                   });
 
-                  const invalidFiles = files.filter((file) => {
+                  const invalidFiles = files.filter((file: File) => {
                     return !(
                       file.type === "image/jpeg" ||
                       file.type === "image/jpg" ||
@@ -1347,10 +1205,9 @@ const AddNewCar = ({ initialValues, ...props }: any) => {
                     return;
                   }
 
-                  // Check file sizes
-                  const maxSize = 10 * 1024 * 1024; // 10MB
+                  const maxSize = 10 * 1024 * 1024;
                   const oversizedFiles = validFiles.filter(
-                    (file) => file.size > maxSize
+                    (file: File) => file.size > maxSize
                   );
 
                   if (oversizedFiles.length > 0) {
@@ -1362,16 +1219,18 @@ const AddNewCar = ({ initialValues, ...props }: any) => {
                     return;
                   }
 
-                  // Set files to input ref to maintain consistency
                   if (inputRef.current) {
                     const dataTransfer = new DataTransfer();
-                    validFiles.forEach((file) => dataTransfer.items.add(file));
+                    validFiles.forEach((file: File) =>
+                      dataTransfer.items.add(file)
+                    );
                     inputRef.current.files = dataTransfer.files;
                     await uploadImages();
                   }
-                } catch (error: any) {
+                } catch (error: unknown) {
+                  const err = error as Error;
                   await sweetMixinErrorAlert(
-                    t("mypage.upload.dropError", { message: error.message })
+                    t("mypage.upload.dropError", { message: err.message })
                   );
                 }
               }}
@@ -1507,28 +1366,28 @@ const AddNewCar = ({ initialValues, ...props }: any) => {
             </Stack>
           </Stack>
 
+          {/* 360° Images Upload Section */}
           <Typography className="upload-title">
             {t("mypage.upload360.title")}
           </Typography>
           <Stack className="images-box">
             <Stack
               className={`upload-box ${isDragOver360 ? "drag-over" : ""}`}
-              onDragOver={(e) => {
+              onDragOver={(e: React.DragEvent<HTMLDivElement>) => {
                 e.preventDefault();
                 e.stopPropagation();
                 if (!isDragOver360) {
                   setIsDragOver360(true);
                 }
               }}
-              onDragEnter={(e) => {
+              onDragEnter={(e: React.DragEvent<HTMLDivElement>) => {
                 e.preventDefault();
                 e.stopPropagation();
                 setIsDragOver360(true);
               }}
-              onDragLeave={(e) => {
+              onDragLeave={(e: React.DragEvent<HTMLDivElement>) => {
                 e.preventDefault();
                 e.stopPropagation();
-                // Only set to false if we're leaving the upload box entirely
                 const rect = e.currentTarget.getBoundingClientRect();
                 const x = e.clientX;
                 const y = e.clientY;
@@ -1542,7 +1401,7 @@ const AddNewCar = ({ initialValues, ...props }: any) => {
                   setIsDragOver360(false);
                 }
               }}
-              onDrop={async (e) => {
+              onDrop={async (e: React.DragEvent<HTMLDivElement>) => {
                 e.preventDefault();
                 e.stopPropagation();
                 setIsDragOver360(false);
@@ -1557,7 +1416,7 @@ const AddNewCar = ({ initialValues, ...props }: any) => {
                     return;
                   }
 
-                  const validFiles = files.filter((file) => {
+                  const validFiles = files.filter((file: File) => {
                     return (
                       file.type === "image/jpeg" ||
                       file.type === "image/jpg" ||
@@ -1566,7 +1425,7 @@ const AddNewCar = ({ initialValues, ...props }: any) => {
                     );
                   });
 
-                  const invalidFiles = files.filter((file) => {
+                  const invalidFiles = files.filter((file: File) => {
                     return !(
                       file.type === "image/jpeg" ||
                       file.type === "image/jpg" ||
@@ -1592,10 +1451,9 @@ const AddNewCar = ({ initialValues, ...props }: any) => {
                     return;
                   }
 
-                  // Check file sizes
-                  const maxSize = 10 * 1024 * 1024; // 10MB
+                  const maxSize = 10 * 1024 * 1024;
                   const oversizedFiles = validFiles.filter(
-                    (file) => file.size > maxSize
+                    (file: File) => file.size > maxSize
                   );
 
                   if (oversizedFiles.length > 0) {
@@ -1607,16 +1465,18 @@ const AddNewCar = ({ initialValues, ...props }: any) => {
                     return;
                   }
 
-                  // Set files to 360° input ref to maintain consistency
                   if (car360Ref.current) {
                     const dataTransfer = new DataTransfer();
-                    validFiles.forEach((file) => dataTransfer.items.add(file));
+                    validFiles.forEach((file: File) =>
+                      dataTransfer.items.add(file)
+                    );
                     car360Ref.current.files = dataTransfer.files;
                     await upload360Images();
                   }
-                } catch (error: any) {
+                } catch (error: unknown) {
+                  const err = error as Error;
                   await sweetMixinErrorAlert(
-                    t("mypage.upload.dropError", { message: error.message })
+                    t("mypage.upload.dropError", { message: err.message })
                   );
                 }
               }}
@@ -1715,25 +1575,26 @@ const AddNewCar = ({ initialValues, ...props }: any) => {
             </Stack>
           </Stack>
 
+          {/* Videos Upload Section */}
           <Typography className="upload-title">
             {t("mypage.uploadVideo.title")}
           </Typography>
           <Stack className="images-box">
             <Stack
               className={`upload-box ${isDragOverVideo ? "drag-over" : ""}`}
-              onDragOver={(e) => {
+              onDragOver={(e: React.DragEvent<HTMLDivElement>) => {
                 e.preventDefault();
                 e.stopPropagation();
                 if (!isDragOverVideo) {
                   setIsDragOverVideo(true);
                 }
               }}
-              onDragEnter={(e) => {
+              onDragEnter={(e: React.DragEvent<HTMLDivElement>) => {
                 e.preventDefault();
                 e.stopPropagation();
                 setIsDragOverVideo(true);
               }}
-              onDragLeave={(e) => {
+              onDragLeave={(e: React.DragEvent<HTMLDivElement>) => {
                 e.preventDefault();
                 e.stopPropagation();
                 const rect = e.currentTarget.getBoundingClientRect();
@@ -1749,7 +1610,7 @@ const AddNewCar = ({ initialValues, ...props }: any) => {
                   setIsDragOverVideo(false);
                 }
               }}
-              onDrop={async (e) => {
+              onDrop={async (e: React.DragEvent<HTMLDivElement>) => {
                 e.preventDefault();
                 e.stopPropagation();
                 setIsDragOverVideo(false);
@@ -1764,7 +1625,7 @@ const AddNewCar = ({ initialValues, ...props }: any) => {
                     return;
                   }
 
-                  const validFiles = files.filter((file) => {
+                  const validFiles = files.filter((file: File) => {
                     return (
                       file.type === "video/mp4" ||
                       file.type === "video/webm" ||
@@ -1775,7 +1636,7 @@ const AddNewCar = ({ initialValues, ...props }: any) => {
                     );
                   });
 
-                  const invalidFiles = files.filter((file) => {
+                  const invalidFiles = files.filter((file: File) => {
                     return !(
                       file.type === "video/mp4" ||
                       file.type === "video/webm" ||
@@ -1803,10 +1664,9 @@ const AddNewCar = ({ initialValues, ...props }: any) => {
                     return;
                   }
 
-                  // Check file sizes (200MB max per video - backend configurable)
                   const maxSize = 200 * 1024 * 1024;
                   const oversizedFiles = validFiles.filter(
-                    (file) => file.size > maxSize
+                    (file: File) => file.size > maxSize
                   );
 
                   if (oversizedFiles.length > 0) {
@@ -1820,14 +1680,17 @@ const AddNewCar = ({ initialValues, ...props }: any) => {
 
                   if (videoRef.current) {
                     const dataTransfer = new DataTransfer();
-                    validFiles.forEach((file) => dataTransfer.items.add(file));
+                    validFiles.forEach((file: File) =>
+                      dataTransfer.items.add(file)
+                    );
                     videoRef.current.files = dataTransfer.files;
                     await uploadVideos();
                   }
-                } catch (error: any) {
+                } catch (error: unknown) {
+                  const err = error as Error;
                   await sweetMixinErrorAlert(
                     t("mypage.uploadVideo.dropError", {
-                      message: error.message,
+                      message: err.message,
                     })
                   );
                 }
@@ -1974,26 +1837,24 @@ const AddNewCar = ({ initialValues, ...props }: any) => {
             </Stack>
           </Stack>
 
-          {/* Upload Car PNG Image Section */}
-          <Typography className="upload-title">
-            {t("mypage.uploadPng.title")}
-          </Typography>
+          {/* PNG Upload Section */}
+          <Typography className="upload-title">Upload Car PNG Image</Typography>
           <Stack className="images-box">
             <Stack
               className={`upload-box ${isDragOverPng ? "drag-over" : ""}`}
-              onDragOver={(e) => {
+              onDragOver={(e: React.DragEvent<HTMLDivElement>) => {
                 e.preventDefault();
                 e.stopPropagation();
                 if (!isDragOverPng) {
                   setIsDragOverPng(true);
                 }
               }}
-              onDragEnter={(e) => {
+              onDragEnter={(e: React.DragEvent<HTMLDivElement>) => {
                 e.preventDefault();
                 e.stopPropagation();
                 setIsDragOverPng(true);
               }}
-              onDragLeave={(e) => {
+              onDragLeave={(e: React.DragEvent<HTMLDivElement>) => {
                 e.preventDefault();
                 e.stopPropagation();
                 const rect = e.currentTarget.getBoundingClientRect();
@@ -2009,7 +1870,7 @@ const AddNewCar = ({ initialValues, ...props }: any) => {
                   setIsDragOverPng(false);
                 }
               }}
-              onDrop={async (e) => {
+              onDrop={async (e: React.DragEvent<HTMLDivElement>) => {
                 e.preventDefault();
                 e.stopPropagation();
                 setIsDragOverPng(false);
@@ -2024,11 +1885,11 @@ const AddNewCar = ({ initialValues, ...props }: any) => {
                     return;
                   }
 
-                  const validFiles = files.filter((file) => {
+                  const validFiles = files.filter((file: File) => {
                     return file.type === "image/png";
                   });
 
-                  const invalidFiles = files.filter((file) => {
+                  const invalidFiles = files.filter((file: File) => {
                     return file.type !== "image/png";
                   });
 
@@ -2049,10 +1910,9 @@ const AddNewCar = ({ initialValues, ...props }: any) => {
                     return;
                   }
 
-                  // Check file size
-                  const maxSize = 10 * 1024 * 1024; // 10MB
+                  const maxSize = 10 * 1024 * 1024;
                   const oversizedFiles = validFiles.filter(
-                    (file) => file.size > maxSize
+                    (file: File) => file.size > maxSize
                   );
 
                   if (oversizedFiles.length > 0) {
@@ -2066,14 +1926,17 @@ const AddNewCar = ({ initialValues, ...props }: any) => {
 
                   if (pngRef.current) {
                     const dataTransfer = new DataTransfer();
-                    validFiles.forEach((file) => dataTransfer.items.add(file));
+                    validFiles.forEach((file: File) =>
+                      dataTransfer.items.add(file)
+                    );
                     pngRef.current.files = dataTransfer.files;
                     await uploadPngImage();
                   }
-                } catch (error: any) {
+                } catch (error: unknown) {
+                  const err = error as Error;
                   await sweetMixinErrorAlert(
                     t("mypage.uploadPng.dropError", {
-                      message: error.message,
+                      message: err.message,
                     })
                   );
                 }
@@ -2126,13 +1989,13 @@ const AddNewCar = ({ initialValues, ...props }: any) => {
               <Stack className="text-box">
                 <Typography className="drag-title">
                   {isUploadingPng
-                    ? t("mypage.uploadPng.uploading")
+                    ? "Uploading PNG..."
                     : isDragOverPng
-                    ? t("mypage.uploadPng.dragTitleOver")
-                    : t("mypage.uploadPng.dragTitleDefault")}
+                    ? "Drop PNG image here"
+                    : "Drag & drop PNG image here"}
                 </Typography>
                 <Typography className="format-title">
-                  {t("mypage.uploadPng.formatTitle")}
+                  PNG format only
                 </Typography>
               </Stack>
               <Button
@@ -2143,9 +2006,7 @@ const AddNewCar = ({ initialValues, ...props }: any) => {
                 }}
               >
                 <Typography className="browse-button-text">
-                  {isUploadingPng
-                    ? t("mypage.uploadPng.uploading")
-                    : t("mypage.uploadPng.browse")}
+                  {isUploadingPng ? "Uploading..." : "Browse Files"}
                 </Typography>
                 <input
                   ref={pngRef}
@@ -2209,34 +2070,34 @@ const AddNewCar = ({ initialValues, ...props }: any) => {
                 </Stack>
               ) : (
                 <Typography className="empty-text">
-                  {t("mypage.uploadPng.empty")}
+                  No PNG image uploaded
                 </Typography>
               )}
             </Stack>
           </Stack>
 
-          {/* Upload Car Background Image Section */}
+          {/* Background Upload Section */}
           <Typography className="upload-title">
-            {t("mypage.uploadBackground.title")}
+            Upload Background Image
           </Typography>
           <Stack className="images-box">
             <Stack
               className={`upload-box ${
                 isDragOverBackground ? "drag-over" : ""
               }`}
-              onDragOver={(e) => {
+              onDragOver={(e: React.DragEvent<HTMLDivElement>) => {
                 e.preventDefault();
                 e.stopPropagation();
                 if (!isDragOverBackground) {
                   setIsDragOverBackground(true);
                 }
               }}
-              onDragEnter={(e) => {
+              onDragEnter={(e: React.DragEvent<HTMLDivElement>) => {
                 e.preventDefault();
                 e.stopPropagation();
                 setIsDragOverBackground(true);
               }}
-              onDragLeave={(e) => {
+              onDragLeave={(e: React.DragEvent<HTMLDivElement>) => {
                 e.preventDefault();
                 e.stopPropagation();
                 const rect = e.currentTarget.getBoundingClientRect();
@@ -2252,7 +2113,7 @@ const AddNewCar = ({ initialValues, ...props }: any) => {
                   setIsDragOverBackground(false);
                 }
               }}
-              onDrop={async (e) => {
+              onDrop={async (e: React.DragEvent<HTMLDivElement>) => {
                 e.preventDefault();
                 e.stopPropagation();
                 setIsDragOverBackground(false);
@@ -2267,7 +2128,7 @@ const AddNewCar = ({ initialValues, ...props }: any) => {
                     return;
                   }
 
-                  const validFiles = files.filter((file) => {
+                  const validFiles = files.filter((file: File) => {
                     return (
                       file.type === "image/jpeg" ||
                       file.type === "image/jpg" ||
@@ -2276,7 +2137,7 @@ const AddNewCar = ({ initialValues, ...props }: any) => {
                     );
                   });
 
-                  const invalidFiles = files.filter((file) => {
+                  const invalidFiles = files.filter((file: File) => {
                     return !(
                       file.type === "image/jpeg" ||
                       file.type === "image/jpg" ||
@@ -2304,10 +2165,9 @@ const AddNewCar = ({ initialValues, ...props }: any) => {
                     return;
                   }
 
-                  // Check file size
-                  const maxSize = 10 * 1024 * 1024; // 10MB
+                  const maxSize = 10 * 1024 * 1024;
                   const oversizedFiles = validFiles.filter(
-                    (file) => file.size > maxSize
+                    (file: File) => file.size > maxSize
                   );
 
                   if (oversizedFiles.length > 0) {
@@ -2321,14 +2181,17 @@ const AddNewCar = ({ initialValues, ...props }: any) => {
 
                   if (backgroundRef.current) {
                     const dataTransfer = new DataTransfer();
-                    validFiles.forEach((file) => dataTransfer.items.add(file));
+                    validFiles.forEach((file: File) =>
+                      dataTransfer.items.add(file)
+                    );
                     backgroundRef.current.files = dataTransfer.files;
                     await uploadBackgroundImage();
                   }
-                } catch (error: any) {
+                } catch (error: unknown) {
+                  const err = error as Error;
                   await sweetMixinErrorAlert(
                     t("mypage.uploadBackground.dropError", {
-                      message: error.message,
+                      message: err.message,
                     })
                   );
                 }
@@ -2390,13 +2253,13 @@ const AddNewCar = ({ initialValues, ...props }: any) => {
               <Stack className="text-box">
                 <Typography className="drag-title">
                   {isUploadingBackground
-                    ? t("mypage.uploadBackground.uploading")
+                    ? "Uploading Background..."
                     : isDragOverBackground
-                    ? t("mypage.uploadBackground.dragTitleOver")
-                    : t("mypage.uploadBackground.dragTitleDefault")}
+                    ? "Drop background image here"
+                    : "Drag & drop background image here"}
                 </Typography>
                 <Typography className="format-title">
-                  {t("mypage.uploadBackground.formatTitle")}
+                  JPG, PNG, or AVIF format
                 </Typography>
               </Stack>
               <Button
@@ -2407,9 +2270,7 @@ const AddNewCar = ({ initialValues, ...props }: any) => {
                 }}
               >
                 <Typography className="browse-button-text">
-                  {isUploadingBackground
-                    ? t("mypage.uploadBackground.uploading")
-                    : t("mypage.uploadBackground.browse")}
+                  {isUploadingBackground ? "Uploading..." : "Browse Files"}
                 </Typography>
                 <input
                   ref={backgroundRef}
@@ -2473,7 +2334,7 @@ const AddNewCar = ({ initialValues, ...props }: any) => {
                 </Stack>
               ) : (
                 <Typography className="empty-text">
-                  {t("mypage.uploadBackground.empty")}
+                  No background image uploaded
                 </Typography>
               )}
             </Stack>
@@ -2505,7 +2366,6 @@ const AddNewCar = ({ initialValues, ...props }: any) => {
         </Stack>
       </div>
 
-      {/* 360° Image Viewer Modal */}
       <Panorama360Modal
         open={show360Modal}
         onClose={() => setShow360Modal(false)}
@@ -2519,8 +2379,8 @@ AddNewCar.defaultProps = {
   initialValues: {
     carTitle: "",
     carPrice: 0,
-    carType: "",
-    carLocation: "",
+    carType: undefined,
+    carLocation: undefined,
     carAddress: "",
     carTradeIn: false,
     carLease: false,

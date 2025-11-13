@@ -11,20 +11,18 @@ import IconButton from "@mui/material/IconButton";
 import RemoveRedEyeIcon from "@mui/icons-material/RemoveRedEye";
 import FavoriteIcon from "@mui/icons-material/Favorite";
 import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
-import { useTranslation } from "react-i18next";
 
 interface CommunityCardProps {
   boardArticle: BoardArticle;
   size?: string;
-  likeArticleHandler?: (e: any, user: any, id: string) => Promise<void>;
+  likeArticleHandler: any;
 }
 
 const CommunityCard = (props: CommunityCardProps) => {
-  const { boardArticle, size, likeArticleHandler } = props;
+  const { boardArticle, size = "normal", likeArticleHandler } = props;
   const device = useDeviceDetect();
   const router = useRouter();
   const user = useReactiveVar(userVar);
-  const { t } = useTranslation("common");
   const imagePath: string = boardArticle?.articleImage
     ? `${REACT_APP_API_URL}/${boardArticle?.articleImage}`
     : "/img/community/communityImg.png";
@@ -84,13 +82,12 @@ const CommunityCard = (props: CommunityCardProps) => {
               <RemoveRedEyeIcon />
             </IconButton>
             <Typography className="view-cnt">
-              {boardArticle?.articleViews} {t("community.views")}
+              {boardArticle?.articleViews}
             </Typography>
             <IconButton
               color={"default"}
-              onClick={(e) =>
-                likeArticleHandler &&
-                likeArticleHandler(e, user, boardArticle._id)
+              onClick={(e: any) =>
+                likeArticleHandler(e, user, boardArticle?._id)
               }
             >
               {boardArticle?.meLiked && boardArticle?.meLiked[0]?.myFavorite ? (
@@ -100,7 +97,7 @@ const CommunityCard = (props: CommunityCardProps) => {
               )}
             </IconButton>
             <Typography className="view-cnt">
-              {boardArticle?.articleLikes} {t("community.likes")}
+              {boardArticle?.articleLikes}
             </Typography>
           </Stack>
         </Stack>
