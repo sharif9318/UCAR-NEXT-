@@ -52,7 +52,7 @@
         .photo-box {
           gap: 23px;
           .title {
-            color: #f5f6fa;
+            color: var(--text-primary);
             font-family: $font;
             font-size: 17px;
             font-style: normal;
@@ -144,7 +144,7 @@
             width: 48%;
             gap: 10px;
             .title {
-              color: #cfd3dc;
+              color: var(--text-primary);
               font-family: $font;
               font-size: 12px;
               font-style: normal;
@@ -176,9 +176,10 @@
           }
         }
         .address-box {
+          margin-top: 30px;
           gap: 10px;
           .title {
-            color: #cfd3dc;
+            color: var(--text-primary);
             font-family: $font;
             font-size: 12px;
             font-style: normal;

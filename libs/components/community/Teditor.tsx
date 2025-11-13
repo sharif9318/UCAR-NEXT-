@@ -27,7 +27,6 @@ const TuiEditor = () => {
   const token = getJwtToken();
   const router = useRouter();
 
-  // Use proper state management instead of useMemo
   const [articleCategory, setArticleCategory] = useState<BoardArticleCategory>(
     BoardArticleCategory.FREE
   );

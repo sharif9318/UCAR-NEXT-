@@ -4,6 +4,7 @@
     padding: 60px 0px 60px;
     width: 100%;
     height: auto;
+    background-color: var(--bg-default);
     .container {
       display: flex;
       flex-direction: column;
@@ -15,7 +16,7 @@
           flex-direction: column;
           align-items: center;
           span {
-            color: #000;
+            color: var(--text-primary);
             font-family: $font;
             font-size: 35px;
             font-style: normal;
@@ -24,7 +25,7 @@
             letter-spacing: 0.525px;
           }
           p {
-            color: #757575;
+            color: var(--text-primary);
             font-family: $font;
             font-size: 16px;
             font-style: normal;
@@ -49,9 +50,9 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            border: 1px solid #EEE;
+            border: 1px solid #eee;
             cursor: pointer;
-            color: #BDBDBD;
+            color: var(--text-primary);
             font-family: $font;
             font-size: 14px;
             font-style: normal;
@@ -59,9 +60,9 @@
             line-height: normal;
             letter-spacing: 0.42px;
             &.active {
-              border: 1px solid #725CE8;
-              background: #EB6753;
-              color: #FFF;
+              border: 1px solid #725ce8;
+              background: #eb6753;
+              color: #fff;
             }
           }
         }
@@ -72,7 +73,7 @@
         flex-direction: column;
         .title {
           margin-bottom: 25px;
-          color: #000;
+          color: var(--text-primary);
           font-family: $font;
           font-size: 27px;
           font-style: normal;
@@ -88,14 +89,14 @@
         }
         .notice-content {
           .main {
-            border: 1px solid #EEE;
+            border: 1px solid #eee;
             .top {
               padding: 25px 33px;
               display: flex;
               flex-direction: row;
               justify-content: space-between;
               span {
-                color: #000;
+                color: var(--text-primary);
                 font-family: $font;
                 font-size: 14px;
                 font-style: normal;
@@ -112,15 +113,15 @@
                 display: flex;
                 flex-direction: row;
                 justify-content: space-between;
-                border: 1px solid #EEE;
+                border: 1px solid #eee;
                 &.event {
-                  background: #F6D79A;
+                  background: #f6d79a;
                 }
                 div {
                   padding: 6px 9px;
                   border-radius: 12px;
-                  border: 1px solid #EB6753;
-                  color: #EB6753;
+                  border: 1px solid #eb6753;
+                  color: var(--text-primary);
                   font-family: $font;
                   font-size: 12px;
                   font-style: normal;
@@ -129,7 +130,7 @@
                 .notice-number {
                   margin-left: 18px;
                   width: 39px;
-                  color: #BDBDBD;
+                  color: #bdbdbd;
                   font-family: $font;
                   font-size: 14px;
                   font-style: normal;
@@ -146,7 +147,7 @@
                   line-height: normal;
                 }
                 .notice-date {
-                  color: #BDBDBD;
+                  color: #bdbdbd;
                   font-family: $font;
                   font-size: 14px;
                   font-style: normal;
@@ -155,9 +156,7 @@
                 }
               }
             }
-
           }
-
         }
         .faq-content {
           margin-top: 25px;
@@ -173,7 +172,7 @@
               display: flex;
               justify-content: center;
               align-items: center;
-              color: #BDBDBD;
+              color: #bdbdbd;
               text-align: center;
               font-family: $font;
               font-size: 15px;
@@ -183,8 +182,8 @@
               letter-spacing: -0.225px;
               cursor: pointer;
               &.active {
-                border-bottom: 1px solid #EB6753;
-                color: #EB6753;
+                border-bottom: 1px solid #eb6753;
+                color: #eb6753;
               }
             }
           }
@@ -192,19 +191,19 @@
             margin-top: 50px;
             .MuiAccordionDetails-root {
               padding: 30px 20px;
-              background: #FAFAFA;
+              background: #fafafa;
             }
             .badge {
               margin: 0 24px;
               display: inline-block;
               padding: 4px 10px;
-              border: 1px solid #725CE8;
+              border: 1px solid #725ce8;
               border-radius: 7px;
-              color: #725CE8;
+              color: #725ce8;
             }
             .question {
               .badge {
-                background: #e92C28;
+                background: #e92c28;
                 color: #fff;
               }
             }
@@ -215,8 +214,8 @@
               align-items: center;
               flex-direction: row;
               .badge {
-                color: #EB6753;
-                border: 1px solid #EB6753;
+                color: #eb6753;
+                border: 1px solid #eb6753;
               }
             }
           }

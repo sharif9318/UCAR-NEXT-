@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import useDeviceDetect from "../../hooks/useDeviceDetect";
 import {
   Stack,
@@ -19,20 +19,46 @@ import {
   sweetErrorHandling,
   sweetTopSmallSuccessAlert,
 } from "../../sweetAlert";
+import dynamic from "next/dynamic";
+
+// Dynamic import for Toast UI Editor
+const TuiEditor = dynamic(
+  () => import("@toast-ui/react-editor").then((mod) => mod.Editor),
+  {
+    ssr: false,
+    loading: () => (
+      <div
+        style={{
+          height: "400px",
+          border: "1px solid #e0e0e0",
+          borderRadius: "4px",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          color: "#666",
+          backgroundColor: "#fafafa",
+        }}
+      >
+        Loading editor...
+      </div>
+    ),
+  }
+);
 
 const Inquiry = () => {
   const device = useDeviceDetect();
   const [category, setCategory] = useState<CsCategory>(CsCategory.OTHER);
   const [title, setTitle] = useState("");
-  const [content, setContent] = useState("");
+  const editorRef = useRef<any>(null);
 
   /** APOLLO REQUESTS **/
   const [createCs, { loading }] = useMutation(CREATE_CS);
 
-  /** LIFECYCLES **/
-  /** HANDLERS **/
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    // Get content from editor
+    const content = editorRef.current?.getInstance?.().getMarkdown?.() || "";
 
     if (!title.trim() || !content.trim()) {
       await sweetErrorHandling("Please fill in all required fields");
@@ -58,8 +84,9 @@ const Inquiry = () => {
 
       // Reset form
       setTitle("");
-      setContent("");
       setCategory(CsCategory.OTHER);
+      // Clear editor content
+      editorRef.current?.getInstance().setMarkdown("");
     } catch (err) {
       await sweetErrorHandling(err);
     }
@@ -108,23 +135,29 @@ const Inquiry = () => {
               label="Subject *"
               value={title}
               onChange={(e) => setTitle(e.target.value)}
-              placeholder={!title ? "Brief description of your inquiry" : ""}
+              placeholder="Brief description of your inquiry"
               InputLabelProps={{ shrink: true }}
             />
 
-            <TextField
-              fullWidth
-              required
-              multiline
-              rows={6}
-              label="Message *"
-              value={content}
-              onChange={(e) => setContent(e.target.value)}
-              placeholder={
-                !content ? "Detailed description of your inquiry" : ""
-              }
-              InputLabelProps={{ shrink: true }}
-            />
+            {/* Toast UI Editor for rich text content */}
+            <Box sx={{ border: "1px solid #e0e0e0", borderRadius: 1 }}>
+              <TuiEditor
+                ref={editorRef}
+                initialValue=""
+                placeholder="Detailed description of your inquiry"
+                previewStyle="vertical"
+                height="400px"
+                initialEditType="wysiwyg"
+                useCommandShortcut={true}
+                toolbarItems={[
+                  ["heading", "bold", "italic", "strike"],
+                  ["hr", "quote"],
+                  ["ul", "ol", "task"],
+                  ["table", "link"],
+                  ["code", "codeblock"],
+                ]}
+              />
+            </Box>
 
             <Button
               type="submit"

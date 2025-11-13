@@ -505,7 +505,7 @@ const ChatButton = ({ isExpanded }: ChatButtonProps) => {
             </>
           )}
         </button>
-        {isExpanded && <span className="label">{t("Community")}</span>}
+        {isExpanded && <span className="label">{t("Chat")}</span>}
       </div>
 
       <Stack className={`chat-frame ${chatOpen ? "open" : ""}`}>
