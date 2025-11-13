@@ -7,7 +7,6 @@ import {
   Typography,
 } from "@mui/material";
 import useDeviceDetect from "../../libs/hooks/useDeviceDetect";
-import withLayoutFull from "../../libs/components/layout/LayoutFull";
 import { NextPage } from "next";
 import Review from "../../libs/components/car/Review";
 import { Swiper, SwiperSlide } from "swiper/react";
@@ -19,11 +18,12 @@ import FavoriteIcon from "@mui/icons-material/Favorite";
 import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
 import WestIcon from "@mui/icons-material/West";
 import EastIcon from "@mui/icons-material/East";
+import RemoveRedEyeIcon from "@mui/icons-material/RemoveRedEye";
 import { useMutation, useQuery, useReactiveVar } from "@apollo/client";
 import { useRouter } from "next/router";
 import { Car } from "../../libs/types/car/car";
 import moment from "moment";
-import { formatterStr, likeTargetMemberHandler } from "../../libs/utils";
+import { formatterStr } from "../../libs/utils";
 import { REACT_APP_API_URL } from "../../libs/config";
 import { userVar } from "../../apollo/store";
 import {
@@ -32,9 +32,7 @@ import {
 } from "../../libs/types/comment/comment.input";
 import { Comment } from "../../libs/types/comment/comment";
 import { CommentGroup } from "../../libs/enums/comment.enum";
-import { Pagination as MuiPagination } from "@mui/material";
 import Link from "next/link";
-import RemoveRedEyeIcon from "@mui/icons-material/RemoveRedEye";
 import { serverSideTranslations } from "next-i18next/serverSideTranslations";
 import "swiper/css";
 import "swiper/css/pagination";
@@ -54,6 +52,7 @@ import {
 } from "../../libs/sweetAlert";
 import { useTranslation } from "react-i18next";
 import withLayoutBasic from "../../libs/components/layout/LayoutBasic";
+import PopularCarCard from "../../libs/components/homepage/PopularCarCard";
 
 SwiperCore.use([Autoplay, Navigation, Pagination]);
 
@@ -177,7 +176,6 @@ const CarDetail: NextPage = (props: any) => {
 
   useEffect(() => {
     if (car?.carImages && car.carImages.length > 0) {
-      // Set first image as slide image (videos are now separate)
       setSlideImage(car.carImages[0]);
     }
   }, [car]);
@@ -185,10 +183,6 @@ const CarDetail: NextPage = (props: any) => {
   /** HANDLERS **/
   const changeImageHandler = (image: string) => {
     setSlideImage(image);
-  };
-
-  const isVideoFile = (filename: string) => {
-    return filename.match(/\.(mp4|webm|ogg|mov)$/i);
   };
 
   const likeCarHandler = async (user: T, id: string) => {
@@ -208,7 +202,7 @@ const CarDetail: NextPage = (props: any) => {
           sort: "createdAt",
           direction: Direction.DESC,
           search: {
-            locationList: [car?.carLocation],
+            locationList: car?.carLocation ? [car.carLocation] : [],
           },
         },
       });
@@ -258,7 +252,6 @@ const CarDetail: NextPage = (props: any) => {
     commentId: string,
     newContent: string
   ) => {
-    // Clean and normalize the content
     let cleanContent = newContent.trim();
 
     try {
@@ -268,12 +261,10 @@ const CarDetail: NextPage = (props: any) => {
         throw new Error("Review content cannot be empty.");
       }
 
-      // Check length
       if (cleanContent.length < 5) {
         throw new Error("Review must be at least 5 characters long.");
       }
 
-      // Remove surrounding quotes if present
       if (
         (cleanContent.startsWith('"') && cleanContent.endsWith('"')) ||
         (cleanContent.startsWith('"') && cleanContent.endsWith('"'))
@@ -281,25 +272,22 @@ const CarDetail: NextPage = (props: any) => {
         cleanContent = cleanContent.slice(1, -1);
       }
 
-      // More aggressive normalization for special characters
       cleanContent = cleanContent
-        .replace(/['']/g, "'") // All types of single quotes
-        .replace(/["\"\"]/g, '"') // All types of double quotes
-        .replace(/[—–-]/g, "-") // All types of dashes
-        .replace(/…/g, "...") // Ellipsis
-        .replace(/\u00A0/g, " ") // Non-breaking space
-        .replace(/[•‣⁃]/g, "-") // Bullets
-        .replace(/[\u0080-\u009F]/g, "") // Control characters
+        .replace(/['']/g, "'")
+        .replace(/["\"\"]/g, '"')
+        .replace(/[—–-]/g, "-")
+        .replace(/…/g, "...")
+        .replace(/\u00A0/g, " ")
+        .replace(/[•‣⁃]/g, "-")
+        .replace(/[\u0080-\u009F]/g, "")
         .trim();
 
-      // Final normalization
       try {
         cleanContent = cleanContent.normalize("NFC");
       } catch (e) {
         console.warn("Unicode normalization failed, using as-is");
       }
 
-      // Backend validation: max 100 characters (from comment.update.ts)
       const MAX_LENGTH = 100;
       if (cleanContent.length > MAX_LENGTH) {
         throw new Error(
@@ -328,9 +316,7 @@ const CarDetail: NextPage = (props: any) => {
       if (!user._id) throw new Error(Message.NOT_AUTHENTICATED);
 
       await removeComment({
-        variables: {
-          commentId: commentId,
-        },
+        variables: { commentId },
       });
 
       await getCommentsRefetch({ input: commentInquiry });
@@ -571,7 +557,6 @@ const CarDetail: NextPage = (props: any) => {
                     );
                   })}
 
-                  {/* 360° Images Section */}
                   {car?.car360Images &&
                     car.car360Images.length > 0 &&
                     car.car360Images.map((img360: string, index: number) => {
@@ -599,16 +584,9 @@ const CarDetail: NextPage = (props: any) => {
                         width="24"
                         height="24"
                         viewBox="0 0 24 24"
-                        fill="none"
                       >
-                        <path
-                          d="M12 2C6.48 2 2 6.48 2 12C2 17.52 6.48 22 12 22C17.52 22 22 17.52 22 12C22 6.48 17.52 2 12 2ZM12 20C7.59 20 4 16.41 4 12C4 7.59 7.59 4 12 4C16.41 4 20 7.59 20 12C20 16.41 16.41 20 12 20Z"
-                          fill="#181A20"
-                        />
-                        <path
-                          d="M12.5 7H11V13L16.2 16.2L17 14.9L12.5 12.2V7Z"
-                          fill="#181A20"
-                        />
+                        <path d="M12 2C6.48 2 2 6.48 2 12C2 17.52 6.48 22 12 22C17.52 22 22 17.52 22 12C22 6.48 17.52 2 12 2ZM12 20C7.59 20 4 16.41 4 12C4 7.59 7.59 4 12 4C16.41 4 20 7.59 20 12C20 16.41 16.41 20 12 20Z" />
+                        <path d="M12.5 7H11V13L16.2 16.2L17 14.9L12.5 12.2V7Z" />
                       </svg>
                     </Stack>
                     <Stack className={"option-includes"}>
@@ -625,12 +603,8 @@ const CarDetail: NextPage = (props: any) => {
                         width="24"
                         height="24"
                         viewBox="0 0 24 24"
-                        fill="none"
                       >
-                        <path
-                          d="M18.92 6.01C18.72 5.42 18.16 5 17.5 5H6.5C5.84 5 5.29 5.42 5.08 6.01L3 12V20C3 20.55 3.45 21 4 21H5C5.55 21 6 20.55 6 20V19H18V20C18 20.55 18.45 21 19 21H20C20.55 21 21 20.55 21 20V12L18.92 6.01ZM6.5 16C5.67 16 5 15.33 5 14.5C5 13.67 5.67 13 6.5 13C7.33 13 8 13.67 8 14.5C8 15.33 7.33 16 6.5 16ZM17.5 16C16.67 16 16 15.33 16 14.5C16 13.67 16.67 13 17.5 13C18.33 13 19 13.67 19 14.5C19 15.33 18.33 16 17.5 16ZM5 11L6.5 6.5H17.5L19 11H5Z"
-                          fill="#181A20"
-                        />
+                        <path d="M18.92 6.01C18.72 5.42 18.16 5 17.5 5H6.5C5.84 5 5.29 5.42 5.08 6.01L3 12V20C3 20.55 3.45 21 4 21H5C5.55 21 6 20.55 6 20V19H18V20C18 20.55 18.45 21 19 21H20C20.55 21 21 20.55 21 20V12L18.92 6.01ZM6.5 16C5.67 16 5 15.33 5 14.5C5 13.67 5.67 13 6.5 13C7.33 13 8 13.67 8 14.5C8 15.33 7.33 16 6.5 16ZM17.5 16C16.67 16 16 15.33 16 14.5C16 13.67 16.67 13 17.5 13C18.33 13 19 13.67 19 14.5C19 15.33 18.33 16 17.5 16ZM5 11L6.5 6.5H17.5L19 11H5Z" />
                       </svg>
                     </Stack>
                     <Stack className={"option-includes"}>
@@ -647,12 +621,26 @@ const CarDetail: NextPage = (props: any) => {
                         width="24"
                         height="24"
                         viewBox="0 0 24 24"
-                        fill="none"
                       >
-                        <path
-                          d="M19 3H5C3.9 3 3 3.9 3 5V19C3 20.1 3.9 21 5 21H19C20.1 21 21 20.1 21 19V5C21 3.9 20.1 3 19 3ZM19 19H5V5H19V19ZM7 17H9V13H7V17ZM11 17H13V7H11V17ZM15 17H17V10H15V17Z"
-                          fill="#181A20"
-                        />
+                        <path d="M18.92 6.01C18.72 5.42 18.16 5 17.5 5H6.5C5.84 5 5.29 5.42 5.08 6.01L3 12V20C3 20.55 3.45 21 4 21H5C5.55 21 6 20.55 6 20V19H18V20C18 20.55 18.45 21 19 21H20C20.55 21 21 20.55 21 20V12L18.92 6.01ZM6.5 16C5.67 16 5 15.33 5 14.5C5 13.67 5.67 13 6.5 13C7.33 13 8 13.67 8 14.5C8 15.33 7.33 16 6.5 16ZM17.5 16C16.67 16 16 15.33 16 14.5C16 13.67 16.67 13 17.5 13C18.33 13 19 13.67 19 14.5C19 15.33 18.33 16 17.5 16ZM5 11L6.5 6.5H17.5L19 11H5Z" />
+                      </svg>
+                    </Stack>
+                    <Stack className={"option-includes"}>
+                      <Typography className={"title"}>Body Type</Typography>
+                      <Typography className={"option-data"}>
+                        {car?.carType}
+                      </Typography>
+                    </Stack>
+                  </Stack>
+                  <Stack className={"option"}>
+                    <Stack className={"svg-box"}>
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="24"
+                        height="24"
+                        viewBox="0 0 24 24"
+                      >
+                        <path d="M19 3H5C3.9 3 3 3.9 3 5V19C3 20.1 3.9 21 5 21H19C20.1 21 21 20.1 21 19V5C21 3.9 20.1 3 19 3ZM19 19H5V5H19V19ZM7 17H9V13H7V17ZM11 17H13V7H11V17ZM15 17H17V10H15V17Z" />
                       </svg>
                     </Stack>
                     <Stack className={"option-includes"}>
@@ -671,12 +659,8 @@ const CarDetail: NextPage = (props: any) => {
                         width="24"
                         height="24"
                         viewBox="0 0 24 24"
-                        fill="none"
                       >
-                        <path
-                          d="M18.92 6.01C18.72 5.42 18.16 5 17.5 5H6.5C5.84 5 5.29 5.42 5.08 6.01L3 12V20C3 20.55 3.45 21 4 21H5C5.55 21 6 20.55 6 20V19H18V20C18 20.55 18.45 21 19 21H20C20.55 21 21 20.55 21 20V12L18.92 6.01ZM6.5 16C5.67 16 5 15.33 5 14.5C5 13.67 5.67 13 6.5 13C7.33 13 8 13.67 8 14.5C8 15.33 7.33 16 6.5 16ZM17.5 16C16.67 16 16 15.33 16 14.5C16 13.67 16.67 13 17.5 13C18.33 13 19 13.67 19 14.5C19 15.33 18.33 16 17.5 16ZM5 11L6.5 6.5H17.5L19 11H5Z"
-                          fill="#181A20"
-                        />
+                        <path d="M18.92 6.01C18.72 5.42 18.16 5 17.5 5H6.5C5.84 5 5.29 5.42 5.08 6.01L3 12V20C3 20.55 3.45 21 4 21H5C5.55 21 6 20.55 6 20V19H18V20C18 20.55 18.45 21 19 21H20C20.55 21 21 20.55 21 20V12L18.92 6.01ZM6.5 16C5.67 16 5 15.33 5 14.5C5 13.67 5.67 13 6.5 13C7.33 13 8 13.67 8 14.5C8 15.33 7.33 16 6.5 16ZM17.5 16C16.67 16 16 15.33 16 14.5C16 13.67 16.67 13 17.5 13C18.33 13 19 13.67 19 14.5C19 15.33 18.33 16 17.5 16ZM5 11L6.5 6.5H17.5L19 11H5Z" />
                       </svg>
                     </Stack>
                     <Stack className={"option-includes"}>
@@ -693,12 +677,8 @@ const CarDetail: NextPage = (props: any) => {
                         width="24"
                         height="24"
                         viewBox="0 0 24 24"
-                        fill="none"
                       >
-                        <path
-                          d="M19 3H5C3.9 3 3 3.9 3 5V19C3 20.1 3.9 21 5 21H19C20.1 21 21 20.1 21 19V5C21 3.9 20.1 3 19 3ZM19 19H5V5H19V19ZM7 17H9V13H7V17ZM11 17H13V7H11V17ZM15 17H17V10H15V17Z"
-                          fill="#181A20"
-                        />
+                        <path d="M19 3H5C3.9 3 3 3.9 3 5V19C3 20.1 3.9 21 5 21H19C20.1 21 21 20.1 21 19V5C21 3.9 20.1 3 19 3ZM19 19H5V5H19V19ZM7 17H9V13H7V17ZM11 17H13V7H11V17ZM15 17H17V10H15V17Z" />
                       </svg>
                     </Stack>
                     <Stack className={"option-includes"}>
@@ -833,7 +813,7 @@ const CarDetail: NextPage = (props: any) => {
                       </>
                     ) : (
                       <Stack alignItems="center" spacing={2}>
-                        <img src={"/img/car/floorPlan.png"} alt={"interior"} />
+                        <img src={"/img/car/interior.jpg"} alt={"interior"} />
                         <Typography variant="body2" color="text.secondary">
                           No 360° images available for this vehicle
                         </Typography>
@@ -841,21 +821,7 @@ const CarDetail: NextPage = (props: any) => {
                     )}
                   </Stack>
                 </Stack>
-                <Stack className={"address-config"}>
-                  <Typography className={"title"}>
-                    Dealership Location
-                  </Typography>
-                  <Stack className={"map-box"}>
-                    <iframe
-                      src="https://www.google.com/maps/emyear?pb=!1m18!1m12!1m3!1d25867.098915951767!2d128.68632810247993!3d35.86402299180927!2m3!1f0!2f0!3f0!3km!1i1024!2i768!4f13.1!3m3!1km!1s0x35660bba427bf179%3A0x1fc02da732b9072f!2sGeumhogangbyeon-ro%2C%20Dong-gu%2C%20Daegu!5e0!3km!1suz!2skr!4v1695537640704!5km!1suz!2skr"
-                      width="100%"
-                      height="100%"
-                      allowFullScreen={true}
-                      loading="lazy"
-                      referrerPolicy="no-referrer-when-downgrade"
-                    ></iframe>
-                  </Stack>
-                </Stack>
+
                 {commentTotal !== 0 && (
                   <Stack className={"reviews-config"}>
                     <Stack className={"filter-box"}>
@@ -1117,6 +1083,12 @@ const CarDetail: NextPage = (props: any) => {
                       </defs>
                     </svg>
                   </Button>
+                </Stack>
+                <Stack className={"highlights-section"} sx={{ mb: 4 }}>
+                  <Typography className={"title"} sx={{ mb: 2 }}>
+                    Key Highlights
+                  </Typography>
+                  {car && <PopularCarCard car={car} />}
                 </Stack>
               </Stack>
             </Stack>

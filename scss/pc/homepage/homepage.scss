@@ -1,6 +1,3 @@
-/* Shared mixins extracted for homepage cards (moved to top) */
-
-/* Unified pagination-box mixin - theme-aware and consistent */
 @mixin pagination-box() {
   display: flex;
   flex-direction: row;
@@ -19,7 +16,6 @@
     box-shadow: 0 4px 12px rgba(229, 9, 20, 0.25);
   }
 
-  // Pagination bullets (dots)
   .swiper-pagination {
     position: static;
     display: flex;
@@ -49,7 +45,6 @@
     }
   }
 
-  // Navigation arrows - inline with dots, vivid and bold
   .swiper-trend-next,
   .swiper-trend-prev,
   .swiper-top-next,
@@ -350,7 +345,7 @@
       }
     }
 
-    // Trend cars section
+    // Like-driven Garage section
     .trend-cars {
       padding: 108px 0px 76px;
       width: 100%;
@@ -588,6 +583,8 @@
         }
       }
     }
+
+    // Main attraction section
     .popular-cars {
       padding: 70px 0px 94px;
       width: 100%;
@@ -703,12 +700,12 @@
         }
 
         .card-box {
-          // margin-top: 24px;
           width: 100%;
           height: auto;
           display: flex;
           flex-direction: row;
           justify-content: space-between;
+
           .popular-car-swiper {
             width: 100%;
             height: 425px;
@@ -726,7 +723,7 @@
             width: 400px;
             height: auto;
             min-height: 600px;
-            margin-right: 20px;
+            margin-right: 15px;
             display: flex;
             flex-direction: column;
             transition: transform 0.25s ease, box-shadow 0.25s ease;
@@ -777,8 +774,8 @@
 
             .info {
               padding: 50px 20px 20px 20px;
-              background: rgba(255, 255, 255, 0.95);
-              border-radius: 0 0 12px 12px;
+              background: transparent;
+              border-radius: 12px;
               position: relative;
               z-index: 10;
               min-height: 200px;
@@ -790,7 +787,7 @@
                 margin-bottom: 15px;
 
                 .model-title {
-                  color: #000;
+                  color: var(--text-primary);
                   font-family: $font;
                   font-size: 20px;
                   font-weight: 700;
@@ -799,7 +796,7 @@
                 }
 
                 .starting-text {
-                  color: #333;
+                  color: var(--text-primary);
                   font-family: $font;
                   font-size: 13px;
                   font-weight: 600;
@@ -807,7 +804,7 @@
                 }
 
                 .msrp-text {
-                  color: #666;
+                  color: var(--text-primary);
                   font-family: $font;
                   font-size: 11px;
                   font-weight: 400;
@@ -833,7 +830,7 @@
                   span {
                     font-family: $font;
                     font-size: 14px;
-                    color: #333;
+                    color: var(--text-primary);
                   }
                 }
               }
@@ -847,7 +844,7 @@
                   font-family: $font;
                   font-size: 14px;
                   font-weight: 600;
-                  color: #000;
+                  color: var(--text-primary);
                   text-transform: uppercase;
                   margin: 0;
                 }
@@ -860,7 +857,7 @@
                   .view-cnt {
                     font-family: $font;
                     font-size: 14px;
-                    color: #666;
+                    color: var(--text-primary);
                   }
                 }
               }
@@ -980,22 +977,36 @@
                 background-repeat: no-repeat;
                 display: block;
               }
-
-              .price-tag {
-                position: absolute;
-                padding: 8px 12px;
-                left: 12px;
-                bottom: 12px;
-                border-radius: 6px;
-                background: var(--bg-paper);
+              .info {
+                background: transparent;
                 color: var(--text-primary);
-                font-family: $font;
-                font-size: 15px;
-                font-style: normal;
-                font-weight: 600;
-                line-height: normal;
-                z-index: 2;
+                .title {
+                  color: var(--text-primary);
+                }
+                img {
+                  fill: var(--text-primary);
+                  color: var(--text-primary);
+                  path {
+                    fill: currentColor;
+                  }
+                }
               }
+
+              // .price-tag {
+              //   position: absolute;
+              //   padding: 8px 12px;
+              //   left: 12px;
+              //   bottom: 12px;
+              //   border-radius: 6px;
+              //   background: var(--bg-paper);
+              //   color: var(--text-primary);
+              //   font-family: $font;
+              //   font-size: 15px;
+              //   font-style: normal;
+              //   font-weight: 600;
+              //   line-height: normal;
+              //   z-index: 2;
+              // }
             }
 
             .info {

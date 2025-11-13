@@ -28,6 +28,11 @@ const PAGE_CONFIG: Record<
     desc: "Browse, filter, and find your perfect car from our curated inventory!",
     bgImage: "/img/banner/header5.jpg",
   },
+  "/car/detail": {
+    title: "Vehicle Overview",
+    desc: "Drive away with total peace of mind in this impeccably maintained vehicle, recently inspected and serviced.",
+    bgImage: "/img/banner/carDetail.jpg",
+  },
   "/agent": {
     title: "Agents",
     desc: "Home / For Lease",
@@ -115,10 +120,6 @@ const withLayoutBasic = (Component: any) => {
           <meta name="title" content="UCAR NEXT" />
         </Head>
         <Stack id="pc-wrap">
-          <Stack className="InteractiveNavbar">
-            <InteractiveNavbar />
-          </Stack>
-
           <Stack
             className={`header-basic ${pageConfig.isAuth ? "auth" : ""}`}
             style={{
@@ -128,6 +129,9 @@ const withLayoutBasic = (Component: any) => {
               backgroundAttachment: "fixed",
             }}
           >
+            <Stack className="InteractiveNavbar">
+              <InteractiveNavbar />
+            </Stack>
             <Stack className="container">
               <strong>{t(pageConfig.title)}</strong>
               <span>{t(pageConfig.desc)}</span>

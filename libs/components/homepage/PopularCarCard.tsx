@@ -10,6 +10,7 @@ import { REACT_APP_API_URL, topCarRank } from "../../config";
 import { useRouter } from "next/router";
 import { useReactiveVar } from "@apollo/client";
 import { userVar } from "../../../apollo/store";
+import { TimerIcon } from "lucide-react";
 
 interface PopularCarCardProps {
   car: Car;
@@ -28,7 +29,6 @@ const PopularCarCard = (props: PopularCarCardProps) => {
   /** HANDLERS **/
 
   const pushDetailHandler = async (carId: string) => {
-    console.log("carId:", carId);
     await router.push({
       pathname: "/car/detail",
       query: { id: carId },
@@ -56,16 +56,14 @@ const PopularCarCard = (props: PopularCarCardProps) => {
     setIsDragging(false);
   };
 
-  // Get real API images - using the same pattern as AddNewCar.tsx
   const carPngImage = car?.carPngImage
     ? `${REACT_APP_API_URL}/${car.carPngImage}`
-    : "/img/car/sampleCar.png"; // fallback image
+    : "/img/car/sampleCar.png";
 
   const carBackgroundImage = car?.carBackgroundImage
     ? `${REACT_APP_API_URL}/${car.carBackgroundImage}`
-    : "/img/car/background.jpg"; // fallback image
+    : "/img/car/background.jpg";
 
-  // Alternative: If carPngImage/carBackgroundImage don't exist, use carImages array
   const backgroundScene =
     carBackgroundImage ||
     (car?.carBackgroundImage
@@ -93,6 +91,8 @@ const PopularCarCard = (props: PopularCarCardProps) => {
           onMouseMove={handleMouseMove}
           onMouseUp={handleMouseUp}
           onMouseLeave={handleMouseUp}
+          onDragEnd={handleMouseUp}
+          onClick={() => pushDetailHandler(car._id!)}
           style={{
             transform: `translate(${position.x}px, ${position.y}px)`,
             cursor: isDragging ? "grabbing" : "grab",
@@ -149,6 +149,8 @@ const PopularCarCard = (props: PopularCarCardProps) => {
           onMouseMove={handleMouseMove}
           onMouseUp={handleMouseUp}
           onMouseLeave={handleMouseUp}
+          onDragEnd={handleMouseUp}
+          onClick={() => pushDetailHandler(car._id!)}
           style={{
             transform: `translate(${position.x}px, ${position.y}px)`,
             cursor: isDragging ? "grabbing" : "grab",
@@ -167,7 +169,8 @@ const PopularCarCard = (props: PopularCarCardProps) => {
 
           <div className={"options"}>
             <div>
-              <img src="/img/icons/year.svg" alt="Year" />
+              <TimerIcon />
+              {/* <img src="/img/icons/year.svg" alt="Year" /> */}
               <span>{car?.carYear || "N/A"} year</span>
             </div>
             <div>

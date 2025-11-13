@@ -14,6 +14,7 @@ export interface TotalCounter {
 }
 
 export interface Car {
+  id: string;
   _id: string;
   carType: CarType;
   carStatus: CarStatus;
