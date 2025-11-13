@@ -54,14 +54,19 @@ import HomeIcon from "@mui/icons-material/Home";
 const NAV_ITEMS = [
   { href: "/", icon: HomeIcon, label: "Home" },
   { href: "/car", icon: DirectionsCarIcon, label: "Cars" },
-  { href: "/agent", icon: PeopleIcon, label: "Agents" },
+  { href: "/agent", icon: PeopleIcon, label: "Car Dealers" },
   {
     href: "/community?articleCategory=FREE",
     icon: ForumIcon,
-    label: "Community",
+    label: "Social Garage",
   },
-  { href: "/mypage", icon: PersonIcon, label: "My Page", requiresAuth: true },
-  { href: "/cs", icon: HelpIcon, label: "CS" },
+  {
+    href: "/mypage",
+    icon: PersonIcon,
+    label: "My Dashboard",
+    requiresAuth: true,
+  },
+  { href: "/cs", icon: HelpIcon, label: "Help Desk" },
 ];
 
 const LANGUAGES = [
