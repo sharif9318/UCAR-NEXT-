@@ -22,18 +22,18 @@
             0 6px 18px rgba(0, 0, 0, 0.4);
           .image-info {
             width: 100%;
-            flex-direction: row;
-            gap: 11px;
+            flex-direction: column;
+            align-items: center;
             img {
-              width: 80px;
+              width: 100%;
               height: 80px;
-              border-radius: 50%;
+
               object-fit: cover;
             }
             .community-name {
               .name {
                 margin-top: 15px;
-                color: #181a20;
+                color: var(--text-primary);
                 font-family: $font;
                 font-size: 15px;
                 font-style: normal;
@@ -94,7 +94,7 @@
                 width: 60%;
                 height: auto;
                 .title {
-                  color: #000;
+                  color: var(--text-primary);
                   font-family: $font;
                   font-size: 24px;
                   font-style: normal;
@@ -103,7 +103,7 @@
                   letter-spacing: 0.24px;
                 }
                 .sub-title {
-                  color: #757575;
+                  color: var(--text-primary);
                   font-family: $font;
                   font-size: 13px;
                   font-style: normal;
@@ -117,7 +117,7 @@
                 height: 32px;
                 border-radius: 4px;
                 background: #eb6753;
-                color: #fff;
+                color: var(--text-primary);
                 font-family: $font;
                 font-size: 13px;
                 font-style: normal;
@@ -145,7 +145,7 @@
         border: 1px solid #c4c4c4;
         .similar-articles-title {
           padding-left: 56px;
-          color: #000;
+          color: var(--text-primary);
           font-family: $font;
           font-size: 30px;
           font-style: normal;
