@@ -46,7 +46,7 @@ const PAGE_CONFIG: Record<
   "/mypage": {
     title: "My Dashboard ",
     desc: "Access your personal hub for cars, agents, community posts, and account settings.",
-    bgImage: "/img/banner/header1.svg",
+    bgImage: "/img/banner/header1.jpg",
   },
   "/community": {
     title: "The Social Garage ",
@@ -64,15 +64,15 @@ const PAGE_CONFIG: Record<
     bgImage: "/img/banner/helpDesk.jpg",
   },
   "/account/join": {
-    title: "Login/Signup",
-    desc: "Authentication Process",
-    bgImage: "/img/banner/header2.svg",
+    title: "Access Your Account",
+    desc: "Sign in to unlock trusted tools for buying and selling used cars.",
+    bgImage: "/img/banner/header2.jpg",
     isAuth: true,
   },
   "/member": {
     title: "Member Page",
-    desc: "Home / For Lease",
-    bgImage: "/img/banner/header1.svg",
+    desc: "Access your personal hub for cars, agents, community posts, and account settings.",
+    bgImage: "/img/banner/header1.jpg",
   },
 };
 

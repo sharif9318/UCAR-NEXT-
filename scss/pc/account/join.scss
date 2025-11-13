@@ -16,6 +16,13 @@
         background: var(--bg-paper);
         border: 1px solid #343a46;
         box-shadow: 0px 1px 4px 0px rgba(24, 26, 32, 0.07);
+        transition: box-shadow 0.5s cubic-bezier(0.4, 0, 0.2, 1),
+          transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+        will-change: box-shadow, transform;
+        &:hover {
+          box-shadow: 0 8px 32px 0 rgba(229, 9, 20, 0.15);
+          transform: translateY(-4px) scale(1.01);
+        }
         .left {
           width: 50%;
           height: 100%;
@@ -93,7 +100,7 @@
                 width: 100%;
                 height: 55px;
                 border-radius: 8px;
-                border: 1px solid #343a46;
+                border: 1px solid var(--border, #343a46);
                 background: var(--bg-default);
                 font-family: $font;
                 font-size: 14px;
@@ -101,6 +108,11 @@
                 font-weight: 400;
                 line-height: 26px;
                 color: var(--text-primary);
+                transition: border-color 0.3s, box-shadow 0.3s;
+                &:focus {
+                  border-color: var(--admin-red, #e50914);
+                  box-shadow: 0 0 0 2px rgba(229, 9, 20, 0.12);
+                }
               }
             }
           }
@@ -160,6 +172,12 @@
               font-weight: 600;
               line-height: normal;
               color: #fff;
+              transition: background 0.3s, box-shadow 0.3s, transform 0.3s;
+              &:hover {
+                background: #b0060f;
+                box-shadow: 0 6px 24px rgba(229, 9, 20, 0.18);
+                transform: translateY(-2px) scale(1.01);
+              }
               img {
                 filter: brightness(0) invert(1);
               }
@@ -180,7 +198,44 @@
                 font-size: 32px;
                 cursor: pointer;
                 text-decoration: underline;
+                transition: color 0.2s, text-shadow 0.2s;
+                &:hover {
+                  color: var(--admin-red);
+                  text-shadow: 0 2px 8px rgba(229, 9, 20, 0.12);
+                }
               }
+            }
+          }
+          .password-input-wrap {
+            position: relative;
+            display: flex;
+            align-items: center;
+            input.password-input {
+              padding-right: 48px;
+              transition: box-shadow 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+              box-shadow: 0 0 0 0 rgba(229, 9, 20, 0);
+              &:focus {
+                box-shadow: 0 0 0 3px rgba(229, 9, 20, 0.15);
+              }
+            }
+            .toggle-password-btn {
+              position: absolute;
+              right: 12px;
+              top: 50%;
+              transform: translateY(-50%);
+              background: none;
+              border: none;
+              font-size: 22px;
+              cursor: pointer;
+              color: var(--text-secondary);
+              opacity: 0.7;
+              transition: color 0.2s, opacity 0.2s;
+              &:hover,
+              &.visible {
+                color: var(--admin-red);
+                opacity: 1;
+              }
+              outline: none;
             }
           }
         }
@@ -192,5 +247,198 @@
         }
       }
     }
+  }
+  .uiverse-login-root {
+    min-height: 100vh;
+    width: 100vw;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--bg-default, #f5f8fa);
+    position: relative;
+    z-index: 0;
+    overflow: hidden;
+  }
+  .uiverse-animation-container {
+    position: absolute;
+    width: 850px;
+    height: 850px;
+    top: 50%;
+
+    transform: translate(-50%, -50%);
+    pointer-events: none;
+    z-index: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 50%;
+    overflow: visible;
+  }
+  .uiverse-animation-container span {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: 40px;
+    height: 10px;
+    background: #2c4766;
+    border-radius: 80px;
+    transform-origin: 425px;
+    transform: translate(-50%, -50%) rotate(calc(var(--i) * (360deg / 50)));
+    animation: uiverse-blink 3s linear infinite;
+    animation-delay: calc(var(--i) * (3s / 50));
+  }
+  @keyframes uiverse-blink {
+    0% {
+      background: #0ef;
+    }
+    25% {
+      background: #2c4766;
+    }
+  }
+  .uiverse-login-box {
+    position: relative;
+    width: 480px;
+    max-width: 90vw;
+    z-index: 1;
+    padding: 48px 40px 40px 40px;
+    border-radius: 24px;
+    background: var(--bg-paper, #fff);
+    box-shadow: 0 8px 32px 0 rgba(44, 71, 102, 0.1);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin: 0 auto;
+  }
+  .uiverse-login-box h2 {
+    font-size: 2.2em;
+    color: var(--primary, #0ef);
+    text-align: center;
+    margin-bottom: 32px;
+    font-weight: 700;
+  }
+  .uiverse-login-box form {
+    width: 100%;
+    padding: 0 10px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  .uiverse-login-box .input-box {
+    position: relative;
+    margin: 18px 0;
+    width: 100%;
+  }
+  .uiverse-login-box input {
+    width: 100%;
+    height: 56px;
+    background: transparent;
+    border: 3px solid var(--border, #2c4766);
+    outline: none;
+    border-radius: 32px;
+    font-size: 1.2em;
+    color: var(--text-primary, #23272f);
+    padding: 0 48px 0 20px;
+    transition: 0.5s ease;
+    font-weight: 500;
+  }
+  .uiverse-login-box input:focus {
+    border-color: var(--primary, #0ef);
+  }
+  .uiverse-login-box input[value]:not([value=""]) ~ label,
+  .uiverse-login-box input:focus ~ label {
+    top: -14px;
+    left: 18px;
+    font-size: 0.9em;
+    background: var(--bg-paper, #fff);
+    padding: 0 8px;
+    color: var(--primary, #0ef);
+  }
+  .uiverse-login-box label {
+    position: absolute;
+    top: 50%;
+    left: 24px;
+    transform: translateY(-50%);
+    font-size: 1.1em;
+    pointer-events: none;
+    transition: 0.5s ease;
+    color: var(--text-secondary, #2c4766);
+    font-weight: 500;
+    background: transparent;
+  }
+  .uiverse-login-box .toggle-password-btn {
+    position: absolute;
+    right: 18px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    font-size: 26px;
+    cursor: pointer;
+    color: var(--text-secondary, #2c4766);
+    opacity: 0.7;
+    transition: color 0.2s, opacity 0.2s;
+    z-index: 2;
+    padding: 0;
+    line-height: 1;
+  }
+  .uiverse-login-box .toggle-password-btn:hover,
+  .uiverse-login-box .toggle-password-btn.visible {
+    color: var(--primary, #0ef);
+    opacity: 1;
+  }
+  .uiverse-login-box .btn {
+    width: 100%;
+    height: 56px;
+    background: var(--btn-bg, #8ef6ff);
+    border: none;
+    outline: none;
+    border-radius: 32px;
+    cursor: pointer;
+    font-size: 1.2em;
+    color: var(--btn-text, #6a6a6a);
+    font-weight: 700;
+    margin-top: 24px;
+    margin-bottom: 10px;
+    transition: background 0.3s, box-shadow 0.3s, transform 0.3s;
+  }
+  .uiverse-login-box .btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+  .uiverse-login-box .btn:hover:not(:disabled) {
+    background: var(--primary, #0ef);
+    color: var(--bg-paper, #fff);
+    box-shadow: 0 4px 16px #0ef3;
+    transform: translateY(-2px) scale(1.01);
+  }
+  .uiverse-login-box .btn.google {
+    background: var(--bg-paper, #fff);
+    color: var(--text-primary, #23272f);
+    border: 1.5px solid var(--border, #e0e0e0);
+    box-shadow: 0 2px 8px #0ef1;
+  }
+  .uiverse-login-box .btn.google:hover {
+    background: var(--bg-default, #f5f8fa);
+    box-shadow: 0 4px 16px #0ef2;
+  }
+  .uiverse-login-box .btn.apple {
+    background: var(--text-primary, #23272f);
+    color: var(--bg-paper, #fff);
+    border: 1.5px solid var(--text-primary, #23272f);
+  }
+  .uiverse-login-box .btn.apple:hover {
+    background: var(--primary, #0ef);
+    color: var(--text-primary, #23272f);
+  }
+  // Dark theme overrides
+  [data-theme="dark"] .uiverse-login-root {
+    --bg-default: #181a20;
+    --bg-paper: #23272f;
+    --text-primary: #f5f8fa;
+    --text-secondary: #b0b0b0;
+    --border: #3a3f4b;
+    --primary: #0ef;
+    --btn-bg: #23272f;
+    --btn-text: #f5f8fa;
   }
 }
