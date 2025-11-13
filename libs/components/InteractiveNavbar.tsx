@@ -29,10 +29,8 @@ import LogoutIcon from "@mui/icons-material/Logout";
 import SendIcon from "@mui/icons-material/Send";
 import CloseFullscreenIcon from "@mui/icons-material/CloseFullscreen";
 import { Logout } from "@mui/icons-material";
-import Brightness4Icon from "@mui/icons-material/Brightness4";
 import AccountCircleOutlinedIcon from "@mui/icons-material/AccountCircleOutlined";
-import NotificationsOutlinedIcon from "@mui/icons-material/NotificationsOutlined";
-import { CaretDown } from "phosphor-react";
+import HomeIcon from "@mui/icons-material/Home";
 
 // Utilities
 import {
@@ -42,13 +40,10 @@ import {
 } from "./../sweetAlert";
 import { ThemeModeContext, ThemeMode } from "../../pages/_app";
 import { REACT_APP_API_URL } from "../config";
-import { getJwtToken, logOut, updateUserInfo } from "../auth";
+import { getJwtToken, updateUserInfo } from "../auth";
 import { Messages } from "../config";
 import { Member } from "../types/member/member";
 import { RippleBadge } from "../../scss/MaterialTheme/styled";
-
-// Icons continued
-import HomeIcon from "@mui/icons-material/Home";
 
 // Constants
 const NAV_ITEMS = [
@@ -288,7 +283,7 @@ const UserProfile = ({ user, roleLabel, onLogoutClick }: UserProfileProps) => {
               ? `${REACT_APP_API_URL}/${user.memberImage}`
               : "/img/profile/defaultUser.svg"
           }
-          alt="User profile"
+          alt={t("mypage.myProfile")}
           style={{
             width: "40px",
             height: "40px",
@@ -298,7 +293,9 @@ const UserProfile = ({ user, roleLabel, onLogoutClick }: UserProfileProps) => {
         />
       </span>
       <span className="label user-info-label">
-        <span className="user-name">{user?.memberNick || "User"}</span>
+        <span className="user-name">
+          {user?.memberNick || t("mypage.guest")}
+        </span>
         <span className="user-role">{roleLabel}</span>
       </span>
     </div>
@@ -339,8 +336,8 @@ const LanguageSelector = ({
       <div className="menu-item" onClick={handleOpenMenu}>
         <span className="icon">
           <img
-            src={`/img/flag/lang${currentLang}.png`}
-            alt="flag"
+            src={currentLanguage.flag}
+            alt={`${t(currentLanguage.label)} flag`}
             style={{ width: 24, height: 17, borderRadius: 2 }}
           />
         </span>
@@ -356,11 +353,13 @@ const LanguageSelector = ({
             key={language.code}
             disableRipple
             onClick={() => handleLanguageSelect(language.code)}
+            selected={language.code === currentLang}
           >
             <img
               className="img-flag"
               src={language.flag}
               alt={`${language.label} flag`}
+              style={{ marginRight: "8px", width: "20px", height: "14px" }}
             />
             {t(language.label)}
           </MenuItem>
@@ -485,6 +484,7 @@ const ChatButton = ({ isExpanded }: ChatButtonProps) => {
         <button
           className={`chat-button ${chatOpen ? "open" : ""}`}
           onClick={handleOpenChat}
+          aria-label="Toggle chat"
         >
           {chatOpen ? (
             <CloseFullscreenIcon style={{ color: "white" }} />
@@ -501,11 +501,11 @@ const ChatButton = ({ isExpanded }: ChatButtonProps) => {
               >
                 <path d="M881.1,720.5H434.7L173.3,941V720.5h-54.4C58.8,720.5,10,671.1,10,610.2v-441C10,108.4,58.8,59,118.9,59h762.2C941.2,59,990,108.4,990,169.3v441C990,671.1,941.2,720.5,881.1,720.5L881.1,720.5z M935.6,169.3c0-30.4-24.4-55.2-54.5-55.2H118.9c-30.1,0-54.5,24.7-54.5,55.2v441c0,30.4,24.4,55.1,54.5,55.1h54.4h54.4v110.3l163.3-110.2H500h381.1c30.1,0,54.5-24.7,54.5-55.1V169.3L935.6,169.3z M717.8,444.8c-30.1,0-54.4-24.7-54.4-55.1c0-30.4,24.3-55.2,54.4-55.2c30.1,0,54.5,24.7,54.5,55.2C772.2,420.2,747.8,444.8,717.8,444.8L717.8,444.8z M500,444.8c-30.1,0-54.4-24.7-54.4-55.1c0-30.4,24.3-55.2,54.4-55.2c30.1,0,54.4,24.7,54.4,55.2C554.4,420.2,530.1,444.8,500,444.8L500,444.8z M282.2,444.8c-30.1,0-54.5-24.7-54.5-55.1c0-30.4,24.4-55.2,54.5-55.2c30.1,0,54.4,24.7,54.4,55.2C336.7,420.2,312.3,444.8,282.2,444.8L282.2,444.8z"></path>
               </svg>
-              <span className="tooltip">Chat</span>
+              <span className="tooltip">{t("Community")}</span>
             </>
           )}
         </button>
-        {isExpanded && <span className="label">{t("Live Chat")}</span>}
+        {isExpanded && <span className="label">{t("Community")}</span>}
       </div>
 
       <Stack className={`chat-frame ${chatOpen ? "open" : ""}`}>
@@ -577,7 +577,11 @@ const ChatButton = ({ isExpanded }: ChatButtonProps) => {
             onChange={getInputMessageHandler}
             onKeyDown={getKeyHandler}
           />
-          <button className={"send-msg-btn"} onClick={onClickHandler}>
+          <button
+            className={"send-msg-btn"}
+            onClick={onClickHandler}
+            aria-label="Send message"
+          >
             <SendIcon style={{ color: "#fff" }} />
           </button>
         </Box>
@@ -613,7 +617,7 @@ const AuthSection = ({
           )}
         </span>
         <span className="label">
-          {isAuthenticated ? t("Logout") : t("Login")}
+          {isAuthenticated ? t("mypage.logout") : t("Login")}
         </span>
       </div>
     </Stack>
@@ -623,7 +627,7 @@ const AuthSection = ({
 // Main Component
 const InteractiveNavbar = () => {
   const user = useReactiveVar(userVar);
-  const { t } = useTranslation("common");
+  const { t, i18n } = useTranslation("common");
   const [isExpanded, setIsExpanded] = useState(false);
   const router = useRouter();
   const { mode, setMode } = useContext(ThemeModeContext);
@@ -633,6 +637,7 @@ const InteractiveNavbar = () => {
 
   const [mounted, setMounted] = useState(false);
   const [currentLang, setCurrentLang] = useState<string>(router.locale || "en");
+  const [isChangingLanguage, setIsChangingLanguage] = useState(false);
 
   const roleKey = (user?.memberType || "").toString().toLowerCase();
   const roleLabel =
@@ -653,13 +658,18 @@ const InteractiveNavbar = () => {
   }, []);
 
   useEffect(() => {
-    if (mounted && router.locale && router.locale !== currentLang) {
+    if (
+      mounted &&
+      router.locale &&
+      router.locale !== currentLang &&
+      !isChangingLanguage
+    ) {
       setCurrentLang(router.locale);
       if (typeof window !== "undefined") {
         localStorage.setItem("locale", router.locale);
       }
     }
-  }, [router.locale, mounted, currentLang]);
+  }, [router.locale, mounted, currentLang, isChangingLanguage]);
 
   const initializeLanguage = () => {
     if (typeof window !== "undefined") {
@@ -682,9 +692,7 @@ const InteractiveNavbar = () => {
 
   const handleLogout = async () => {
     try {
-      const result = await sweetConfirmAlert(
-        t("Are you sure you want to logout?")
-      );
+      const result = await sweetConfirmAlert(t("mypage.confirmLogout"));
       if (result) {
         localStorage.removeItem("accessToken");
 
@@ -709,12 +717,13 @@ const InteractiveNavbar = () => {
           memberBlocks: 0,
         });
 
-        await sweetTopSmallSuccessAlert(t("Logged out successfully!"), 1000);
+        await sweetTopSmallSuccessAlert(t("mypage.profileUpdated"), 1000);
         setLogoutAnchor(null);
         router.push("/");
       }
     } catch (err) {
       console.log("Logout error:", err);
+      sweetErrorAlert(t("common.errorLoading"));
     }
   };
 
@@ -723,12 +732,35 @@ const InteractiveNavbar = () => {
   };
 
   const handleLanguageChange = async (code: "en" | "kr" | "ru") => {
+    if (isChangingLanguage || code === currentLang) return;
+
     try {
+      setIsChangingLanguage(true);
       setCurrentLang(code);
+
+      // Save to localStorage
       localStorage.setItem("locale", code);
-      await router.push(router.asPath, router.asPath, { locale: code });
+
+      // Change i18n language
+      await i18n.changeLanguage(code);
+
+      // Navigate with new locale
+      await router.push(router.asPath, router.asPath, {
+        locale: code,
+        scroll: false,
+      });
+
+      // Update document metadata if needed
+      if (typeof document !== "undefined") {
+        document.documentElement.lang = code;
+      }
     } catch (error) {
       console.error("Language change error:", error);
+      sweetErrorAlert(t("common.errorLoading"));
+      // Revert on error
+      setCurrentLang(router.locale || "en");
+    } finally {
+      setIsChangingLanguage(false);
     }
   };
 
@@ -743,7 +775,11 @@ const InteractiveNavbar = () => {
       onMouseEnter={() => setIsExpanded(true)}
       onMouseLeave={() => setIsExpanded(false)}
     >
-      <button className="menu-toggle-btn" onClick={toggleNavbar}>
+      <button
+        className="menu-toggle-btn"
+        onClick={toggleNavbar}
+        aria-label="Toggle menu"
+      >
         <span className="icon">
           <svg viewBox="0 0 175 80" width="40" height="40">
             <rect width="80" height="15" fill="currentColor" rx="10"></rect>
@@ -763,7 +799,7 @@ const InteractiveNavbar = () => {
             ></rect>
           </svg>
         </span>
-        <span className="text"> MENU</span>
+        <span className="text">MENU</span>
       </button>
 
       <div className="menu-items">
@@ -787,7 +823,7 @@ const InteractiveNavbar = () => {
               fontSize="small"
               style={{ color: "blue", marginRight: "10px" }}
             />
-            {t("Logout")}
+            {t("mypage.logout")}
           </MenuItem>
         </Menu>
 
