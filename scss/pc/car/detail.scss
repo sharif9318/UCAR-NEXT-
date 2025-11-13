@@ -1544,6 +1544,7 @@
 
           .title-pagination-box {
             display: flex;
+            flex-direction: row;
             justify-content: space-between;
             align-items: flex-end;
             margin-bottom: 32px;
@@ -1552,7 +1553,10 @@
             flex-wrap: wrap;
             gap: 20px;
             position: relative;
-
+            .pagination-box {
+              display: flex;
+              flex-direction: row;
+            }
             &::after {
               content: "";
               position: absolute;

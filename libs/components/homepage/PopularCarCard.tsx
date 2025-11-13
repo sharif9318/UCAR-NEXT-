@@ -170,7 +170,6 @@ const PopularCarCard = (props: PopularCarCardProps) => {
           <div className={"options"}>
             <div>
               <TimerIcon />
-              {/* <img src="/img/icons/year.svg" alt="Year" /> */}
               <span>{car?.carYear || "N/A"} year</span>
             </div>
             <div>

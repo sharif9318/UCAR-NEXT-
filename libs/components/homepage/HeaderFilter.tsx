@@ -474,7 +474,7 @@ const HeaderFilter = (props: HeaderFilterProps) => {
               <div className={"middle"}>
                 <div className={"row-box"}>
                   <div className={"box"}>
-                    <span>yearseats</span>
+                    <span>Seats</span>
                     <div className={"inside"}>
                       <div
                         className={`seat ${
@@ -519,7 +519,7 @@ const HeaderFilter = (props: HeaderFilterProps) => {
                 </div>
                 <div className={"row-box"} style={{ marginTop: "44px" }}>
                   <div className={"box"}>
-                    <span>Year Built</span>
+                    <span>Model Year</span>
                     <div className={"inside space-between align-center"}>
                       <FormControl sx={{ width: "122px" }}>
                         <Select
@@ -566,7 +566,7 @@ const HeaderFilter = (props: HeaderFilterProps) => {
                     </div>
                   </div>
                   <div className={"box"}>
-                    <span>square meter</span>
+                    <span>Mileage</span>
                     <div className={"inside space-between align-center"}>
                       <FormControl sx={{ width: "122px" }}>
                         <Select

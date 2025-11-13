@@ -34,9 +34,9 @@ const PAGE_CONFIG: Record<
     bgImage: "/img/banner/carDetail.jpg",
   },
   "/agent": {
-    title: "Agents",
-    desc: "Home / For Lease",
-    bgImage: "/img/banner/agents.webp",
+    title: "Certified Auto Advisors  ",
+    desc: "Work with reliable agents who put your needs first.",
+    bgImage: "/img/banner/AgentPage.jpg",
   },
   "/agent/detail": {
     title: "Agent Page",

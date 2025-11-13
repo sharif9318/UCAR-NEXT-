@@ -266,8 +266,11 @@
     .agent-info {
       display: flex;
       flex-direction: column;
+      color: var(--text-primary);
+
       strong {
-        color: #181a20;
+        color: var(--text-primary) !important;
+
         font-family: $font;
         font-size: 15px;
         font-style: normal;
@@ -276,7 +279,7 @@
         cursor: pointer;
       }
       span {
-        color: #181a20;
+        color: var(--text-primary) !important;
         font-family: $font;
         font-size: 15px;
         font-style: normal;
