@@ -209,7 +209,7 @@ const Filter = (props: FilterType) => {
   ]);
   const [mileageRange, setMileageRange] = useState<number[]>([
     searchFilter?.search?.mileageRange?.start ?? 0,
-    searchFilter?.search?.mileageRange?.end ?? 500,
+    searchFilter?.search?.mileageRange?.end ?? 500000,
   ]);
 
   useEffect(() => {
@@ -421,7 +421,7 @@ const Filter = (props: FilterType) => {
     try {
       setSearchText("");
       setPriceRange([0, 200000]);
-      setMileageRange([0, 500]);
+      setMileageRange([0, 500000]);
       await router.push(
         `/car?input=${JSON.stringify(initialInput)}`,
         `/car?input=${JSON.stringify(initialInput)}`,
@@ -611,20 +611,20 @@ const Filter = (props: FilterType) => {
               onChangeCommitted={handleMileageCommit}
               valueLabelDisplay="auto"
               min={0}
-              max={500}
-              step={10}
-              valueLabelFormat={(value) => `${value}k km`}
+              max={500000}
+              step={10000}
+              valueLabelFormat={(value) => `${(value / 1000).toFixed(0)}k km`}
             />
             <Stack direction="row" justifyContent="space-between" mt={0.5}>
               <Typography
                 sx={{ fontSize: "10px", color: "rgba(229, 9, 20, 0.7)" }}
               >
-                {mileageRange[0]}k km
+                {(mileageRange[0] / 1000).toFixed(0)}k km
               </Typography>
               <Typography
                 sx={{ fontSize: "10px", color: "rgba(229, 9, 20, 0.7)" }}
               >
-                {mileageRange[1]}k km
+                {(mileageRange[1] / 1000).toFixed(0)}k km
               </Typography>
             </Stack>
           </Box>

@@ -1,4 +1,3 @@
-// index.tsx - Updated with reordered layout and theme-aware sorting panel
 import React, {
   ChangeEvent,
   MouseEvent,
@@ -253,7 +252,6 @@ const CarList: NextPage = ({ initialInput, ...props }: any) => {
             }),
           }}
         >
-          {/* Sorting Panel - Top Right */}
           <Box component={"div"} className={"right"}>
             <Box className="sorting-panel">
               <ToggleButtonGroup

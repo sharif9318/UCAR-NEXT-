@@ -12,6 +12,11 @@ import { userVar } from "../../../apollo/store";
 import IconButton from "@mui/material/IconButton";
 import RemoveRedEyeIcon from "@mui/icons-material/RemoveRedEye";
 import { useTranslation } from "react-i18next";
+import {
+  Speed,
+  EventSeat as EventSeatIcon,
+  AccessTime,
+} from "@mui/icons-material";
 
 interface CarCardType {
   car: Car;
@@ -82,13 +87,13 @@ const CarCard = memo((props: CarCardType) => {
               }}
             />
           </Link>
-          {isTopCar && (
+          {isTopCar && car?.carRank > topCarRank && (
             <Box component={"div"} className={"top-badge"}>
               <img src="/img/icons/electricity.svg" alt="Top car badge" />
               <Typography>TOP</Typography>
             </Box>
           )}
-          {car?.car360Images?.length ? (
+          {/* {car?.car360Images?.length ? (
             <Box
               component={"div"}
               className={"car360-badge"}
@@ -110,7 +115,7 @@ const CarCard = memo((props: CarCardType) => {
                 360° ({car.car360Images.length})
               </Typography>
             </Box>
-          ) : null}
+          ) : null} */}
           <Box component={"div"} className={"price-box"}>
             <Typography>${formatterStr(car?.carPrice)}</Typography>
           </Box>
@@ -135,19 +140,19 @@ const CarCard = memo((props: CarCardType) => {
           </Stack>
           <Stack className="options">
             <Stack className="option">
-              <img src="/img/icons/year.svg" alt="" />{" "}
+              <AccessTime sx={{ fontSize: 18 }} />{" "}
               <Typography>
                 {car.carYear} {t("car.year")}
               </Typography>
             </Stack>
             <Stack className="option">
-              <img src="/img/icons/seat.svg" alt="" />{" "}
+              <EventSeatIcon sx={{ fontSize: 18 }} />{" "}
               <Typography>
                 {car.carSeats} {t("car.seats")}
               </Typography>
             </Stack>
             <Stack className="option">
-              <img src="/img/icons/mileage.svg" alt="" />{" "}
+              <Speed sx={{ fontSize: 18 }} />{" "}
               <Typography>
                 {car.carMileage} {t("car.km")}
               </Typography>
@@ -181,7 +186,7 @@ const CarCard = memo((props: CarCardType) => {
                   disabled={!handleLikeClick}
                 >
                   {isLiked ? (
-                    <FavoriteIcon color="primary" />
+                    <FavoriteIcon color="red" />
                   ) : (
                     <FavoriteBorderIcon />
                   )}
