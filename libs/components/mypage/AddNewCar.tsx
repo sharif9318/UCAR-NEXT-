@@ -44,7 +44,7 @@ const AddNewCar = ({ initialValues, ...props }: any) => {
   const [isUploadingPng, setIsUploadingPng] = useState(false);
   const [isUploadingBackground, setIsUploadingBackground] = useState(false);
 
-  // Global drag event handlers to prevent default browser behavior
+  /** LIFECYCLES **/
   useEffect(() => {
     const handleGlobalDragOver = (e: DragEvent) => {
       e.preventDefault();
