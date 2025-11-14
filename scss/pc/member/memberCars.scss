@@ -5,7 +5,7 @@
       max-width: 1200px;
       margin: 0 auto;
       padding: 40px 20px;
-
+      background: var(--bg-default);
       .main-title-box {
         width: 100%;
         display: flex;
@@ -18,7 +18,7 @@
 
         .right-box {
           .main-title {
-            color: #181a20;
+            color: var(--text-primary);
             font-family: $font;
             font-size: 36px;
             font-weight: 700;
@@ -47,7 +47,7 @@
         width: 100%;
 
         .list-box {
-          background: #ffffff;
+          background: var(--bg-default);
           border-radius: 16px;
           box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
           overflow: hidden;

@@ -2,6 +2,7 @@
   #community-list-page {
     position: relative;
     .container {
+      background-color: none;
       padding-top: 100px;
       flex-direction: column;
       gap: 64px;
@@ -17,7 +18,7 @@
           margin-bottom: 50px;
           border-radius: 12px;
           border: 1px solid #343a46;
-          background: var(--bg-paper);
+          background: none;
           box-shadow: 0 0 0 1px rgba(229, 9, 20, 0.06) inset,
             0 6px 18px rgba(0, 0, 0, 0.4);
           .image-info {

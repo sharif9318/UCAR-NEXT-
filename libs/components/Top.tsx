@@ -15,7 +15,6 @@ interface TopProps {
   trendingCar?: Car;
 }
 
-// Extracted Mobile Navigation Component
 const MobileNavigation: React.FC = () => {
   const { t } = useTranslation("common");
 
@@ -38,7 +37,6 @@ const MobileNavigation: React.FC = () => {
   );
 };
 
-// Extracted Car Details Component
 interface CarDetailsProps {
   car: Car;
   onNavigate: (carId: string) => void;
@@ -56,11 +54,35 @@ const CarDetails: React.FC<CarDetailsProps> = ({ car, onNavigate }) => {
     },
   ];
 
+  const handleClick = (e: React.MouseEvent) => {
+    console.log("CarDetails clicked!", car._id);
+    e.preventDefault();
+    e.stopPropagation();
+
+    if (car._id) {
+      onNavigate(car._id);
+    } else {
+      console.error("Car _id is missing:", car);
+    }
+  };
+
   return (
     <Box
-      onClick={() => car._id && onNavigate(car._id)}
+      onClick={handleClick}
+      onMouseDown={(e) => console.log("Mouse down on CarDetails")}
       suppressHydrationWarning
-      sx={{ cursor: "pointer" }}
+      sx={{
+        cursor: "pointer",
+        transition: "all 0.3s ease",
+        "&:hover": {
+          opacity: 0.9,
+          transform: "scale(1.02)",
+        },
+        // Ensure the box captures clicks
+        position: "relative",
+        zIndex: "10001 !important",
+        userSelect: "none",
+      }}
     >
       <Box
         className="car-tag"
@@ -114,7 +136,6 @@ const CarDetails: React.FC<CarDetailsProps> = ({ car, onNavigate }) => {
   );
 };
 
-// Extracted Hero Content Component
 interface HeroContentProps {
   isVisible: boolean;
   isMounted: boolean;
@@ -127,7 +148,7 @@ const HeroContent: React.FC<HeroContentProps> = ({ isVisible, isMounted }) => {
     <Box
       className={`motto-box ${isVisible ? "" : "hidden"}`}
       sx={{
-        pointerEvents: "auto",
+        pointerEvents: isVisible ? "auto" : "none",
         visibility: isMounted ? "visible" : "hidden",
       }}
       suppressHydrationWarning
@@ -167,7 +188,6 @@ const HeroContent: React.FC<HeroContentProps> = ({ isVisible, isMounted }) => {
   );
 };
 
-// Main Component
 const Top: React.FC<TopProps> = ({ trendingCar }) => {
   const device = useDeviceDetect();
   const router = useRouter();
@@ -178,7 +198,6 @@ const Top: React.FC<TopProps> = ({ trendingCar }) => {
   const [showCarInfo, setShowCarInfo] = useState(false);
   const [mounted, setMounted] = useState(false);
 
-  // Utility function to get video source
   const getVideoSource = (): string => {
     if (trendingCar?.carVideos?.length) {
       return `${REACT_APP_API_URL}/${trendingCar.carVideos[0]}`;
@@ -186,33 +205,53 @@ const Top: React.FC<TopProps> = ({ trendingCar }) => {
     return "/img/video/default-car.mp4";
   };
 
-  // Navigation handler
-  const pushDetailHandler = async (carId: string) => {
-    await router.push({
-      pathname: "/car/detail",
-      query: { id: carId },
-    });
+  const pushDetailHandler = (carId: string) => {
+    console.log("pushDetailHandler called with:", carId);
+
+    if (!carId) {
+      return;
+    }
+
+    router
+      .push({
+        pathname: "/car/detail",
+        query: { id: carId },
+      })
+      .then(() => {})
+      .catch((error) => {});
   };
 
-  // Mount effect
   useEffect(() => {
     setMounted(true);
-  }, []);
 
-  // Route change effect
+    if (trendingCar) {
+      setTimeout(() => {
+        const overlay = document.querySelector(".car-info-overlay");
+        if (overlay) {
+          console.log("Car overlay element:", overlay);
+          console.log(
+            "Car overlay computed z-index:",
+            window.getComputedStyle(overlay).zIndex
+          );
+          console.log(
+            "Car overlay pointer-events:",
+            window.getComputedStyle(overlay).pointerEvents
+          );
+        }
+      }, 1000);
+    }
+  }, [trendingCar]);
+
   useEffect(() => {
     setBgColor(router.pathname === "/car/detail");
   }, [router.pathname]);
 
-  // Video management effect
   useEffect(() => {
     const videoElement = videoRef.current;
     if (!videoElement) return;
 
     const handleCanPlay = () => {
-      videoElement.play().catch(() => {
-        // Video autoplay blocked by browser - expected behavior
-      });
+      videoElement.play().catch(() => {});
     };
 
     videoElement.addEventListener("canplay", handleCanPlay);
@@ -223,7 +262,6 @@ const Top: React.FC<TopProps> = ({ trendingCar }) => {
     };
   }, [trendingCar]);
 
-  // Scroll effect
   useEffect(() => {
     const handleScroll = () => {
       setColorChange(window.scrollY >= 50);
@@ -233,18 +271,21 @@ const Top: React.FC<TopProps> = ({ trendingCar }) => {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  // Mobile view
   if (device === "mobile") {
     return <MobileNavigation />;
   }
 
-  // Desktop view
   return (
-    <Stack className="navbar">
+    <Stack className="navbar" sx={{ position: "relative", zIndex: 1 }}>
       <Box
         className="video-background"
         onMouseEnter={() => setShowCarInfo(true)}
         onMouseLeave={() => setShowCarInfo(false)}
+        sx={{
+          position: "relative",
+          width: "100%",
+          height: "100%",
+        }}
       >
         <video
           ref={videoRef}
@@ -256,25 +297,29 @@ const Top: React.FC<TopProps> = ({ trendingCar }) => {
         >
           <source src={getVideoSource()} type="video/mp4" />
         </video>
-        <div className="video-overlay" />
+        <div className="video-overlay" style={{ pointerEvents: "none" }} />
 
-        {trendingCar && (
+        {trendingCar && trendingCar._id && (
           <Box
+            key={trendingCar._id}
             className={`car-info-overlay ${showCarInfo ? "visible" : ""}`}
+            onClick={(e) => {
+              e.stopPropagation();
+            }}
             sx={{
-              position: "absolute",
-              bottom: "40px",
-              left: "40px",
+              position: "absolute !important",
+              bottom: "40px !important",
+              left: "40px !important",
               maxWidth: "500px",
               color: "white",
-              zIndex: 15,
-              pointerEvents: "auto",
+              zIndex: "10000 !important",
+              pointerEvents: "auto !important",
               visibility: mounted ? "visible" : "hidden",
+              opacity: showCarInfo ? 1 : 0,
+              transition: "opacity 0.3s ease",
             }}
           >
-            {trendingCar && (
-              <CarDetails car={trendingCar} onNavigate={pushDetailHandler} />
-            )}
+            <CarDetails car={trendingCar} onNavigate={pushDetailHandler} />
           </Box>
         )}
       </Box>
@@ -283,7 +328,7 @@ const Top: React.FC<TopProps> = ({ trendingCar }) => {
         className={`navbar-main ${
           colorChange || bgColor ? "transpalease" : ""
         }`}
-        sx={{ pointerEvents: "none" }}
+        sx={{ pointerEvents: "none", position: "relative", zIndex: 1 }}
       >
         <Stack className="container" sx={{ pointerEvents: "auto" }}>
           <Box component="div" className="logo-box">
