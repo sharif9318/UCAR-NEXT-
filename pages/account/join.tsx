@@ -7,6 +7,7 @@ import { logIn, signUp } from "../../libs/auth";
 import { sweetMixinErrorAlert } from "../../libs/sweetAlert";
 import { serverSideTranslations } from "next-i18next/serverSideTranslations";
 import withI18n from "../../libs/i18n/withI18n";
+import { BriefcaseBusinessIcon } from "lucide-react";
 
 export const getStaticProps = async ({ locale }: any) => ({
   props: {
@@ -219,7 +220,7 @@ const Join: NextPage = () => {
                       onChange={() => handleInput("type", "USER")}
                     />
                     <label htmlFor="switch-opt-1" className="switch-button">
-                      <HomeIcon />
+                      <AgentIcon />
                       <span>User</span>
                     </label>
 
@@ -231,7 +232,7 @@ const Join: NextPage = () => {
                       onChange={() => handleInput("type", "AGENT")}
                     />
                     <label htmlFor="switch-opt-2" className="switch-button">
-                      <AgentIcon />
+                      <BriefcaseBusinessIcon />
                       <span>Agent</span>
                     </label>
 

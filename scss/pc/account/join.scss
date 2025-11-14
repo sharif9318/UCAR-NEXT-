@@ -19,10 +19,11 @@
   // Animation container
   .uiverse-animation-container {
     position: absolute;
+    align-self: center;
     width: 850px;
     height: 850px;
     top: 50%;
-    left: 50%;
+    left: 35%;
     transform: translate(-50%, -50%);
     pointer-events: none;
     z-index: 0;
@@ -34,11 +35,11 @@
 
     span {
       position: absolute;
-      left: 50%;
+
       top: 50%;
       width: 40px;
       height: 10px;
-      background: #2c4766;
+      background: #940404;
       border-radius: 80px;
       transform-origin: 425px;
       transform: translate(-50%, -50%) rotate(calc(var(--i) * (360deg / 50)));
@@ -50,10 +51,10 @@
   // Animations
   @keyframes uiverse-blink {
     0% {
-      background: #0ef;
+      background: rgb(234, 45, 45);
     }
     25% {
-      background: #2c4766;
+      background: #f05277;
     }
   }
 
@@ -81,7 +82,7 @@
   .uiverse-login-box {
     position: relative;
     width: 480px;
-    max-width: 90vw;
+    max-width: 70vw;
     z-index: 10;
     padding: 48px 40px 40px;
     border-radius: 24px;
@@ -95,7 +96,7 @@
     h2 {
       font-size: 2.5em;
       font-weight: 700;
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      background: linear-gradient(135deg, #ed0d0d 0%, #e15252 100%);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
       background-clip: text;
@@ -141,7 +142,7 @@
           font-size: 0.9em;
           background: var(--bg-paper);
           padding: 0 8px;
-          color: var(--primary, #0ef);
+          color: #f13636;
         }
       }
 
@@ -153,7 +154,7 @@
         font-size: 1.1em;
         pointer-events: none;
         transition: all 0.5s ease;
-        color: var(--text-secondary, #2c4766);
+        color: var(--text-secondary);
         font-weight: 500;
         background: transparent;
       }
@@ -189,7 +190,7 @@
 
       a {
         font-size: 0.875rem;
-        color: #667eea;
+        color: #e43740;
         text-decoration: none;
         font-weight: 500;
         cursor: pointer;
@@ -203,6 +204,7 @@
 
     .type-option {
       width: 100%;
+      height: fit-content;
       margin: 20px 0 0;
       padding: 0;
       background: transparent;
@@ -221,7 +223,7 @@
     .btn {
       width: 100%;
       height: 56px;
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      background: linear-gradient(135deg, #e22525 0%, #ee3235 100%);
       border: none;
       outline: none;
       border-radius: 32px;
@@ -257,6 +259,7 @@
         font-weight: 600;
         margin: 0;
         height: 48px;
+        border-color: var(--border);
 
         &:hover {
           border-color: #667eea;
@@ -266,8 +269,8 @@
       }
 
       &.apple {
-        background: #1f2937;
-        color: white;
+        background: none;
+        color: var(--text-primary);
         border: 2px solid #1f2937;
         display: flex;
         align-items: center;
@@ -277,9 +280,16 @@
         font-weight: 600;
         margin: 0;
         height: 48px;
+        border-color: var(--border);
+        svg {
+          fill: var(--text-primary);
+          path {
+            fill: var(--text-primary);
+          }
+        }
 
         &:hover {
-          background: #374151;
+          border-color: #667eea;
           transform: translateY(-2px);
           box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
         }
@@ -288,13 +298,13 @@
 
     .switch-view {
       text-align: center;
-      color: #6b7280;
+      color: #e45868;
       font-size: 0.875rem;
       margin-top: 16px;
       margin-bottom: 24px;
 
       span {
-        color: #667eea;
+        color: #fb3b3e;
         font-weight: 700;
         cursor: pointer;
         text-decoration: underline;
@@ -344,9 +354,9 @@
     --card-height: 100px;
     --switch-bg: rgba(243, 244, 246, 0.8);
     --switch-border-color: #e5e7eb;
-    --text-color: #667eea;
-    --inactive-text-color: #9ca3af;
-    --card-bg: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    --text-color: #f3eeee;
+    --inactive-text-color: #202020;
+    --card-bg: linear-gradient(135deg, #eb3636 0%, #ee656e 100%);
     --highlight-color: #64ffda;
 
     display: flex;
@@ -477,17 +487,17 @@
   // Dark theme overrides
   [data-theme="dark"] {
     .join-page {
-      --bg-default: #181a20;
-      --bg-paper: #23272f;
+      --bg-default: #aa1818;
+      --bg-paper: #a03345;
       --text-primary: #f5f8fa;
       --text-secondary: #b0b0b0;
-      --border: #3a3f4b;
-      --primary: #0ef;
+      --border: #a12437;
+      --primary: rgb(241, 91, 101);
     }
 
     .flip-switch-container {
-      --switch-bg: rgba(35, 39, 47, 0.8);
-      --switch-border-color: #3a3f4b;
+      --switch-bg: rgba(223, 61, 61, 0.8);
+      --switch-border-color: #f04242;
     }
   }
 }
