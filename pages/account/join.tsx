@@ -209,14 +209,30 @@ const Join: NextPage = () => {
             {loginView ? (
               <>
                 Don't have an account?{" "}
-                <span className="span" onClick={() => viewChangeHandler(false)}>
+                <span
+                  className="span"
+                  style={{
+                    cursor: "pointer",
+                    color: "red",
+                    fontWeight: "bold",
+                  }}
+                  onClick={() => viewChangeHandler(false)}
+                >
                   Sign Up
                 </span>
               </>
             ) : (
               <>
                 Already have an account?{" "}
-                <span className="span" onClick={() => viewChangeHandler(true)}>
+                <span
+                  className="span"
+                  style={{
+                    cursor: "pointer",
+                    color: "red",
+                    fontWeight: "bold",
+                  }}
+                  onClick={() => viewChangeHandler(true)}
+                >
                   Login
                 </span>
               </>

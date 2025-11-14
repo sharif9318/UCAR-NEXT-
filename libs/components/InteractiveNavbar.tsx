@@ -1,15 +1,5 @@
 import { useReactiveVar } from "@apollo/client";
-import {
-  Box,
-  Link,
-  Button,
-  Stack,
-  Menu,
-  MenuItem,
-  MenuProps,
-  Typography,
-  Avatar,
-} from "@mui/material";
+import { Box, Link, Stack, Menu, MenuItem, Avatar } from "@mui/material";
 import { userVar, socketVar } from "../../apollo/store";
 import { useEffect, useState, useContext, useCallback, useRef } from "react";
 import { useTranslation } from "next-i18next";
@@ -17,8 +7,9 @@ import { useRouter } from "next/router";
 import { styled, alpha } from "@mui/material/styles";
 import React from "react";
 import ScrollableFeed from "react-scrollable-feed";
+import { useMutation } from "@apollo/client";
+import { LOGIN } from "../../apollo/user/mutation";
 
-// Icons
 import DirectionsCarIcon from "@mui/icons-material/DirectionsCar";
 import PeopleIcon from "@mui/icons-material/People";
 import ForumIcon from "@mui/icons-material/Forum";
@@ -32,7 +23,6 @@ import { Logout } from "@mui/icons-material";
 import AccountCircleOutlinedIcon from "@mui/icons-material/AccountCircleOutlined";
 import HomeIcon from "@mui/icons-material/Home";
 
-// Utilities
 import {
   sweetConfirmAlert,
   sweetTopSmallSuccessAlert,
@@ -44,8 +34,9 @@ import { getJwtToken, updateUserInfo } from "../auth";
 import { Messages } from "../config";
 import { Member } from "../types/member/member";
 import { RippleBadge } from "../../scss/MaterialTheme/styled";
+import AuthPopup from "./AuthPopup";
+import { CustomJwtPayload } from "../types/customJwtPayload";
 
-// Constants
 const NAV_ITEMS = [
   { href: "/", icon: HomeIcon, label: "Home" },
   { href: "/car", icon: DirectionsCarIcon, label: "Cars" },
@@ -70,7 +61,6 @@ const LANGUAGES = [
   { code: "ru" as const, label: "Russian", flag: "/img/flag/langru.png" },
 ];
 
-// Types
 interface MessagePayload {
   event: string;
   text: string;
@@ -84,7 +74,6 @@ interface InfoPayload {
   action: string;
 }
 
-// Styled Components
 const StyledWrapper = styled("div")<{ $themeMode?: ThemeMode }>`
   .glass-radio-group {
     --bg: ${({ $themeMode }) =>
@@ -175,14 +164,7 @@ const StyledWrapper = styled("div")<{ $themeMode?: ThemeMode }>`
   }
 `;
 
-const StyledMenu = styled((props: MenuProps) => (
-  <Menu
-    elevation={0}
-    anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
-    transformOrigin={{ vertical: "top", horizontal: "right" }}
-    {...props}
-  />
-))(({ theme }) => ({
+const StyledMenu = styled(Menu)(({ theme }) => ({
   "& .MuiPaper-root": {
     borderRadius: 6,
     marginTop: theme.spacing(0.5),
@@ -210,7 +192,6 @@ const StyledMenu = styled((props: MenuProps) => (
   },
 }));
 
-// Components
 interface RadioProps {
   mode: ThemeMode;
   setMode: (m: ThemeMode) => void;
@@ -254,23 +235,30 @@ interface UserProfileProps {
   user: any;
   roleLabel: string;
   onLogoutClick: (event: React.MouseEvent<HTMLElement>) => void;
+  onLoginClick?: () => void;
 }
 
-const UserProfile = ({ user, roleLabel, onLogoutClick }: UserProfileProps) => {
+const UserProfile = ({
+  user,
+  roleLabel,
+  onLogoutClick,
+  onLoginClick,
+}: UserProfileProps) => {
   const { t } = useTranslation("common");
 
   if (!user?._id) {
     return (
-      <Link href={"/account/join"}>
-        <div className="user-profile-item">
-          <span className="icon">
-            <AccountCircleOutlinedIcon sx={{ fontSize: 32 }} />
-          </span>
-          <span className="label">
-            {t("Login")} / {t("Register")}
-          </span>
-        </div>
-      </Link>
+      <div
+        className="user-profile-item user-profile-login"
+        onClick={onLoginClick}
+      >
+        <span className="icon">
+          <AccountCircleOutlinedIcon sx={{ fontSize: 32 }} />
+        </span>
+        <span className="label">
+          {t("Login")} / {t("Register")}
+        </span>
+      </div>
     );
   }
 
@@ -624,20 +612,19 @@ const AuthSection = ({
   );
 };
 
-// Main Component
 const InteractiveNavbar = () => {
   const user = useReactiveVar(userVar);
   const { t, i18n } = useTranslation("common");
   const [isExpanded, setIsExpanded] = useState(false);
   const router = useRouter();
   const { mode, setMode } = useContext(ThemeModeContext);
-
+  const [memberLogin] = useMutation(LOGIN);
   const [logoutAnchor, setLogoutAnchor] = useState<null | HTMLElement>(null);
   const logoutOpen = Boolean(logoutAnchor);
-
   const [mounted, setMounted] = useState(false);
   const [currentLang, setCurrentLang] = useState<string>(router.locale || "en");
   const [isChangingLanguage, setIsChangingLanguage] = useState(false);
+  const [authPopupOpen, setAuthPopupOpen] = useState(false);
 
   const roleKey = (user?.memberType || "").toString().toLowerCase();
   const roleLabel =
@@ -728,7 +715,60 @@ const InteractiveNavbar = () => {
   };
 
   const handleLogin = () => {
-    router.push("/account/join");
+    setAuthPopupOpen(true);
+  };
+
+  const handleAuthPopupLogin = async (nick: string, password: string) => {
+    try {
+      const result = await memberLogin({
+        variables: {
+          input: {
+            memberNick: nick,
+            memberPassword: password,
+          },
+        },
+      });
+
+      if (result.data?.login) {
+        const loginData = result.data.login;
+
+        if (loginData.accessToken) {
+          localStorage.setItem("accessToken", loginData.accessToken);
+        }
+
+        const userData: CustomJwtPayload = {
+          _id: loginData._id || "",
+          memberType: loginData.memberType || "",
+          memberStatus: loginData.memberStatus || "",
+          memberAuthType: loginData.memberAuthType || "",
+          memberPhone: loginData.memberPhone || "",
+          memberNick: loginData.memberNick || "",
+          memberFullName: loginData.memberFullName || "",
+          memberImage: loginData.memberImage || "",
+          memberAddress: loginData.memberAddress || "",
+          memberDesc: loginData.memberDesc || "",
+          memberCars: loginData.memberCars || 0,
+          memberRank: loginData.memberRank || 0,
+          memberArticles: loginData.memberArticles || 0,
+          memberPoints: loginData.memberPoints || 0,
+          memberLikes: loginData.memberLikes || 0,
+          memberViews: loginData.memberViews || 0,
+          memberWarnings: loginData.memberWarnings || 0,
+          memberBlocks: loginData.memberBlocks || 0,
+        };
+
+        userVar(userData);
+        await sweetTopSmallSuccessAlert(t("Login successful"), 1000);
+        setAuthPopupOpen(false);
+        await router.push(router.asPath, undefined, { shallow: true });
+      }
+    } catch (err: any) {
+      console.error("Login error:", err);
+      sweetErrorAlert(
+        err.message || t("Login failed. Please check your credentials.")
+      );
+      throw err;
+    }
   };
 
   const handleLanguageChange = async (code: "en" | "kr" | "ru") => {
@@ -737,27 +777,19 @@ const InteractiveNavbar = () => {
     try {
       setIsChangingLanguage(true);
       setCurrentLang(code);
-
-      // Save to localStorage
       localStorage.setItem("locale", code);
-
-      // Change i18n language
       await i18n.changeLanguage(code);
-
-      // Navigate with new locale
       await router.push(router.asPath, router.asPath, {
         locale: code,
         scroll: false,
       });
 
-      // Update document metadata if needed
       if (typeof document !== "undefined") {
         document.documentElement.lang = code;
       }
     } catch (error) {
       console.error("Language change error:", error);
       sweetErrorAlert(t("common.errorLoading"));
-      // Revert on error
       setCurrentLang(router.locale || "en");
     } finally {
       setIsChangingLanguage(false);
@@ -769,94 +801,104 @@ const InteractiveNavbar = () => {
   };
 
   return (
-    <Box
-      component={"div"}
-      className={`InteractiveNavbar ${isExpanded ? "expanded" : "collapsed"}`}
-      onMouseEnter={() => setIsExpanded(true)}
-      onMouseLeave={() => setIsExpanded(false)}
-    >
-      <button
-        className="menu-toggle-btn"
-        onClick={toggleNavbar}
-        aria-label="Toggle menu"
+    <>
+      {authPopupOpen && (
+        <AuthPopup
+          open={authPopupOpen}
+          onClose={() => setAuthPopupOpen(false)}
+          onLogin={handleAuthPopupLogin}
+        />
+      )}
+
+      <Box
+        component={"div"}
+        className={`InteractiveNavbar ${isExpanded ? "expanded" : "collapsed"}`}
+        onMouseEnter={() => setIsExpanded(true)}
+        onMouseLeave={() => setIsExpanded(false)}
       >
-        <span className="icon">
-          <svg viewBox="0 0 175 80" width="40" height="40">
-            <rect width="80" height="15" fill="currentColor" rx="10"></rect>
-            <rect
-              y="30"
-              width="80"
-              height="15"
-              fill="currentColor"
-              rx="10"
-            ></rect>
-            <rect
-              y="60"
-              width="80"
-              height="15"
-              fill="currentColor"
-              rx="10"
-            ></rect>
-          </svg>
-        </span>
-        <span className="text">MENU</span>
-      </button>
-
-      <div className="menu-items">
-        <Box component={"div"} className={"user-section"}>
-          <UserProfile
-            user={user}
-            roleLabel={roleLabel}
-            onLogoutClick={handleLogoutClick}
-          />
-        </Box>
-
-        <Menu
-          id="logout-menu"
-          anchorEl={logoutAnchor}
-          open={logoutOpen}
-          onClose={() => setLogoutAnchor(null)}
-          sx={{ mt: "5px" }}
+        <button
+          className="menu-toggle-btn"
+          onClick={toggleNavbar}
+          aria-label="Toggle menu"
         >
-          <MenuItem onClick={handleLogout}>
-            <Logout
-              fontSize="small"
-              style={{ color: "blue", marginRight: "10px" }}
+          <span className="icon">
+            <svg viewBox="0 0 175 80" width="40" height="40">
+              <rect width="80" height="15" fill="currentColor" rx="10"></rect>
+              <rect
+                y="30"
+                width="80"
+                height="15"
+                fill="currentColor"
+                rx="10"
+              ></rect>
+              <rect
+                y="60"
+                width="80"
+                height="15"
+                fill="currentColor"
+                rx="10"
+              ></rect>
+            </svg>
+          </span>
+          <span className="text">MENU</span>
+        </button>
+
+        <div className="menu-items">
+          <Box component={"div"} className={"user-section"}>
+            <UserProfile
+              user={user}
+              roleLabel={roleLabel}
+              onLogoutClick={handleLogoutClick}
+              onLoginClick={handleLogin}
             />
-            {t("mypage.logout")}
-          </MenuItem>
-        </Menu>
+          </Box>
 
-        {NAV_ITEMS.map((item) => (
-          <NavigationItem
-            key={item.href}
-            href={item.href}
-            icon={item.icon}
-            label={item.label}
-            requiresAuth={item.requiresAuth}
-            user={user}
+          <Menu
+            id="logout-menu"
+            anchorEl={logoutAnchor}
+            open={logoutOpen}
+            onClose={() => setLogoutAnchor(null)}
+            sx={{ mt: "5px" }}
+          >
+            <MenuItem onClick={handleLogout}>
+              <Logout
+                fontSize="small"
+                style={{ color: "blue", marginRight: "10px" }}
+              />
+              {t("mypage.logout")}
+            </MenuItem>
+          </Menu>
+
+          {NAV_ITEMS.map((item) => (
+            <NavigationItem
+              key={item.href}
+              href={item.href}
+              icon={item.icon}
+              label={item.label}
+              requiresAuth={item.requiresAuth}
+              user={user}
+            />
+          ))}
+
+          <div className="theme-toggle">
+            <ThemeRadio mode={mode} setMode={setMode} />
+          </div>
+
+          <LanguageSelector
+            currentLang={currentLang}
+            onLanguageChange={handleLanguageChange}
           />
-        ))}
 
-        <div className="theme-toggle">
-          <ThemeRadio mode={mode} setMode={setMode} />
+          <ChatButton isExpanded={isExpanded} />
+
+          <AuthSection
+            isAuthenticated={!!user?._id}
+            onLogin={handleLogin}
+            onLogout={handleLogout}
+          />
         </div>
-
-        <LanguageSelector
-          currentLang={currentLang}
-          onLanguageChange={handleLanguageChange}
-        />
-
-        {/* Chat Button - Above Authentication */}
-        <ChatButton isExpanded={isExpanded} />
-
-        <AuthSection
-          isAuthenticated={!!user?._id}
-          onLogin={handleLogin}
-          onLogout={handleLogout}
-        />
-      </div>
-    </Box>
+      </Box>
+    </>
   );
 };
 

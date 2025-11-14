@@ -75,8 +75,6 @@ const PopularCarCard = (props: PopularCarCardProps) => {
     (car?.carPngImage
       ? `${REACT_APP_API_URL}/${car.carPngImage}`
       : "/img/car/sampleCar.png");
-  console.log("carForeground:", carForeground);
-  console.log("backgroundScene:", backgroundScene);
 
   if (device === "mobile") {
     return (

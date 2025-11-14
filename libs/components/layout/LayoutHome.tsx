@@ -20,7 +20,6 @@ const withLayoutMain = (Component: any) => {
     const user = useReactiveVar(userVar);
     const [trendingCar, setTrendingCar] = useState<Car | undefined>();
 
-    /** LIFECYCLES **/
     useEffect(() => {
       const jwt = getJwtToken();
       if (jwt) updateUserInfo(jwt);
@@ -29,8 +28,6 @@ const withLayoutMain = (Component: any) => {
     useNavbarOverTop({
       threshold: 100,
     });
-
-    /** HANDLERS **/
 
     if (device == "mobile") {
       return (
@@ -65,9 +62,8 @@ const withLayoutMain = (Component: any) => {
             <Stack id={"top"}>
               <Top {...props} trendingCar={trendingCar} />
             </Stack>
-            <Stack className={"InteractiveNavbar"}>
-              <InteractiveNavbar />
-            </Stack>
+
+            <InteractiveNavbar />
 
             <Stack id={"main"}>
               <Component {...props} setTrendingCar={setTrendingCar} />
