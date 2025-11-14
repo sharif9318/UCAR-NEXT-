@@ -3,14 +3,19 @@ import { NextPage } from "next";
 import useDeviceDetect from "../../hooks/useDeviceDetect";
 import { Pagination, Stack, Typography } from "@mui/material";
 import CommunityCard from "../common/CommunityCard";
-import { useReactiveVar } from "@apollo/client";
+import { useMutation, useQuery, useReactiveVar } from "@apollo/client";
 import { userVar } from "../../../apollo/store";
 import { T } from "../../types/common";
 import { BoardArticle } from "../../types/board-article/board-article";
-import { useTranslation } from "react-i18next";
+import { GET_BOARD_ARTICLES } from "../../../apollo/user/query";
+import { Messages } from "../../config";
+import { LIKE_TARGET_BOARD_ARTICLE } from "../../../apollo/user/mutation";
+import {
+  sweetMixinErrorAlert,
+  sweetTopSmallSuccessAlert,
+} from "../../sweetAlert";
 
 const MyArticles: NextPage = ({ initialInput, ...props }: T) => {
-  const { t } = useTranslation("common");
   const device = useDeviceDetect();
   const user = useReactiveVar(userVar);
   const [searchCommunity, setSearchCommunity] = useState({
@@ -22,9 +27,47 @@ const MyArticles: NextPage = ({ initialInput, ...props }: T) => {
 
   /** APOLLO REQUESTS **/
 
+  const [likeTargetBoardArticle] = useMutation(LIKE_TARGET_BOARD_ARTICLE);
+
+  const {
+    loading: boardArticlesLoading,
+    data: boardArticlesData,
+    error: getBoardArticlesError,
+    refetch: boardArticlesRefetch,
+  } = useQuery(GET_BOARD_ARTICLES, {
+    fetchPolicy: "network-only",
+    variables: {
+      input: searchCommunity,
+    },
+    notifyOnNetworkStatusChange: true,
+    onCompleted(data: T) {
+      setBoardArticles(data?.getBoardArticles?.list);
+      setTotalCount(data?.getBoardArticles?.metaCounter[0]?.total);
+    },
+  });
+
   /** HANDLERS **/
   const paginationHandler = (e: T, value: number) => {
     setSearchCommunity({ ...searchCommunity, page: value });
+  };
+
+  const likeBoardArticleHandler = async (e: any, user: any, id: string) => {
+    try {
+      e.stopPropagation();
+      if (!id) return;
+      if (!user?._id) throw new Error(Messages.error2);
+
+      await likeTargetBoardArticle({
+        variables: {
+          input: id,
+        },
+      });
+      await boardArticlesRefetch({ input: searchCommunity });
+      await sweetTopSmallSuccessAlert("Success:", 758);
+    } catch (err: any) {
+      console.log("ERROR, likeBoArticleHandler:", err.message);
+      sweetMixinErrorAlert(err.message).then();
+    }
   };
 
   if (device === "mobile") {
@@ -34,11 +77,9 @@ const MyArticles: NextPage = ({ initialInput, ...props }: T) => {
       <div id="my-articles-page">
         <Stack className="main-title-box">
           <Stack className="right-box">
-            <Typography className="main-title">
-              {t("mypage.articles")}
-            </Typography>
+            <Typography className="main-title">Article</Typography>
             <Typography className="sub-title">
-              {t("We are glad to see you again!")}
+              We are glad to see you again!
             </Typography>
           </Stack>
         </Stack>
@@ -50,13 +91,14 @@ const MyArticles: NextPage = ({ initialInput, ...props }: T) => {
                   boardArticle={boardArticle}
                   key={boardArticle?._id}
                   size={"small"}
+                  likeArticleHandler={likeBoardArticleHandler}
                 />
               );
             })
           ) : (
             <div className={"no-data"}>
               <img src="/img/icons/icoAlert.svg" alt="" />
-              <p>{t("mypage.noArticles")}</p>
+              <p>No Articles found!</p>
             </div>
           )}
         </Stack>
@@ -74,7 +116,7 @@ const MyArticles: NextPage = ({ initialInput, ...props }: T) => {
             </Stack>
             <Stack className="total">
               <Typography>
-                {t("mypage.totalArticles", { count: totalCount ?? 0 })}
+                Total {totalCount ?? 0} article(s) available
               </Typography>
             </Stack>
           </Stack>

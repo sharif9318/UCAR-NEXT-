@@ -5,16 +5,32 @@ import { Pagination, Stack, Typography } from "@mui/material";
 import CarCard from "../car/CarCard";
 import { Car } from "../../types/car/car";
 import { T } from "../../types/common";
-import { useTranslation } from "react-i18next";
+import { useQuery } from "@apollo/client";
+import { GET_VISITED } from "../../../apollo/user/query";
 
 const RecentlyVisited: NextPage = () => {
-  const { t } = useTranslation("common");
   const device = useDeviceDetect();
   const [recentlyVisited, setRecentlyVisited] = useState<Car[]>([]);
   const [total, setTotal] = useState<number>(0);
   const [searchVisited, setSearchVisited] = useState<T>({ page: 1, limit: 6 });
 
   /** APOLLO REQUESTS **/
+
+  const {
+    loading: getVisitedLoading,
+    data: getVisitedData,
+    error: getVisitedError,
+    refetch: getVisitedRefetch,
+  } = useQuery(GET_VISITED, {
+    fetchPolicy: "network-only",
+    variables: {
+      input: searchVisited,
+    },
+    onCompleted(data: T) {
+      setRecentlyVisited(data.getVisited?.list);
+      setTotal(data.getVisited?.metaCounter?.[0]?.total || 0);
+    },
+  });
 
   /** HANDLERS **/
   const paginationHandler = (e: T, value: number) => {
@@ -28,11 +44,9 @@ const RecentlyVisited: NextPage = () => {
       <div id="my-favorites-page">
         <Stack className="main-title-box">
           <Stack className="right-box">
-            <Typography className="main-title">
-              {t("mypage.recentlyVisited")}
-            </Typography>
+            <Typography className="main-title">Recently Visited</Typography>
             <Typography className="sub-title">
-              {t("We are glad to see you again!")}
+              We are glad to see you again!
             </Typography>
           </Stack>
         </Stack>
@@ -44,7 +58,7 @@ const RecentlyVisited: NextPage = () => {
           ) : (
             <div className={"no-data"}>
               <img src="/img/icons/icoAlert.svg" alt="" />
-              <p>{t("mypage.noRecentlyVisited")}</p>
+              <p>No Recently Visited Cars found!</p>
             </div>
           )}
         </Stack>
@@ -60,9 +74,7 @@ const RecentlyVisited: NextPage = () => {
               />
             </Stack>
             <Stack className="total-result">
-              <Typography>
-                {t("mypage.totalRecentlyVisited", { count: total })}
-              </Typography>
+              <Typography>Total {total} recently visited cars</Typography>
             </Stack>
           </Stack>
         ) : null}

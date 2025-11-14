@@ -20,7 +20,7 @@ const MyCars: NextPage = ({ initialInput, ...props }: any) => {
   const device = useDeviceDetect();
   const [searchFilter, setSearchFilter] =
     useState<AgentCarsInquiry>(initialInput);
-  const [agentProperties, setAgentProperties] = useState<Car[]>([]);
+  const [agentCars, setAgentCars] = useState<Car[]>([]);
   const [total, setTotal] = useState<number>(0);
   const user = useReactiveVar(userVar);
   const router = useRouter();
@@ -38,7 +38,7 @@ const MyCars: NextPage = ({ initialInput, ...props }: any) => {
     variables: { input: searchFilter },
     notifyOnNetworkStatusChange: true,
     onCompleted: (data: T) => {
-      setAgentProperties(data?.getAgentCars?.list);
+      setAgentCars(data?.getAgentCars?.list);
       setTotal(data?.getAgentCars?.metaCounter[0]?.total ?? 0);
     },
   });
@@ -98,7 +98,7 @@ const MyCars: NextPage = ({ initialInput, ...props }: any) => {
   }
 
   if (device === "mobile") {
-    return <div>NESTAR PROPERTIES MOBILE</div>;
+    return <div>UCAR CARS MOBILE</div>;
   } else {
     return (
       <div id="my-cars-page">
@@ -152,13 +152,13 @@ const MyCars: NextPage = ({ initialInput, ...props }: any) => {
               )}
             </Stack>
 
-            {agentProperties?.length === 0 ? (
+            {agentCars?.length === 0 ? (
               <div className={"no-data"}>
                 <img src="/img/icons/icoAlert.svg" alt="" />
                 <p>{t("car.noResults")}</p>
               </div>
             ) : (
-              agentProperties.map((car: Car) => (
+              agentCars.map((car: Car) => (
                 <CarCard
                   key={car._id}
                   car={car}
@@ -168,7 +168,7 @@ const MyCars: NextPage = ({ initialInput, ...props }: any) => {
               ))
             )}
 
-            {agentProperties.length !== 0 && (
+            {agentCars.length !== 0 && (
               <Stack className="pagination-config">
                 <Stack className="pagination-box">
                   <Pagination

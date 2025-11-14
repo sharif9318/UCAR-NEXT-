@@ -5,10 +5,13 @@ import { Pagination, Stack, Typography } from "@mui/material";
 import CarCard from "../car/CarCard";
 import { Car } from "../../types/car/car";
 import { T } from "../../types/common";
-import { useTranslation } from "react-i18next";
+import { useMutation, useQuery } from "@apollo/client";
+import { LIKE_TARGET_CAR } from "../../../apollo/user/mutation";
+import { GET_FAVORITES } from "../../../apollo/user/query";
+import { Messages } from "../../config";
+import { sweetMixinErrorAlert } from "../../sweetAlert";
 
 const MyFavorites: NextPage = () => {
-  const { t } = useTranslation("common");
   const device = useDeviceDetect();
   const [myFavorites, setMyFavorites] = useState<Car[]>([]);
   const [total, setTotal] = useState<number>(0);
@@ -18,10 +21,45 @@ const MyFavorites: NextPage = () => {
   });
 
   /** APOLLO REQUESTS **/
+  const [likeTargetCar] = useMutation(LIKE_TARGET_CAR);
+
+  const {
+    loading: getFavoritesLoading,
+    data: getFavoritesData,
+    error: getFavoritesError,
+    refetch: getFavoritesRefetch,
+  } = useQuery(GET_FAVORITES, {
+    fetchPolicy: "network-only",
+    variables: {
+      input: searchFavorites,
+    },
+    notifyOnNetworkStatusChange: true,
+    onCompleted(data: T) {
+      setMyFavorites(data.getFavorites?.list);
+      setTotal(data.getFavorites?.metaCounter?.[0]?.total || 0);
+    },
+  });
 
   /** HANDLERS **/
   const paginationHandler = (e: T, value: number) => {
     setSearchFavorites({ ...searchFavorites, page: value });
+  };
+
+  const LikeCarHandler = async (user: any, id: string) => {
+    try {
+      if (!id) return;
+      if (!user._id) throw new Error(Messages.error2);
+
+      await likeTargetCar({
+        variables: {
+          input: id,
+        },
+      });
+      await getFavoritesRefetch({ input: searchFavorites });
+    } catch (err: any) {
+      console.log("ERROR, likeCarHandler:", err.message);
+      sweetMixinErrorAlert(err.message).then();
+    }
   };
 
   if (device === "mobile") {
@@ -31,23 +69,27 @@ const MyFavorites: NextPage = () => {
       <div id="my-favorites-page">
         <Stack className="main-title-box">
           <Stack className="right-box">
-            <Typography className="main-title">
-              {t("mypage.myFavorites")}
-            </Typography>
+            <Typography className="main-title">My Favorites</Typography>
             <Typography className="sub-title">
-              {t("We are glad to see you again!")}
+              We are glad to see you again!
             </Typography>
           </Stack>
         </Stack>
         <Stack className="favorites-list-box">
           {myFavorites?.length ? (
-            myFavorites?.map((car: Car) => (
-              <CarCard car={car} myFavorites={true} key={car._id} />
-            ))
+            myFavorites?.map((car: Car) => {
+              return (
+                <CarCard
+                  car={car}
+                  likeCarHandler={LikeCarHandler}
+                  myFavorites={true}
+                />
+              );
+            })
           ) : (
             <div className={"no-data"}>
               <img src="/img/icons/icoAlert.svg" alt="" />
-              <p>{t("mypage.noFavorites")}</p>
+              <p>No Favorites found!</p>
             </div>
           )}
         </Stack>
@@ -63,9 +105,7 @@ const MyFavorites: NextPage = () => {
               />
             </Stack>
             <Stack className="total-result">
-              <Typography>
-                {t("mypage.totalFavorites", { count: total })}
-              </Typography>
+              <Typography>Total {total} favorite cars</Typography>
             </Stack>
           </Stack>
         ) : null}
