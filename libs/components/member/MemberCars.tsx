@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { NextPage } from "next";
-import { Pagination, Stack, Typography } from "@mui/material";
+import Stack from "@mui/material/Stack";
+import Typography from "@mui/material/Typography";
+import Pagination from "@mui/material/Pagination";
 import useDeviceDetect from "../../hooks/useDeviceDetect";
 import CarCard from "../car/CarCard";
 import { Car } from "../../types/car/car";

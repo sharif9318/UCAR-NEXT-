@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo } from "react";
 import { useRouter } from "next/router";
 import Head from "next/head";
-import { Stack } from "@mui/material";
+import Stack from "@mui/material/Stack";
 import { useTranslation } from "next-i18next";
 
 import useDeviceDetect from "../../hooks/useDeviceDetect";

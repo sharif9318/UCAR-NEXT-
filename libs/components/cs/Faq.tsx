@@ -609,7 +609,10 @@ const Faq = () => {
           </div>
         </Box>
         <Box className={"wrap"} component={"div"}>
-          {(faqData[category] || fallbackData[category])?.map((ele: any) => (
+          {(faqData[category]?.length
+            ? faqData[category]
+            : fallbackData[category]
+          )?.map((ele: any) => (
             <Accordion
               expanded={expanded === (ele?._id || ele?.id)}
               onChange={handleChange(ele?._id || ele?.id)}

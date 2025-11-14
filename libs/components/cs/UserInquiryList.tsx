@@ -72,33 +72,24 @@ const UserInquiryList = () => {
   };
 
   if (device === "mobile") {
-    // TODO: Implement mobile-friendly inquiry list UI. See issue #1234.
     return (
-      <Stack className="inquiry-list-mobile" spacing={3} sx={{ p: 2 }}>
-        <Typography variant="h5" sx={{ fontWeight: 600, mb: 1 }}>
+      <Stack className="inquiry-list-mobile" spacing={3}>
+        <Typography variant="h5" className="mobile-title">
           My Inquiries
         </Typography>
-        <Typography variant="body2" color="textSecondary" sx={{ mb: 2 }}>
+        <Typography variant="body2" className="mobile-subtitle">
           Track your inquiries and view responses from our support team
         </Typography>
         {getInquiriesLoading ? (
-          <Alert severity="info" sx={{ borderRadius: 2 }}>
+          <Alert severity="info" className="loading-alert">
             Loading your inquiries...
           </Alert>
         ) : inquiryList.length === 0 ? (
-          <Paper
-            elevation={0}
-            sx={{
-              p: 4,
-              textAlign: "center",
-              bgcolor: "grey.50",
-              borderRadius: 2,
-            }}
-          >
-            <Typography variant="h6" color="textSecondary" gutterBottom>
+          <Paper elevation={0} className="empty-state-mobile">
+            <Typography variant="h6" className="empty-title">
               No Inquiries Yet
             </Typography>
-            <Typography variant="body2" color="textSecondary">
+            <Typography variant="body2" className="empty-subtitle">
               You haven't submitted any inquiries. Visit the "Submit Inquiry"
               tab to ask a question.
             </Typography>
@@ -109,15 +100,7 @@ const UserInquiryList = () => {
               <Paper
                 key={inquiry._id}
                 elevation={2}
-                sx={{
-                  p: 2,
-                  borderRadius: 2,
-                  mb: 1,
-                  cursor: "pointer",
-                  border: "1px solid",
-                  borderColor: "grey.200",
-                  "&:active": { bgcolor: "grey.100" },
-                }}
+                className="inquiry-card-mobile"
                 onClick={() => handleInquiryClick(inquiry)}
               >
                 <Stack direction="row" alignItems="center" spacing={2}>
@@ -125,18 +108,9 @@ const UserInquiryList = () => {
                     label={inquiry.inquiryStatus || "PENDING"}
                     color={getStatusColor(inquiry.inquiryStatus)}
                     size="small"
-                    sx={{ fontWeight: 600 }}
+                    className="status-chip-mobile"
                   />
-                  <Typography
-                    variant="body2"
-                    color="textSecondary"
-                    sx={{
-                      flex: 1,
-                      overflow: "hidden",
-                      textOverflow: "ellipsis",
-                      whiteSpace: "nowrap",
-                    }}
-                  >
+                  <Typography variant="body2" className="inquiry-title-mobile">
                     {inquiry.csTitle}
                   </Typography>
                 </Stack>
@@ -144,41 +118,32 @@ const UserInquiryList = () => {
             ))}
           </Stack>
         )}
-        {/* TODO: Add pagination/infinite-scroll and filters for mobile. */}
       </Stack>
     );
   }
 
   return (
     <>
-      <Stack className={"inquiry-list-content"} spacing={4}>
-        <Box sx={{ textAlign: "center", py: 2 }}>
-          <Typography variant="h3" sx={{ fontWeight: 600, mb: 1 }}>
+      <Stack className="inquiry-list-content" spacing={4}>
+        <Box className="header-section">
+          <Typography variant="h3" className="page-title">
             My Inquiries
           </Typography>
-          <Typography variant="body2" color="textSecondary">
+          <Typography variant="body2" className="page-subtitle">
             Track your inquiries and view responses from our support team
           </Typography>
         </Box>
 
         {getInquiriesLoading ? (
-          <Alert severity="info" sx={{ borderRadius: 2 }}>
+          <Alert severity="info" className="loading-alert">
             Loading your inquiries...
           </Alert>
         ) : inquiryList.length === 0 ? (
-          <Paper
-            elevation={0}
-            sx={{
-              p: 6,
-              textAlign: "center",
-              bgcolor: "grey.50",
-              borderRadius: 3,
-            }}
-          >
-            <Typography variant="h6" color="textSecondary" gutterBottom>
+          <Paper elevation={0} className="empty-state-desktop">
+            <Typography variant="h6" className="empty-title">
               No Inquiries Yet
             </Typography>
-            <Typography variant="body2" color="textSecondary">
+            <Typography variant="body2" className="empty-subtitle">
               You haven't submitted any inquiries. Visit the "Submit Inquiry"
               tab to ask a question.
             </Typography>
@@ -189,19 +154,7 @@ const UserInquiryList = () => {
               <Paper
                 key={inquiry._id}
                 elevation={3}
-                sx={{
-                  p: 3,
-                  cursor: "pointer",
-                  transition: "all 0.3s",
-                  border: "1px solid",
-                  borderColor: "grey.200",
-                  borderRadius: 2,
-                  "&:hover": {
-                    bgcolor: "grey.50",
-                    transform: "translateY(-2px)",
-                    boxShadow: 6,
-                  },
-                }}
+                className="inquiry-card-desktop"
                 onClick={() => handleInquiryClick(inquiry)}
               >
                 <Stack spacing={2}>
@@ -214,30 +167,16 @@ const UserInquiryList = () => {
                     <Chip
                       label={inquiry.inquiryStatus || "PENDING"}
                       color={getStatusColor(inquiry.inquiryStatus)}
-                      sx={{ fontWeight: 600 }}
+                      className="status-chip-desktop"
                     />
                   </Stack>
-                  <Typography
-                    variant="body2"
-                    color="textSecondary"
-                    sx={{
-                      overflow: "hidden",
-                      textOverflow: "ellipsis",
-                      display: "-webkit-box",
-                      WebkitLineClamp: 2,
-                      WebkitBoxOrient: "vertical",
-                    }}
-                  >
+                  <Typography variant="body2" className="inquiry-description">
                     {inquiry.csTitle}
                   </Typography>
                   <Button
                     variant="text"
                     size="small"
-                    sx={{
-                      alignSelf: "flex-start",
-                      textTransform: "none",
-                      fontWeight: 600,
-                    }}
+                    className="view-details-btn"
                   >
                     View Details →
                   </Button>
@@ -247,44 +186,49 @@ const UserInquiryList = () => {
           </Stack>
         )}
       </Stack>
-      {/* Inquiry Detail Dialog */}
+
       <Dialog
         open={openDialog}
         onClose={handleCloseDialog}
         maxWidth="md"
         fullWidth
+        className="inquiry-dialog"
         PaperProps={{
-          sx: { borderRadius: 3 },
+          className: "dialog-paper",
         }}
       >
-        <DialogTitle sx={{ pb: 2, pt: 3 }}>
+        <DialogTitle className="dialog-title">
           <Stack
             direction="row"
             justifyContent="space-between"
             alignItems="center"
           >
-            <Typography variant="h5" fontWeight={600}>
+            <Typography variant="h5" className="dialog-title-text">
               {selectedInquiry?.csTitle || "Inquiry Details"}
             </Typography>
             <Chip
               label={selectedInquiry?.inquiryStatus || "PENDING"}
               color={getStatusColor(selectedInquiry?.inquiryStatus)}
-              sx={{ fontWeight: 600, px: 1.5 }}
+              className="dialog-status-chip"
             />
           </Stack>
         </DialogTitle>
-        <DialogContent dividers sx={{ py: 3 }}>
+        <DialogContent dividers className="dialog-content">
           {selectedInquiry ? (
             <Stack spacing={4}>
-              {/* Metadata */}
-              <Stack direction="row" spacing={3} flexWrap="wrap">
+              <Stack
+                direction="row"
+                spacing={3}
+                flexWrap="wrap"
+                className="metadata-section"
+              >
                 <Box>
-                  <Typography variant="caption" color="textSecondary">
+                  <Typography variant="caption" className="metadata-item">
                     Category: {selectedInquiry.csCategory}
                   </Typography>
                 </Box>
                 <Box>
-                  <Typography variant="caption" color="textSecondary">
+                  <Typography variant="caption" className="metadata-item">
                     Date:{" "}
                     {selectedInquiry.createdAt
                       ? new Date(selectedInquiry.createdAt).toLocaleDateString()
@@ -293,7 +237,10 @@ const UserInquiryList = () => {
                 </Box>
                 {selectedInquiry.answeredAt && (
                   <Box>
-                    <Typography variant="caption" color="textSecondary">
+                    <Typography
+                      variant="caption"
+                      className="metadata-item-secondary"
+                    >
                       Answered:{" "}
                       {new Date(
                         selectedInquiry.answeredAt
@@ -302,66 +249,30 @@ const UserInquiryList = () => {
                   </Box>
                 )}
               </Stack>
-              {/* Question */}
+
               <Box>
-                <Typography
-                  variant="subtitle1"
-                  fontWeight={600}
-                  gutterBottom
-                  sx={{ mb: 1.5 }}
-                >
+                <Typography variant="subtitle1" className="section-title">
                   Your Question:
                 </Typography>
-                <Paper
-                  elevation={0}
-                  sx={{
-                    whiteSpace: "pre-wrap",
-                    p: 3,
-                    bgcolor: "grey.50",
-                    borderRadius: 2,
-                    border: "1px solid",
-                    borderColor: "grey.200",
-                  }}
-                >
+                <Paper elevation={0} className="content-box">
                   {selectedInquiry.csContent}
                 </Paper>
               </Box>
-              {/* Answer */}
+
               {selectedInquiry.csAnswer ? (
                 <Box>
                   <Typography
                     variant="subtitle1"
-                    fontWeight={600}
-                    gutterBottom
-                    color="primary"
-                    sx={{ mb: 1.5 }}
+                    className="section-title-answer"
                   >
                     ✓ Answer from Support Team:
                   </Typography>
-                  <Paper
-                    elevation={0}
-                    sx={{
-                      whiteSpace: "pre-wrap",
-                      p: 3,
-                      bgcolor: "grey.50",
-                      borderRadius: 2,
-                      border: "1px solid",
-                      borderColor: "grey.200",
-                    }}
-                  >
+                  <Paper elevation={0} className="content-box">
                     {selectedInquiry.csAnswer}
                   </Paper>
                 </Box>
               ) : (
-                <Alert
-                  severity="info"
-                  sx={{
-                    borderRadius: 2,
-                    "& .MuiAlert-message": {
-                      width: "100%",
-                    },
-                  }}
-                >
+                <Alert severity="info" className="no-answer-alert">
                   No answer yet. Our support team will respond soon.
                 </Alert>
               )}
@@ -370,16 +281,11 @@ const UserInquiryList = () => {
             <Typography>No details available</Typography>
           )}
         </DialogContent>
-        <DialogActions sx={{ p: 2.5 }}>
+        <DialogActions className="dialog-actions">
           <Button
             onClick={handleCloseDialog}
             variant="contained"
-            sx={{
-              minWidth: 120,
-              borderRadius: 2,
-              textTransform: "none",
-              fontWeight: 600,
-            }}
+            className="close-btn"
           >
             Close
           </Button>

@@ -153,7 +153,7 @@ const AgentDetail: NextPage = ({
     }
   };
 
-  const propertyPaginationChangeHandler = async (
+  const carPaginationChangeHandler = async (
     event: ChangeEvent<unknown>,
     value: number
   ) => {
@@ -174,6 +174,9 @@ const AgentDetail: NextPage = ({
       if (!user._id) throw new Error(Messages.error2);
       if (user._id === agentId)
         throw new Error("Cannot write a review for yourself");
+      if (!isValidObjectId(insertCommentData.commentRefId)) {
+        throw new Error("Invalid commentRefId");
+      }
 
       await createComment({
         variables: {
@@ -190,7 +193,8 @@ const AgentDetail: NextPage = ({
 
   const likeCarHandler = async (user: any, id: string) => {
     try {
-      if (!id) return;
+      console.log("likeCarHandler id:", id); // Debug log
+      if (!id || !isValidObjectId(id)) throw new Error("Invalid car ID: " + id);
       if (!user._id) throw new Error(Messages.error2);
 
       await likeTargetCar({
@@ -202,10 +206,14 @@ const AgentDetail: NextPage = ({
 
       await sweetTopSmallSuccessAlert("success", 800);
     } catch (err: any) {
-      console.log("ERROR, likePropertyHandler:", err.message);
+      console.log("ERROR, likeCarHandler:", err.message);
       sweetMixinErrorAlert(err.message).then();
     }
   };
+
+  function isValidObjectId(id: string) {
+    return /^[a-f\d]{24}$/i.test(id);
+  }
 
   if (device === "mobile") {
     return <div>AGENT DETAIL PAGE MOBILE</div>;
@@ -255,7 +263,7 @@ const AgentDetail: NextPage = ({
                     <Pagination
                       page={searchFilter.page}
                       count={Math.ceil(carTotal / searchFilter.limit) || 1}
-                      onChange={propertyPaginationChangeHandler}
+                      onChange={carPaginationChangeHandler}
                       shape="circular"
                       color="primary"
                     />
@@ -267,7 +275,7 @@ const AgentDetail: NextPage = ({
               ) : (
                 <div className={"no-data"}>
                   <img src="/img/icons/icoAlert.svg" alt="" />
-                  <p>No properties found!</p>
+                  <p>No cars found!</p>
                 </div>
               )}
             </Stack>
