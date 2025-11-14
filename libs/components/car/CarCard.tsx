@@ -176,17 +176,17 @@ const CarCard = memo((props: CarCardType) => {
             </Stack>
             {!recentlyVisited && (
               <Stack className="buttons">
-                <IconButton color={"default"}>
+                <IconButton>
                   <RemoveRedEyeIcon />
                 </IconButton>
                 <Typography className="view-cnt">{car?.carViews}</Typography>
                 <IconButton
-                  color={"default"}
+                  className="like-btn"
                   onClick={handleLikeClick}
                   disabled={!handleLikeClick}
                 >
                   {isLiked ? (
-                    <FavoriteIcon color="red" />
+                    <FavoriteIcon sx={{ color: "red" }} />
                   ) : (
                     <FavoriteBorderIcon />
                   )}
