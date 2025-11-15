@@ -152,6 +152,13 @@ function createIsomorphicLink() {
     );
 
     return from([errorLink, tokenRefreshLink, splitLink]);
+  } else {
+    // SSR: return a basic HTTP link
+    const { HttpLink } = require("@apollo/client");
+    return new HttpLink({
+      uri: process.env.REACT_APP_API_GRAPHQL_URL,
+      headers: getHeaders(),
+    });
   }
 }
 
