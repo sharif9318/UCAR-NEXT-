@@ -1,5 +1,3 @@
-version: "3.3"
-
 services:
   ucar-next:
     container_name: ucar-next
