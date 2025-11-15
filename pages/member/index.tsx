@@ -24,6 +24,7 @@ import {
 } from "../../apollo/user/mutation";
 import { Messages } from "../../libs/config";
 import withI18n from "../../libs/i18n/withI18n";
+import Head from "next/head";
 
 export const getStaticProps = async ({ locale }: any) => ({
   props: {
@@ -125,45 +126,77 @@ const MemberPage: NextPage = () => {
   };
 
   if (device === "mobile") {
-    return <>MEMBER PAGE MOBILE</>;
+    return (
+      <>
+        <Head>
+          <title>Members - UCAR</title>
+          <meta
+            name="description"
+            content="View UCAR members, their cars, articles, and more. Connect with trusted car buyers and sellers in Korea."
+          />
+          <meta
+            name="keywords"
+            content="ucar members, car buyers, car sellers, member list korea"
+          />
+        </Head>
+        <>MEMBER PAGE MOBILE</>
+      </>
+    );
   } else {
     return (
-      <div id="member-page" style={{ position: "relative" }}>
-        <div className="container">
-          <Stack className={"member-page"}>
-            <Stack className={"back-frame"}>
-              <Stack className={"left-config"}>
-                <MemberMenu
-                  subscribeHandler={subscribeHandler}
-                  unsubscribeHandler={unsubscribeHandler}
-                />
-              </Stack>
-              <Stack className="main-config" mb={"76px"}>
-                <Stack className={"list-config"}>
-                  {category === "cars" && <MemberCars />}
-                  {category === "followers" && (
-                    <MemberFollowers
-                      subscribeHandler={subscribeHandler}
-                      unsubscribeHandler={unsubscribeHandler}
-                      likeMemberHandler={likeMemberHandler}
-                      redirectToMemberPageHandler={redirectToMemberPageHandler}
-                    />
-                  )}
-                  {category === "followings" && (
-                    <MemberFollowings
-                      subscribeHandler={subscribeHandler}
-                      unsubscribeHandler={unsubscribeHandler}
-                      likeMemberHandler={likeMemberHandler}
-                      redirectToMemberPageHandler={redirectToMemberPageHandler}
-                    />
-                  )}
-                  {category === "articles" && <MemberArticles />}
+      <>
+        <Head>
+          <title>Members - UCAR</title>
+          <meta
+            name="description"
+            content="View UCAR members, their cars, articles, and more. Connect with trusted car buyers and sellers in Korea."
+          />
+          <meta
+            name="keywords"
+            content="ucar members, car buyers, car sellers, member list korea"
+          />
+        </Head>
+        <div id="member-page" style={{ position: "relative" }}>
+          <div className="container">
+            <Stack className={"member-page"}>
+              <Stack className={"back-frame"}>
+                <Stack className={"left-config"}>
+                  <MemberMenu
+                    subscribeHandler={subscribeHandler}
+                    unsubscribeHandler={unsubscribeHandler}
+                  />
+                </Stack>
+                <Stack className="main-config" mb={"76px"}>
+                  <Stack className={"list-config"}>
+                    {category === "cars" && <MemberCars />}
+                    {category === "followers" && (
+                      <MemberFollowers
+                        subscribeHandler={subscribeHandler}
+                        unsubscribeHandler={unsubscribeHandler}
+                        likeMemberHandler={likeMemberHandler}
+                        redirectToMemberPageHandler={
+                          redirectToMemberPageHandler
+                        }
+                      />
+                    )}
+                    {category === "followings" && (
+                      <MemberFollowings
+                        subscribeHandler={subscribeHandler}
+                        unsubscribeHandler={unsubscribeHandler}
+                        likeMemberHandler={likeMemberHandler}
+                        redirectToMemberPageHandler={
+                          redirectToMemberPageHandler
+                        }
+                      />
+                    )}
+                    {category === "articles" && <MemberArticles />}
+                  </Stack>
                 </Stack>
               </Stack>
             </Stack>
-          </Stack>
+          </div>
         </div>
-      </div>
+      </>
     );
   }
 };

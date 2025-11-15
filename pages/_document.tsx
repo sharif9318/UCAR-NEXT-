@@ -57,7 +57,6 @@ class MyDocument extends Document {
             type="image/svg+xml"
             href="/img/logo/ucar_logo.svg"
           />
-          <title>{seo?.title}</title>
           <meta name="keywords" content={seo?.keywords} />
           <meta name="description" content={seo?.description} />
         </Head>

@@ -42,6 +42,7 @@ import {
 } from "../../libs/sweetAlert";
 import withI18n from "../../libs/i18n/withI18n";
 import { useTranslation } from "react-i18next";
+import Head from "next/head";
 
 export const getStaticProps = async ({ locale }: any) => ({
   props: {
@@ -225,179 +226,382 @@ const CarList: NextPage = ({ initialInput, ...props }: any) => {
   const hasCars = useMemo(() => cars.length > 0, [cars.length]);
 
   if (device === "mobile") {
-    return <h1>CARS MOBILE</h1>;
-  } else {
     return (
-      <div
-        id="car-list-page"
-        style={{
-          position: "relative",
-          ...(viewMode === "holographic" && {
-            width: "100vw",
-            maxWidth: "100vw",
-            margin: 0,
-            padding: 0,
-            overflow: "hidden",
-          }),
-        }}
-      >
+      <>
+        <Head>
+          <title>Cars for Sale - UCAR</title>
+          <meta
+            name="description"
+            content="Browse cars for sale on UCAR. Find the best deals on used and new cars in South Korea."
+          />
+          <meta
+            name="keywords"
+            content="ucar cars, buy car korea, used cars, car listings korea"
+          />
+        </Head>
         <div
-          className="container"
+          id="car-list-page"
           style={{
+            position: "relative",
             ...(viewMode === "holographic" && {
-              maxWidth: "100%",
-              width: "100%",
-              padding: 0,
+              width: "100vw",
+              maxWidth: "100vw",
               margin: 0,
+              padding: 0,
+              overflow: "hidden",
             }),
           }}
         >
-          <Box component={"div"} className={"right"}>
-            <Box className="sorting-panel">
-              <ToggleButtonGroup
-                value={viewMode}
-                exclusive
-                onChange={handleViewChange}
-                aria-label="view mode"
-              >
-                <ToggleButton value="grid" aria-label="grid view">
-                  <ViewModuleIcon />
-                </ToggleButton>
-                <ToggleButton value="holographic" aria-label="holographic view">
-                  <ViewComfyIcon />
-                </ToggleButton>
-              </ToggleButtonGroup>
-              <span>{t("filter.sortBy")}</span>
-              <Button
-                onClick={sortingClickHandler}
-                endIcon={<KeyboardArrowDownRoundedIcon />}
-              >
-                {sortLabel}
-              </Button>
-            </Box>
-            <Menu
-              anchorEl={anchorEl}
-              open={sortingOpen}
-              onClose={sortingCloseHandler}
-              sx={{ paddingTop: "5px" }}
-            >
-              <MenuItem
-                onClick={sortingHandler}
-                id={"new"}
-                disableRipple
-                sx={{ boxShadow: "rgba(149, 157, 165, 0.2) 0px 8px 24px" }}
-              >
-                {t("filter.newest")}
-              </MenuItem>
-              <MenuItem
-                onClick={sortingHandler}
-                id={"lowest"}
-                disableRipple
-                sx={{ boxShadow: "rgba(149, 157, 165, 0.2) 0px 8px 24px" }}
-              >
-                {t("filter.priceAsc")}
-              </MenuItem>
-              <MenuItem
-                onClick={sortingHandler}
-                id={"highest"}
-                disableRipple
-                sx={{ boxShadow: "rgba(149, 157, 165, 0.2) 0px 8px 24px" }}
-              >
-                {t("filter.priceDesc")}
-              </MenuItem>
-            </Menu>
-          </Box>
-
-          <Stack
-            className={"car-page"}
-            sx={{
-              flexDirection: "column",
+          <div
+            className="container"
+            style={{
+              ...(viewMode === "holographic" && {
+                maxWidth: "100%",
+                width: "100%",
+                padding: 0,
+                margin: 0,
+              }),
             }}
           >
-            {viewMode === "grid" ? (
-              <>
-                {/* 1. Main content area - Car Cards */}
-                <Stack className="main-config" mb="0">
-                  <Stack className={"list-config"}>
-                    {getCarsLoading ? (
-                      <Stack
-                        alignItems="center"
-                        justifyContent="center"
-                        sx={{ width: "100%", minHeight: "400px" }}
-                      >
-                        <CircularProgress />
-                      </Stack>
-                    ) : getCarsError ? (
-                      <div className={"no-data"}>
-                        <img src="/img/icons/icoAlert.svg" alt="" />
-                        <p>{t("common.errorLoading")}</p>
-                      </div>
-                    ) : !hasCars ? (
-                      <div className={"no-data"}>
-                        <img src="/img/icons/icoAlert.svg" alt="" />
-                        <p>{t("car.noResults")}</p>
-                      </div>
-                    ) : (
+            <Box component={"div"} className={"right"}>
+              <Box className="sorting-panel">
+                <ToggleButtonGroup
+                  value={viewMode}
+                  exclusive
+                  onChange={handleViewChange}
+                  aria-label="view mode"
+                >
+                  <ToggleButton value="grid" aria-label="grid view">
+                    <ViewModuleIcon />
+                  </ToggleButton>
+                  <ToggleButton
+                    value="holographic"
+                    aria-label="holographic view"
+                  >
+                    <ViewComfyIcon />
+                  </ToggleButton>
+                </ToggleButtonGroup>
+                <span>{t("filter.sortBy")}</span>
+                <Button
+                  onClick={sortingClickHandler}
+                  endIcon={<KeyboardArrowDownRoundedIcon />}
+                >
+                  {sortLabel}
+                </Button>
+              </Box>
+              <Menu
+                anchorEl={anchorEl}
+                open={sortingOpen}
+                onClose={sortingCloseHandler}
+                sx={{ paddingTop: "5px" }}
+              >
+                <MenuItem
+                  onClick={sortingHandler}
+                  id={"new"}
+                  disableRipple
+                  sx={{ boxShadow: "rgba(149, 157, 165, 0.2) 0px 8px 24px" }}
+                >
+                  {t("filter.newest")}
+                </MenuItem>
+                <MenuItem
+                  onClick={sortingHandler}
+                  id={"lowest"}
+                  disableRipple
+                  sx={{ boxShadow: "rgba(149, 157, 165, 0.2) 0px 8px 24px" }}
+                >
+                  {t("filter.priceAsc")}
+                </MenuItem>
+                <MenuItem
+                  onClick={sortingHandler}
+                  id={"highest"}
+                  disableRipple
+                  sx={{ boxShadow: "rgba(149, 157, 165, 0.2) 0px 8px 24px" }}
+                >
+                  {t("filter.priceDesc")}
+                </MenuItem>
+              </Menu>
+            </Box>
+
+            <Stack
+              className={"car-page"}
+              sx={{
+                flexDirection: "column",
+              }}
+            >
+              {viewMode === "grid" ? (
+                <>
+                  {/* 1. Main content area - Car Cards */}
+                  <Stack className="main-config" mb="0">
+                    <Stack className={"list-config"}>
+                      {getCarsLoading ? (
+                        <Stack
+                          alignItems="center"
+                          justifyContent="center"
+                          sx={{ width: "100%", minHeight: "400px" }}
+                        >
+                          <CircularProgress />
+                        </Stack>
+                      ) : getCarsError ? (
+                        <div className={"no-data"}>
+                          <img src="/img/icons/icoAlert.svg" alt="" />
+                          <p>{t("common.errorLoading")}</p>
+                        </div>
+                      ) : !hasCars ? (
+                        <div className={"no-data"}>
+                          <img src="/img/icons/icoAlert.svg" alt="" />
+                          <p>{t("car.noResults")}</p>
+                        </div>
+                      ) : (
+                        <>
+                          {cars.map((car: Car) => (
+                            <CarCard
+                              car={car}
+                              likeCarHandler={likeCarHandler}
+                              key={car?._id}
+                            />
+                          ))}
+                        </>
+                      )}
+                    </Stack>
+                  </Stack>
+
+                  {/* 2. Filter Panel - Below car cards */}
+                  {hasCars && (
+                    <Stack className={"filter-config"}>
+                      <Filter
+                        searchFilter={searchFilter}
+                        setSearchFilter={setSearchFilter}
+                        initialInput={initialInput}
+                      />
+                    </Stack>
+                  )}
+
+                  {/* 3. Pagination - Below filter */}
+                  <Stack className="pagination-config">
+                    {hasCars && (
                       <>
-                        {cars.map((car: Car) => (
-                          <CarCard
-                            car={car}
-                            likeCarHandler={likeCarHandler}
-                            key={car?._id}
+                        <Stack className="pagination-box">
+                          <Pagination
+                            page={currentPage}
+                            count={totalPages}
+                            onChange={handlePaginationChange}
+                            shape="circular"
+                            color="primary"
                           />
-                        ))}
+                        </Stack>
+                        <Stack className="total-result">
+                          <Typography>
+                            {t("car.totalAvailable", { count: total })}
+                          </Typography>
+                        </Stack>
                       </>
                     )}
                   </Stack>
-                </Stack>
-
-                {/* 2. Filter Panel - Below car cards */}
-                {hasCars && (
-                  <Stack className={"filter-config"}>
-                    <Filter
-                      searchFilter={searchFilter}
-                      setSearchFilter={setSearchFilter}
-                      initialInput={initialInput}
-                    />
-                  </Stack>
-                )}
-
-                {/* 3. Pagination - Below filter */}
-                <Stack className="pagination-config">
-                  {hasCars && (
-                    <>
-                      <Stack className="pagination-box">
-                        <Pagination
-                          page={currentPage}
-                          count={totalPages}
-                          onChange={handlePaginationChange}
-                          shape="circular"
-                          color="primary"
-                        />
-                      </Stack>
-                      <Stack className="total-result">
-                        <Typography>
-                          {t("car.totalAvailable", { count: total })}
-                        </Typography>
-                      </Stack>
-                    </>
-                  )}
-                </Stack>
-              </>
-            ) : (
-              <HolographicCarCard
-                cars={cars}
-                loading={getCarsLoading}
-                error={getCarsError}
-                likeCarHandler={likeCarHandler}
-                searchFilter={searchFilter}
-                setSearchFilter={setSearchFilter}
-                t={t}
-              />
-            )}
-          </Stack>
+                </>
+              ) : (
+                <HolographicCarCard
+                  cars={cars}
+                  loading={getCarsLoading}
+                  error={getCarsError}
+                  likeCarHandler={likeCarHandler}
+                  searchFilter={searchFilter}
+                  setSearchFilter={setSearchFilter}
+                  t={t}
+                />
+              )}
+            </Stack>
+          </div>
         </div>
-      </div>
+      </>
+    );
+  } else {
+    return (
+      <>
+        <Head>
+          <title>Cars for Sale - UCAR</title>
+          <meta
+            name="description"
+            content="Browse cars for sale on UCAR. Find the best deals on used and new cars in South Korea."
+          />
+          <meta
+            name="keywords"
+            content="ucar cars, buy car korea, used cars, car listings korea"
+          />
+        </Head>
+        <div
+          id="car-list-page"
+          style={{
+            position: "relative",
+            ...(viewMode === "holographic" && {
+              width: "100vw",
+              maxWidth: "100vw",
+              margin: 0,
+              padding: 0,
+              overflow: "hidden",
+            }),
+          }}
+        >
+          <div
+            className="container"
+            style={{
+              ...(viewMode === "holographic" && {
+                maxWidth: "100%",
+                width: "100%",
+                padding: 0,
+                margin: 0,
+              }),
+            }}
+          >
+            <Box component={"div"} className={"right"}>
+              <Box className="sorting-panel">
+                <ToggleButtonGroup
+                  value={viewMode}
+                  exclusive
+                  onChange={handleViewChange}
+                  aria-label="view mode"
+                >
+                  <ToggleButton value="grid" aria-label="grid view">
+                    <ViewModuleIcon />
+                  </ToggleButton>
+                  <ToggleButton
+                    value="holographic"
+                    aria-label="holographic view"
+                  >
+                    <ViewComfyIcon />
+                  </ToggleButton>
+                </ToggleButtonGroup>
+                <span>{t("filter.sortBy")}</span>
+                <Button
+                  onClick={sortingClickHandler}
+                  endIcon={<KeyboardArrowDownRoundedIcon />}
+                >
+                  {sortLabel}
+                </Button>
+              </Box>
+              <Menu
+                anchorEl={anchorEl}
+                open={sortingOpen}
+                onClose={sortingCloseHandler}
+                sx={{ paddingTop: "5px" }}
+              >
+                <MenuItem
+                  onClick={sortingHandler}
+                  id={"new"}
+                  disableRipple
+                  sx={{ boxShadow: "rgba(149, 157, 165, 0.2) 0px 8px 24px" }}
+                >
+                  {t("filter.newest")}
+                </MenuItem>
+                <MenuItem
+                  onClick={sortingHandler}
+                  id={"lowest"}
+                  disableRipple
+                  sx={{ boxShadow: "rgba(149, 157, 165, 0.2) 0px 8px 24px" }}
+                >
+                  {t("filter.priceAsc")}
+                </MenuItem>
+                <MenuItem
+                  onClick={sortingHandler}
+                  id={"highest"}
+                  disableRipple
+                  sx={{ boxShadow: "rgba(149, 157, 165, 0.2) 0px 8px 24px" }}
+                >
+                  {t("filter.priceDesc")}
+                </MenuItem>
+              </Menu>
+            </Box>
+
+            <Stack
+              className={"car-page"}
+              sx={{
+                flexDirection: "column",
+              }}
+            >
+              {viewMode === "grid" ? (
+                <>
+                  {/* 1. Main content area - Car Cards */}
+                  <Stack className="main-config" mb="0">
+                    <Stack className={"list-config"}>
+                      {getCarsLoading ? (
+                        <Stack
+                          alignItems="center"
+                          justifyContent="center"
+                          sx={{ width: "100%", minHeight: "400px" }}
+                        >
+                          <CircularProgress />
+                        </Stack>
+                      ) : getCarsError ? (
+                        <div className={"no-data"}>
+                          <img src="/img/icons/icoAlert.svg" alt="" />
+                          <p>{t("common.errorLoading")}</p>
+                        </div>
+                      ) : !hasCars ? (
+                        <div className={"no-data"}>
+                          <img src="/img/icons/icoAlert.svg" alt="" />
+                          <p>{t("car.noResults")}</p>
+                        </div>
+                      ) : (
+                        <>
+                          {cars.map((car: Car) => (
+                            <CarCard
+                              car={car}
+                              likeCarHandler={likeCarHandler}
+                              key={car?._id}
+                            />
+                          ))}
+                        </>
+                      )}
+                    </Stack>
+                  </Stack>
+
+                  {/* 2. Filter Panel - Below car cards */}
+                  {hasCars && (
+                    <Stack className={"filter-config"}>
+                      <Filter
+                        searchFilter={searchFilter}
+                        setSearchFilter={setSearchFilter}
+                        initialInput={initialInput}
+                      />
+                    </Stack>
+                  )}
+
+                  {/* 3. Pagination - Below filter */}
+                  <Stack className="pagination-config">
+                    {hasCars && (
+                      <>
+                        <Stack className="pagination-box">
+                          <Pagination
+                            page={currentPage}
+                            count={totalPages}
+                            onChange={handlePaginationChange}
+                            shape="circular"
+                            color="primary"
+                          />
+                        </Stack>
+                        <Stack className="total-result">
+                          <Typography>
+                            {t("car.totalAvailable", { count: total })}
+                          </Typography>
+                        </Stack>
+                      </>
+                    )}
+                  </Stack>
+                </>
+              ) : (
+                <HolographicCarCard
+                  cars={cars}
+                  loading={getCarsLoading}
+                  error={getCarsError}
+                  likeCarHandler={likeCarHandler}
+                  searchFilter={searchFilter}
+                  setSearchFilter={setSearchFilter}
+                  t={t}
+                />
+              )}
+            </Stack>
+          </div>
+        </div>
+      </>
     );
   }
 };
