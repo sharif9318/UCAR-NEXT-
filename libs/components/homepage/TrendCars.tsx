@@ -98,7 +98,7 @@ const TrendCars = (props: TrendCarsProps) => {
 
   if (device === "mobile") {
     return (
-      <Stack className={"trend-properties"}>
+      <Stack className={"trend-cars"}>
         <Stack className={"container"}>
           <Stack className={"info-box"}>
             <span>{t("trend.titleMobile")}</span>

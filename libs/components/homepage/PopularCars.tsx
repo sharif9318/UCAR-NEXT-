@@ -46,7 +46,7 @@ const PopularCars = (props: PopularCarsProps) => {
 
   if (device === "mobile") {
     return (
-      <Stack className={"popular-properties"}>
+      <Stack className={"popular-cars"}>
         <Stack className={"container"}>
           <Stack className={"info-box"}>
             <span>{t("popular.titleMobile")}</span>
