@@ -461,10 +461,10 @@ const InteractiveNavbar = () => {
 
           {/* Language Selector */}
           <div
-            className="menu-item"
+            className="lan-box"
             onClick={(e) => setLangAnchor(e.currentTarget)}
           >
-            <span className="icon">
+            <span className="btn-lang">
               <img
                 src={currentLanguage.flag}
                 alt={t(currentLanguage.label)}

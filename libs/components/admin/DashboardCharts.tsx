@@ -36,7 +36,6 @@ ChartJS.register(
 const DashboardCharts = () => {
   const theme = useTheme();
 
-  // Fetch real data
   const { data: usersData } = useQuery(GET_ALL_MEMBERS_BY_ADMIN, {
     variables: {
       input: {
@@ -82,7 +81,6 @@ const DashboardCharts = () => {
     },
   });
 
-  // Fetch inquiries (csType: 'INQUIRY')
   const { data: inquiriesData } = useQuery(GET_ALL_CS, {
     variables: {
       input: {
@@ -212,27 +210,6 @@ const DashboardCharts = () => {
         }}
       >
         <Typography variant="h6" mb={2}>
-          Entity Overview
-        </Typography>
-        <Bar
-          data={barData}
-          options={{
-            responsive: true,
-            plugins: { legend: { display: false } },
-          }}
-        />
-      </Box>
-      <Box
-        sx={{
-          flex: 1,
-          minWidth: 320,
-          bgcolor: "background.paper",
-          p: 3,
-          borderRadius: 2,
-          boxShadow: 2,
-        }}
-      >
-        <Typography variant="h6" mb={2}>
           User Status
         </Typography>
         <Pie data={pieData} options={{ responsive: true }} />
@@ -269,6 +246,27 @@ const DashboardCharts = () => {
         <Typography variant="body2" mt={2}>
           Total Inquiries: {inquiryCount}
         </Typography>
+      </Box>
+      <Box
+        sx={{
+          flex: 1,
+          minWidth: 320,
+          bgcolor: "background.paper",
+          p: 3,
+          borderRadius: 2,
+          boxShadow: 2,
+        }}
+      >
+        <Typography variant="h6" mb={2}>
+          Entity Overview
+        </Typography>
+        <Bar
+          data={barData}
+          options={{
+            responsive: true,
+            plugins: { legend: { display: false } },
+          }}
+        />
       </Box>
     </Box>
   );

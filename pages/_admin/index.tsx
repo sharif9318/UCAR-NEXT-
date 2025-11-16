@@ -8,8 +8,10 @@ const AdminHome: NextPage = (props: any) => {
 
   /** LIFECYCLES **/
   useEffect(() => {
-    router.push("/_admin/users");
-  }, []);
+    if (router.isReady) {
+      router.push("/_admin/dashboard");
+    }
+  }, [router]);
   return <></>;
 };
 

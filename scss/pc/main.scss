@@ -353,7 +353,7 @@ body {
             }
             .btn-lang {
               border-radius: 4px;
-              img {
+              .flag-img {
                 width: 24px;
                 height: 17px;
                 border-radius: 2px;
@@ -629,7 +629,65 @@ body {
     // ============================================
     // DEFAULT STATE (dark/transparent)
     // ============================================
+    .menu-control,
+    .btn-lang,
+    .theme-toggle,
+    .flag,
+    .img-flag {
+      display: flex;
+      align-items: center;
+      padding: 12px 16px;
+      border-radius: 8px;
+      color: #f5f5f5;
+      font-family: $font;
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      white-space: nowrap;
+      background: transparent;
+      transition: all 0.25s ease;
 
+      img {
+        display: block;
+        width: 24px !important;
+        height: 17px !important;
+        max-width: 24px !important;
+        max-height: 17px !important;
+        object-fit: cover;
+        border-radius: 2px;
+        margin-right: 12px;
+      }
+
+      .icon {
+        min-width: 24px;
+        font-size: 1.2rem;
+        margin-right: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .label {
+        opacity: 0;
+        visibility: hidden;
+        transition: opacity 0.25s ease, visibility 0.25s ease;
+        margin-left: 0;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+
+      &:hover {
+        background: #e20c0c;
+        color: #ffffff;
+        transform: translateX(5px);
+
+        .label {
+          opacity: 1;
+          visibility: visible;
+        }
+      }
+    }
     // Menu Toggle Button - Dark default
     .menu-toggle-btn {
       width: 150px;
@@ -1235,9 +1293,22 @@ body {
       border-bottom-color: transparent;
 
       &.over-top {
-        // background: rgba(255, 255, 255, 0.98) !important;
+        background: none !important;
         backdrop-filter: blur(16px) !important;
-        box-shadow: 2px 0 16px rgba(0, 0, 0, 0.1) !important;
+        box-shadow: none !important;
+      }
+
+      &:not(.overtop) {
+        background: transparent !important;
+        backdrop-filter: none !important;
+        box-shadow: none !important;
+      }
+
+      .theme-toggle,
+      .label,
+      img {
+        opacity: 0;
+        visibility: hidden;
       }
 
       .user-section {
@@ -1325,7 +1396,72 @@ body {
       }
 
       .theme-toggle {
-        margin: auto;
+        margin: 1.5rem 0;
+
+        .glass-radio-group {
+          --bg: var(--bg-paper);
+          --text: var(--text-primary);
+
+          display: flex;
+          position: relative;
+          background: var(--bg);
+          color: var(--text);
+          border-radius: 1rem;
+          backdrop-filter: blur(12px);
+          box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+          overflow: hidden;
+          width: 100%;
+
+          input {
+            display: none;
+          }
+
+          label {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 13px;
+            padding: 0.8rem 0.5rem;
+            cursor: pointer;
+            font-weight: 600;
+            letter-spacing: 0.3px;
+            color: var(--text);
+            position: relative;
+            z-index: 2;
+            transition: color 0.3s ease-in-out;
+          }
+
+          input:checked + label {
+            color: #fff;
+          }
+
+          .glass-glider {
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            width: calc(100% / 3);
+            border-radius: 1rem;
+            z-index: 1;
+            transition: transform 0.5s cubic-bezier(0.37, 1.95, 0.66, 0.56),
+              background 0.4s ease-in-out;
+          }
+
+          #light:checked ~ .glass-glider {
+            transform: translateX(0%);
+            background: linear-gradient(135deg, #c0c0c055, #242121ff);
+          }
+
+          #EDark:checked ~ .glass-glider {
+            transform: translateX(100%);
+            background: linear-gradient(135deg, #ffd70055, #ffcc00);
+          }
+
+          #dark:checked ~ .glass-glider {
+            transform: translateX(200%);
+            background: linear-gradient(135deg, #d0e7ff55, #a0d8ff);
+          }
+        }
       }
 
       .menu-toggle-btn {
@@ -1342,6 +1478,24 @@ body {
           transition: all 0.5s;
           opacity: 0;
         }
+      }
+      .menu-control,
+      .btn-lang,
+      .theme-toggle,
+      .menu-items > .menu-item,
+      a > div {
+        .label {
+          opacity: 1;
+          visibility: visible;
+        }
+      }
+      .btn-lang img,
+      .btn-lang .flag img {
+        width: 24px !important;
+        height: 17px !important;
+        border-radius: 2px;
+        display: block;
+        margin-right: 12px;
       }
     }
   }
@@ -1867,51 +2021,6 @@ body {
         }
       }
     }
-
-    .lan-box {
-      margin-left: 8px;
-      display: flex;
-      align-items: center;
-
-      .notification-icon {
-        color: var(--text-on-hero, #fff);
-        margin-right: 4px;
-      }
-
-      .btn-lang {
-        border-radius: 4px;
-        min-width: auto;
-        padding: 4px 6px;
-
-        img {
-          width: 24px;
-          height: 17px;
-          border-radius: 2px;
-        }
-
-        // Ensure inner flag image never grows
-        .flag {
-          display: inline-flex;
-          align-items: center;
-          img {
-            width: 24px !important;
-            height: 17px !important;
-            max-width: 24px !important;
-            max-height: 17px !important;
-            object-fit: cover;
-            border-radius: 2px;
-            display: block;
-          }
-        }
-      }
-
-      .img-flag {
-        width: 24px;
-        height: 17px;
-        border-radius: 2px;
-        margin-right: 8px;
-      }
-    }
   }
 
   // Title/Subtitle container that sits below the nav
@@ -2050,13 +2159,6 @@ body {
       margin-right: 8px !important;
       object-fit: cover !important;
       flex-shrink: 0 !important;
-    }
-
-    img.img-flag {
-      width: 24px !important;
-      height: 16px !important;
-      margin-right: 8px !important;
-      object-fit: cover !important;
     }
   }
 }
