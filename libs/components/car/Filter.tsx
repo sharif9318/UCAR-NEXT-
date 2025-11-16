@@ -433,7 +433,223 @@ const Filter = (props: FilterType) => {
   }, [router, initialInput]);
 
   if (device === "mobile") {
-    return <div>CARS FILTER</div>;
+    return (
+      <DashboardPanel className="futuristic-filter">
+        <Stack
+          direction="row"
+          spacing={3}
+          alignItems="flex-start"
+          flexWrap="wrap"
+        >
+          {/* Search Section */}
+          <FilterSection sx={{ minWidth: "240px", flex: 1 }}>
+            <SectionLabel>
+              <TuneIcon /> {t("filter.search")}
+            </SectionLabel>
+            <StyledInput
+              value={searchText}
+              type="text"
+              placeholder={t("filter.placeholder")}
+              onChange={(e: any) => setSearchText(e.target.value)}
+              onKeyDown={(event: any) => {
+                if (event.key === "Enter") {
+                  setSearchFilter({
+                    ...searchFilter,
+                    search: { ...searchFilter.search, text: searchText },
+                  });
+                }
+              }}
+              endAdornment={
+                <IconButton size="small" onClick={() => setSearchText("")}>
+                  <CancelRoundedIcon
+                    sx={{ fontSize: "18px", color: "#E50914" }}
+                  />
+                </IconButton>
+              }
+            />
+          </FilterSection>
+
+          {/* Location Section */}
+          <FilterSection>
+            <SectionLabel>
+              <LocationOnIcon /> {t("filter.location")}
+            </SectionLabel>
+            <Stack direction="row" gap={0.5} flexWrap="wrap">
+              {carLocation.slice(0, 4).map((location: string) => (
+                <StyledButton
+                  key={location}
+                  size="small"
+                  className={
+                    (searchFilter?.search?.locationList || []).includes(
+                      location as CarLocation
+                    )
+                      ? "active"
+                      : ""
+                  }
+                  onClick={() => handleLocationToggle(location)}
+                >
+                  {location}
+                </StyledButton>
+              ))}
+            </Stack>
+          </FilterSection>
+
+          {/* Car Type Section */}
+          <FilterSection>
+            <SectionLabel>
+              <DirectionsCarIcon /> {t("filter.carType")}
+            </SectionLabel>
+            <Stack direction="row" gap={0.5} flexWrap="wrap">
+              {carType.slice(0, 4).map((type: string) => (
+                <StyledButton
+                  key={type}
+                  size="small"
+                  className={
+                    (searchFilter?.search?.typeList || []).includes(
+                      type as CarType
+                    )
+                      ? "active"
+                      : ""
+                  }
+                  onClick={() => handleTypeToggle(type)}
+                >
+                  {type}
+                </StyledButton>
+              ))}
+            </Stack>
+          </FilterSection>
+
+          {/* Seats Section */}
+          <FilterSection>
+            <SectionLabel>
+              <EventSeatIcon /> {t("car.seats")}
+            </SectionLabel>
+            <Stack direction="row" gap={0.5}>
+              {[2, 4, 5, 7].map((seats) => (
+                <StyledButton
+                  key={seats}
+                  size="small"
+                  className={
+                    (searchFilter?.search?.seatsList || []).includes(seats)
+                      ? "active"
+                      : ""
+                  }
+                  onClick={() => handleSeatsToggle(seats)}
+                >
+                  {seats}+
+                </StyledButton>
+              ))}
+            </Stack>
+          </FilterSection>
+
+          {/* Year Section */}
+          <FilterSection>
+            <SectionLabel>
+              <CalendarTodayIcon /> {t("filter.yearRange")}
+            </SectionLabel>
+            <Stack direction="row" gap={0.5}>
+              {[1, 2, 3, 5].map((year) => (
+                <StyledButton
+                  key={year}
+                  size="small"
+                  className={
+                    (searchFilter?.search?.yearsList || []).includes(year)
+                      ? "active"
+                      : ""
+                  }
+                  onClick={() => handleYearToggle(year)}
+                >
+                  {year}y
+                </StyledButton>
+              ))}
+            </Stack>
+          </FilterSection>
+
+          {/* Price Range Section */}
+          <FilterSection sx={{ minWidth: "200px" }}>
+            <SectionLabel>
+              <AttachMoneyIcon /> {t("filter.priceRange")}
+            </SectionLabel>
+            <Box sx={{ px: 1 }}>
+              <StyledSlider
+                value={priceRange}
+                onChange={handlePriceChange}
+                onChangeCommitted={handlePriceCommit}
+                valueLabelDisplay="auto"
+                min={0}
+                max={200000}
+                step={5000}
+                valueLabelFormat={(value) => `$${value.toLocaleString()}`}
+              />
+              <Stack direction="row" justifyContent="space-between" mt={0.5}>
+                <Typography
+                  sx={{ fontSize: "10px", color: "rgba(229, 9, 20, 0.7)" }}
+                >
+                  ${priceRange[0].toLocaleString()}
+                </Typography>
+                <Typography
+                  sx={{ fontSize: "10px", color: "rgba(229, 9, 20, 0.7)" }}
+                >
+                  ${priceRange[1].toLocaleString()}
+                </Typography>
+              </Stack>
+            </Box>
+          </FilterSection>
+
+          {/* Mileage Range Section */}
+          <FilterSection sx={{ minWidth: "200px" }}>
+            <SectionLabel>
+              <SpeedIcon /> {t("filter.mileage")}
+            </SectionLabel>
+            <Box sx={{ px: 1 }}>
+              <StyledSlider
+                value={mileageRange}
+                onChange={handleMileageChange}
+                onChangeCommitted={handleMileageCommit}
+                valueLabelDisplay="auto"
+                min={0}
+                max={500000}
+                step={10000}
+                valueLabelFormat={(value) => `${(value / 1000).toFixed(0)}k km`}
+              />
+              <Stack direction="row" justifyContent="space-between" mt={0.5}>
+                <Typography
+                  sx={{ fontSize: "10px", color: "rgba(229, 9, 20, 0.7)" }}
+                >
+                  {(mileageRange[0] / 1000).toFixed(0)}k km
+                </Typography>
+                <Typography
+                  sx={{ fontSize: "10px", color: "rgba(229, 9, 20, 0.7)" }}
+                >
+                  {(mileageRange[1] / 1000).toFixed(0)}k km
+                </Typography>
+              </Stack>
+            </Box>
+          </FilterSection>
+
+          {/* Reset Button */}
+          <FilterSection sx={{ minWidth: "auto", justifyContent: "flex-end" }}>
+            <Tooltip title={t("filter.reset")}>
+              <IconButton
+                onClick={refreshHandler}
+                sx={{
+                  color: "#E50914",
+                  border: "1px solid rgba(229, 9, 20, 0.3)",
+                  borderRadius: "8px",
+                  mt: "20px",
+                  "&:hover": {
+                    background: "rgba(229, 9, 20, 0.15)",
+                    boxShadow: "0 0 20px rgba(229, 9, 20, 0.3)",
+                  },
+                }}
+              >
+                <RefreshIcon />
+              </IconButton>
+            </Tooltip>
+          </FilterSection>
+        </Stack>
+      </DashboardPanel>
+    );
   }
 
   return (

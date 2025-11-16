@@ -18,6 +18,7 @@ import {
   Typography,
   ToggleButton,
   ToggleButtonGroup,
+  IconButton,
 } from "@mui/material";
 import CarCard from "../../libs/components/car/CarCard";
 import HolographicCarCard from "../../libs/components/car/HolographicCarCard";
@@ -31,6 +32,7 @@ import { serverSideTranslations } from "next-i18next/serverSideTranslations";
 import KeyboardArrowDownRoundedIcon from "@mui/icons-material/KeyboardArrowDownRounded";
 import ViewModuleIcon from "@mui/icons-material/ViewModule";
 import ViewComfyIcon from "@mui/icons-material/ViewComfy";
+import TuneIcon from "@mui/icons-material/Tune";
 import { Direction, Message } from "../../libs/enums/common.enum";
 import { useMutation, useQuery } from "@apollo/client";
 import { GET_CARS } from "../../apollo/user/query";
@@ -68,6 +70,7 @@ const CarList: NextPage = ({ initialInput, ...props }: any) => {
     "new" | "lowest" | "highest"
   >("new");
   const [viewMode, setViewMode] = useState<"grid" | "holographic">("grid");
+  const [showFilter, setShowFilter] = useState<boolean>(false);
 
   /** APOLLO REQUESTS **/
   const [likeTargetCar] = useMutation(LIKE_TARGET_CAR);
@@ -206,6 +209,10 @@ const CarList: NextPage = ({ initialInput, ...props }: any) => {
     []
   );
 
+  const toggleFilterHandler = useCallback(() => {
+    setShowFilter((prev) => !prev);
+  }, []);
+
   const sortLabel = useMemo(() => {
     switch (filterSortKey) {
       case "new":
@@ -281,6 +288,24 @@ const CarList: NextPage = ({ initialInput, ...props }: any) => {
                     <ViewComfyIcon />
                   </ToggleButton>
                 </ToggleButtonGroup>
+                <IconButton
+                  onClick={toggleFilterHandler}
+                  sx={{
+                    color: showFilter ? "#E50914" : "#6c757d",
+                    padding: "8px",
+                    border: showFilter
+                      ? "1px solid #E50914"
+                      : "1px solid rgba(229, 9, 20, 0.3)",
+                    borderRadius: "8px",
+                    background: showFilter
+                      ? "rgba(229, 9, 20, 0.15)"
+                      : "transparent",
+                    transition: "all 0.3s ease",
+                  }}
+                  aria-label="toggle filter"
+                >
+                  <TuneIcon />
+                </IconButton>
                 <span>{t("filter.sortBy")}</span>
                 <Button
                   onClick={sortingClickHandler}
@@ -365,8 +390,8 @@ const CarList: NextPage = ({ initialInput, ...props }: any) => {
                     </Stack>
                   </Stack>
 
-                  {/* 2. Filter Panel - Below car cards */}
-                  {hasCars && (
+                  {/* 2. Filter Panel - Below car cards - UPDATED WITH TOGGLE */}
+                  {hasCars && showFilter && (
                     <Stack className={"filter-config"}>
                       <Filter
                         searchFilter={searchFilter}

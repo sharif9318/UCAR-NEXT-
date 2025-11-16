@@ -99,9 +99,8 @@ const withLayoutBasic = (Component: any) => {
             <meta name="title" content="UCAR NEXT" />
           </Head>
           <Stack id="mobile-wrap">
-            <Stack id="top">
-              <Top />
-            </Stack>
+            <InteractiveNavbar />
+
             <Stack id="main">
               <Component {...props} />
             </Stack>

@@ -1,0 +1,1769 @@
+@import "/scss/variables.scss";
+
+@media (max-width: 768px) {
+  #mobile-wrap {
+    // ============================================
+    // CAR LIST PAGE
+    // ============================================
+    #car-list-page {
+      padding: 80px 0 40px;
+      background: var(--bg-default);
+      min-height: 100vh;
+
+      .container {
+        width: 100%;
+        padding: 0;
+
+        .right {
+          position: relative;
+          top: 0;
+          right: 0;
+          width: 100%;
+          padding: 12px 16px;
+          background: var(--bg-paper);
+          border-bottom: 1px solid rgba(229, 9, 20, 0.2);
+          z-index: 10;
+
+          .sorting-panel {
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            padding: 12px 16px;
+            background: linear-gradient(
+              135deg,
+              rgba(229, 9, 20, 0.08) 0%,
+              rgba(255, 255, 255, 0.95) 100%
+            );
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(229, 9, 20, 0.25);
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+
+            // Added IconButton animation
+            .MuiIconButton-root {
+              &:active {
+                transform: scale(0.95);
+              }
+            }
+
+            span {
+              color: #2c3e50;
+              font-family: $font;
+              font-size: 11px;
+              font-weight: 700;
+              letter-spacing: 0.5px;
+              text-transform: uppercase;
+              white-space: nowrap;
+            }
+
+            button {
+              padding: 6px 12px;
+              color: #2c3e50;
+              font-family: $font;
+              font-size: 12px;
+              font-weight: 600;
+              background: rgba(229, 9, 20, 0.1);
+              border: 1px solid rgba(229, 9, 20, 0.3);
+              border-radius: 8px;
+              white-space: nowrap;
+
+              &:active {
+                background: rgba(229, 9, 20, 0.2);
+              }
+            }
+          }
+
+          .MuiToggleButtonGroup-root {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 8px;
+            border: 1px solid rgba(229, 9, 20, 0.25);
+
+            .MuiToggleButton-root {
+              border: none;
+              color: #6c757d;
+              padding: 8px 12px;
+
+              &.Mui-selected {
+                background: linear-gradient(
+                  135deg,
+                  rgba(229, 9, 20, 0.25) 0%,
+                  rgba(229, 9, 20, 0.35) 100%
+                );
+                color: #e50914;
+              }
+            }
+          }
+        }
+
+        .car-page {
+          width: 100%;
+          padding: 0;
+
+          .main-config {
+            width: 100%;
+            padding: 16px;
+
+            .list-config {
+              display: flex;
+              flex-direction: column;
+              gap: 16px;
+              width: 100%;
+
+              // Mobile Car Card Styles
+              .card-config {
+                width: 100%;
+                height: auto;
+                display: flex;
+                flex-direction: column;
+                border-radius: 12px;
+                background: var(--bg-paper);
+                border: 1px solid rgba(229, 9, 20, 0.2);
+                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+                overflow: hidden;
+                transition: transform 0.3s ease, box-shadow 0.3s ease;
+
+                &:active {
+                  transform: scale(0.98);
+                  box-shadow: 0 8px 20px rgba(229, 9, 20, 0.2);
+                }
+
+                .top {
+                  position: relative;
+                  width: 100%;
+                  height: 200px;
+
+                  a {
+                    display: block;
+                    width: 100%;
+                    height: 100%;
+                  }
+
+                  img {
+                    width: 100%;
+                    height: 100%;
+                    object-fit: cover;
+                  }
+
+                  .top-badge {
+                    position: absolute;
+                    top: 12px;
+                    left: 12px;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    padding: 4px 12px;
+                    border-radius: 6px;
+                    background: #eb6753;
+                    color: #fff;
+                    font-family: $font;
+                    font-size: 11px;
+                    font-weight: 600;
+                    z-index: 2;
+
+                    img {
+                      height: 12px;
+                      width: auto;
+                      margin-right: 4px;
+                    }
+                  }
+
+                  .price-box {
+                    position: absolute;
+                    bottom: 12px;
+                    left: 12px;
+                    padding: 6px 12px;
+                    border-radius: 8px;
+                    border: 1px solid rgba(229, 9, 20, 0.3);
+                    background: rgba(255, 255, 255, 0.95);
+                    backdrop-filter: blur(6px);
+
+                    p {
+                      color: #e50914;
+                      font-family: $font;
+                      font-size: 14px;
+                      font-weight: 700;
+                      margin: 0;
+                    }
+                  }
+                }
+
+                .bottom {
+                  width: 100%;
+                  padding: 14px 16px;
+                  display: flex;
+                  flex-direction: column;
+                  gap: 12px;
+
+                  .name-address {
+                    display: flex;
+                    flex-direction: column;
+                    gap: 4px;
+
+                    .name {
+                      p {
+                        color: var(--text-primary);
+                        font-family: $font;
+                        font-size: 15px;
+                        font-weight: 600;
+                        margin: 0;
+                        text-transform: capitalize;
+                      }
+                    }
+
+                    .address {
+                      p {
+                        color: var(--text-secondary);
+                        font-family: $font;
+                        font-size: 12px;
+                        font-weight: 400;
+                        margin: 0;
+                      }
+                    }
+                  }
+
+                  .options {
+                    display: flex;
+                    flex-direction: row;
+                    gap: 12px;
+                    flex-wrap: wrap;
+
+                    .option {
+                      display: flex;
+                      flex-direction: row;
+                      align-items: center;
+                      gap: 4px;
+
+                      svg {
+                        width: 16px;
+                        height: 16px;
+                        color: var(--text-secondary);
+                      }
+
+                      p {
+                        color: var(--text-secondary);
+                        font-family: $font;
+                        font-size: 12px;
+                        font-weight: 400;
+                        margin: 0;
+                      }
+                    }
+                  }
+
+                  .divider {
+                    width: 100%;
+                    height: 1px;
+                    background: rgba(229, 9, 20, 0.15);
+                  }
+
+                  .type-buttons {
+                    display: flex;
+                    flex-direction: row;
+                    justify-content: space-between;
+                    align-items: center;
+
+                    .type {
+                      display: flex;
+                      flex-direction: row;
+                      gap: 8px;
+
+                      p {
+                        color: var(--text-primary);
+                        font-family: $font;
+                        font-size: 12px;
+                        font-weight: 500;
+                        margin: 0;
+
+                        &.disabled-type {
+                          color: #adb5bd;
+                        }
+                      }
+                    }
+
+                    .buttons {
+                      display: flex;
+                      flex-direction: row;
+                      align-items: center;
+                      gap: 4px;
+
+                      .MuiIconButton-root {
+                        padding: 6px;
+
+                        svg {
+                          width: 20px;
+                          height: 20px;
+                        }
+                      }
+
+                      .view-cnt {
+                        font-size: 12px;
+                        color: var(--text-secondary);
+                        font-family: $font;
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+
+          // Filter Panel Mobile - UPDATED WITH ANIMATION
+          .filter-config {
+            width: 100%;
+            padding: 16px;
+            background: var(--bg-paper);
+            border-top: 1px solid rgba(229, 9, 20, 0.2);
+            animation: slideDown 0.3s ease-out;
+
+            @keyframes slideDown {
+              from {
+                opacity: 0;
+                transform: translateY(-10px);
+              }
+              to {
+                opacity: 1;
+                transform: translateY(0);
+              }
+            }
+          }
+
+          // Pagination Mobile
+          .pagination-config {
+            width: 100%;
+            padding: 20px 16px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 12px;
+
+            .pagination-box {
+              width: 100%;
+              display: flex;
+              justify-content: center;
+
+              .MuiPagination-root .MuiPaginationItem-root {
+                min-width: 32px;
+                height: 32px;
+                font-size: 13px;
+                color: var(--text-primary);
+                border: 1px solid rgba(229, 9, 20, 0.25);
+
+                &.Mui-selected {
+                  background: rgba(229, 9, 20, 0.3);
+                  color: #e50914;
+                  font-weight: 700;
+                }
+              }
+            }
+
+            .total-result p {
+              color: var(--text-secondary);
+              font-size: 14px;
+              font-weight: 500;
+              text-align: center;
+            }
+          }
+        }
+      }
+
+      .no-data {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 60px 20px;
+
+        img {
+          width: 60px;
+          height: 60px;
+          margin-bottom: 16px;
+          opacity: 0.4;
+        }
+
+        p {
+          color: var(--text-secondary);
+          font-size: 14px;
+          font-weight: 500;
+          text-align: center;
+        }
+      }
+    }
+  }
+}
+
+// Dark theme for mobile
+@media (max-width: 768px) {
+  [data-theme="dark"],
+  [data-theme="elevatedDark"] {
+    #mobile-wrap {
+      #car-list-page {
+        .sorting-panel {
+          background: linear-gradient(
+            135deg,
+            rgba(229, 9, 20, 0.15) 0%,
+            rgba(0, 0, 0, 0.85) 100%
+          );
+
+          span {
+            color: rgba(229, 9, 20, 0.95);
+          }
+
+          button {
+            color: #ffffff;
+            background: rgba(229, 9, 20, 0.2);
+          }
+        }
+
+        .price-box {
+          background: rgba(0, 0, 0, 0.85) !important;
+          border-color: rgba(229, 9, 20, 0.5) !important;
+
+          p {
+            color: #ff4444 !important;
+          }
+        }
+      }
+    }
+  }
+}
+
+@media (max-width: 768px) {
+  #mobile-wrap {
+    // ============================================
+    // CAR DETAIL PAGE
+    // ============================================
+    #car-detail-page {
+      padding: 70px 0 40px;
+      background: var(--bg-default);
+      min-height: 100vh;
+
+      .loading-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        width: 100%;
+        height: 400px;
+      }
+
+      .container {
+        width: 100%;
+        padding: 0;
+
+        .car-detail-config {
+          display: flex;
+          flex-direction: column;
+          gap: 20px;
+
+          // Car Info Section
+          .car-info-config {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+
+            .info {
+              width: 100%;
+              padding: 16px;
+              background: var(--bg-paper);
+              border-radius: 12px;
+              box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+              border: 1px solid rgba(229, 9, 20, 0.2);
+              display: flex;
+              flex-direction: column;
+              gap: 16px;
+
+              .left-box {
+                width: 100%;
+
+                .title-main {
+                  color: var(--text-primary);
+                  font-family: $font;
+                  font-size: 20px;
+                  font-weight: 700;
+                  margin-bottom: 12px;
+                  text-transform: capitalize;
+                  line-height: 1.3;
+                }
+
+                .top-box {
+                  display: flex;
+                  flex-direction: row;
+                  align-items: center;
+                  gap: 8px;
+                  flex-wrap: wrap;
+                  margin-bottom: 12px;
+
+                  .city {
+                    color: var(--text-secondary);
+                    font-size: 12px;
+                    font-family: $font;
+                  }
+
+                  .divider {
+                    width: 1px;
+                    height: 16px;
+                    background: rgba(229, 9, 20, 0.2);
+                  }
+
+                  .buy-lease-box {
+                    display: flex;
+                    flex-direction: row;
+                    align-items: center;
+                    gap: 6px;
+
+                    .circle {
+                      display: flex;
+                      align-items: center;
+                      justify-content: center;
+                    }
+
+                    .buy-lease {
+                      color: var(--accent);
+                      font-size: 13px;
+                      font-weight: 600;
+                      font-family: $font;
+                    }
+                  }
+
+                  .date {
+                    color: var(--text-secondary);
+                    font-size: 13px;
+                    font-family: $font;
+                  }
+
+                  svg {
+                    width: 14px;
+                    height: 14px;
+                    color: var(--text-secondary);
+                  }
+                }
+
+                .bottom-box {
+                  display: flex;
+                  flex-direction: row;
+                  gap: 12px;
+                  flex-wrap: wrap;
+
+                  .option {
+                    display: flex;
+                    flex-direction: row;
+                    align-items: center;
+                    gap: 6px;
+
+                    svg {
+                      width: 18px;
+                      height: 18px;
+                      color: var(--text-secondary);
+                    }
+
+                    p {
+                      color: var(--text-primary);
+                      font-size: 13px;
+                      margin: 0;
+                      font-family: $font;
+                    }
+                  }
+                }
+              }
+
+              .right-box {
+                width: 100%;
+                display: flex;
+                flex-direction: row;
+                justify-content: space-between;
+                align-items: center;
+
+                .buttons {
+                  display: flex;
+                  flex-direction: row;
+                  align-items: center;
+                  gap: 8px;
+
+                  p {
+                    color: var(--text-secondary);
+                    font-size: 13px;
+                    margin: 0;
+                    font-family: $font;
+                  }
+
+                  .button-box {
+                    display: flex;
+                    flex-direction: row;
+                    align-items: center;
+                    gap: 4px;
+
+                    .MuiIconButton-root {
+                      padding: 6px;
+                    }
+
+                    svg {
+                      width: 24px;
+                      height: 24px;
+                      color: var(--text-secondary);
+
+                      &.MuiSvgIcon-colorPrimary {
+                        color: var(--accent);
+                      }
+                    }
+                  }
+                }
+
+                > p {
+                  color: var(--accent);
+                  font-size: 20px;
+                  font-weight: 700;
+                  margin: 0;
+                  font-family: $font;
+                }
+
+                span {
+                  color: var(--text-secondary);
+                  font-size: 12px;
+                  font-family: $font;
+                }
+              }
+            }
+
+            .images {
+              width: 100%;
+              padding: 16px;
+              background: var(--bg-paper);
+              border-radius: 12px;
+              box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+              border: 1px solid rgba(229, 9, 20, 0.2);
+              display: flex;
+              flex-direction: column;
+              gap: 12px;
+
+              .main-image {
+                width: 100%;
+                height: 250px;
+                border-radius: 12px;
+                overflow: hidden;
+
+                img,
+                video {
+                  width: 100%;
+                  height: 100%;
+                  object-fit: cover;
+                }
+              }
+
+              .sub-images {
+                display: flex;
+                flex-direction: row;
+                gap: 8px;
+                overflow-x: auto;
+                padding-bottom: 8px;
+
+                &::-webkit-scrollbar {
+                  height: 4px;
+                }
+
+                &::-webkit-scrollbar-thumb {
+                  background: rgba(229, 9, 20, 0.5);
+                  border-radius: 4px;
+                }
+
+                .sub-img-box {
+                  width: 80px;
+                  height: 80px;
+                  min-width: 80px;
+                  border-radius: 8px;
+                  overflow: hidden;
+                  border: 2px solid transparent;
+                  cursor: pointer;
+                  position: relative;
+
+                  &:active {
+                    border-color: var(--accent);
+                  }
+
+                  img,
+                  video {
+                    width: 100%;
+                    height: 100%;
+                    object-fit: cover;
+                  }
+
+                  .badge-360 {
+                    position: absolute;
+                    bottom: 4px;
+                    left: 4px;
+                    background: var(--accent);
+                    color: white;
+                    padding: 2px 6px;
+                    border-radius: 4px;
+                    font-size: 8px;
+                    font-weight: bold;
+                    z-index: 2;
+                  }
+                }
+              }
+            }
+          }
+
+          // Car Description Section
+          .car-desc-config {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            padding: 0 16px;
+
+            .left-config {
+              width: 100%;
+              display: flex;
+              flex-direction: column;
+              gap: 20px;
+
+              // Options Config
+              .options-config {
+                width: 100%;
+                display: grid;
+                grid-template-columns: repeat(2, 1fr);
+                gap: 16px;
+
+                .option {
+                  display: flex;
+                  flex-direction: row;
+                  gap: 12px;
+                  align-items: flex-start;
+
+                  .svg-box {
+                    width: 48px;
+                    height: 48px;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    border-radius: 10px;
+                    border: 1px solid rgba(229, 9, 20, 0.2);
+                    background: var(--bg-paper);
+                    flex-shrink: 0;
+
+                    img {
+                      width: 28px;
+                      height: auto;
+                    }
+
+                    svg {
+                      fill: var(--text-primary);
+                    }
+                  }
+
+                  .option-includes {
+                    display: flex;
+                    flex-direction: column;
+                    gap: 2px;
+                    flex: 1;
+                    min-width: 0;
+
+                    .title {
+                      color: var(--text-primary);
+                      font-family: $font;
+                      font-size: 13px;
+                      font-weight: 600;
+                      line-height: 1.3;
+                      word-wrap: break-word;
+                    }
+
+                    .option-data {
+                      color: var(--text-secondary);
+                      font-family: $font;
+                      font-size: 12px;
+                      font-weight: 400;
+                      line-height: 1.4;
+                      word-wrap: break-word;
+                    }
+                  }
+                }
+              }
+
+              // Property Description Config
+              .prop-desc-config {
+                width: 100%;
+                padding: 20px 16px;
+                border-radius: 12px;
+                border: 1px solid rgba(229, 9, 20, 0.2);
+                background: var(--bg-paper);
+                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+                display: flex;
+                flex-direction: column;
+                gap: 24px;
+
+                .top {
+                  display: flex;
+                  flex-direction: column;
+                  gap: 12px;
+
+                  .title {
+                    color: var(--text-primary);
+                    font-family: $font;
+                    font-size: 16px;
+                    font-weight: 600;
+                    line-height: 1.3;
+                  }
+
+                  .desc {
+                    color: var(--text-primary);
+                    font-family: $font;
+                    font-size: 13px;
+                    font-weight: 400;
+                    line-height: 1.6;
+                  }
+                }
+
+                .bottom {
+                  display: flex;
+                  flex-direction: column;
+                  gap: 16px;
+
+                  .title {
+                    color: var(--text-primary);
+                    font-family: $font;
+                    font-size: 16px;
+                    font-weight: 600;
+                    line-height: 1.3;
+                    margin-bottom: 8px;
+                  }
+
+                  .info-box {
+                    display: flex;
+                    flex-direction: column;
+                    gap: 0;
+
+                    .left,
+                    .right {
+                      .info {
+                        display: flex;
+                        flex-direction: row;
+                        justify-content: space-between;
+                        align-items: center;
+                        padding: 8px 0;
+                        border-bottom: 1px solid rgba(229, 9, 20, 0.1);
+
+                        &:last-child {
+                          border-bottom: none;
+                        }
+
+                        .title {
+                          color: var(--text-primary);
+                          font-family: $font;
+                          font-size: 13px;
+                          font-weight: 600;
+                          line-height: 1.4;
+                          margin: 0;
+                        }
+
+                        .data {
+                          color: var(--text-secondary);
+                          font-family: $font;
+                          font-size: 13px;
+                          font-weight: 400;
+                          line-height: 1.4;
+                          text-align: right;
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+
+              // Interior Config
+              .interior-config {
+                width: 100%;
+                padding: 20px 16px;
+                border-radius: 12px;
+                border: 1px solid rgba(229, 9, 20, 0.2);
+                background: var(--bg-paper);
+                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+                display: flex;
+                flex-direction: column;
+                gap: 16px;
+
+                .title {
+                  color: var(--text-primary);
+                  font-family: $font;
+                  font-size: 16px;
+                  font-weight: 600;
+                  line-height: 1.3;
+                }
+
+                .image-box {
+                  width: 100%;
+                  height: 300px;
+                  border: 1px solid rgba(229, 9, 20, 0.2);
+                  background: var(--bg-paper);
+                  border-radius: 12px;
+                  position: relative;
+                  overflow: hidden;
+
+                  .panorama-preview {
+                    width: 100%;
+                    height: 100%;
+                    position: relative;
+                    border-radius: 12px;
+                    overflow: hidden;
+                    cursor: pointer;
+
+                    img {
+                      width: 100%;
+                      height: 100%;
+                      object-fit: cover;
+                    }
+
+                    .badge-360-large {
+                      position: absolute;
+                      top: 50%;
+                      left: 50%;
+                      transform: translate(-50%, -50%);
+                      background: linear-gradient(
+                        135deg,
+                        var(--accent) 0%,
+                        #c20812 100%
+                      );
+                      color: white;
+                      border-radius: 50%;
+                      width: 60px;
+                      height: 60px;
+                      display: flex;
+                      align-items: center;
+                      justify-content: center;
+                      font-size: 14px;
+                      font-weight: bold;
+                      box-shadow: 0 4px 20px rgba(229, 9, 20, 0.5);
+                    }
+                  }
+
+                  .panorama-count {
+                    position: absolute;
+                    bottom: 8px;
+                    right: 8px;
+                    background: rgba(0, 0, 0, 0.8);
+                    color: white;
+                    padding: 4px 8px;
+                    border-radius: 4px;
+                    font-size: 11px;
+                    backdrop-filter: blur(10px);
+                  }
+
+                  img {
+                    width: 100%;
+                    height: 100%;
+                    object-fit: cover;
+                    border-radius: 12px;
+                  }
+                }
+              }
+
+              // Reviews Config
+              .reviews-config {
+                background: var(--bg-paper);
+                border-radius: 12px;
+                padding: 20px 16px;
+                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+                border: 1px solid rgba(229, 9, 20, 0.2);
+
+                .filter-box {
+                  display: flex;
+                  flex-direction: column;
+                  gap: 12px;
+                  margin-bottom: 20px;
+                  padding-bottom: 16px;
+                  border-bottom: 1px solid rgba(229, 9, 20, 0.1);
+
+                  .review-cnt {
+                    display: flex;
+                    flex-direction: row;
+                    align-items: center;
+                    gap: 8px;
+
+                    svg {
+                      color: var(--accent);
+                      width: 20px;
+                      height: 20px;
+                    }
+
+                    .reviews {
+                      color: var(--text-primary);
+                      font-family: $font;
+                      font-size: 16px;
+                      font-weight: 600;
+                    }
+                  }
+
+                  .select-box {
+                    display: flex;
+                    flex-direction: row;
+                    align-items: center;
+                    gap: 8px;
+
+                    .sort-title {
+                      color: var(--text-secondary);
+                      font-family: $font;
+                      font-size: 13px;
+                      font-weight: 400;
+                    }
+
+                    .select-main {
+                      flex: 1;
+                      border: 1px solid rgba(229, 9, 20, 0.2);
+                      outline: none;
+                      color: var(--text-primary);
+                      font-family: $font;
+                      font-size: 13px;
+                      background: var(--bg-paper);
+                      padding: 6px 8px;
+                      border-radius: 6px;
+
+                      &:focus {
+                        border-color: var(--accent);
+                      }
+                    }
+                  }
+                }
+
+                .review-list {
+                  display: flex;
+                  flex-direction: column;
+                  gap: 16px;
+
+                  .review-config {
+                    display: flex;
+                    flex-direction: column;
+                    width: 100%;
+                    padding-bottom: 16px;
+                    border-bottom: 1px solid rgba(229, 9, 20, 0.1);
+
+                    &:last-child {
+                      border-bottom: none;
+                      padding-bottom: 0;
+                    }
+
+                    .review-mb-info {
+                      display: flex;
+                      flex-direction: column;
+                      gap: 12px;
+                      width: 100%;
+
+                      .img-name-box {
+                        display: flex;
+                        flex-direction: row;
+                        align-items: center;
+                        gap: 12px;
+                        width: 100%;
+
+                        .img-box {
+                          width: 50px;
+                          height: 50px;
+                          border-radius: 50%;
+                          background: var(--bg-paper);
+                          border: 2px solid rgba(229, 9, 20, 0.2);
+                          object-fit: cover;
+                          flex-shrink: 0;
+                        }
+
+                        > div {
+                          display: flex;
+                          flex-direction: column;
+                          gap: 4px;
+                          flex: 1;
+
+                          .name {
+                            color: var(--text-primary);
+                            font-family: $font;
+                            font-size: 14px;
+                            font-weight: 600;
+                            margin: 0;
+                          }
+
+                          .date {
+                            color: var(--text-secondary);
+                            font-family: $font;
+                            font-size: 12px;
+                            font-weight: 400;
+                            margin: 0;
+                          }
+                        }
+                      }
+
+                      .review-stars {
+                        display: flex;
+                        align-items: center;
+                        gap: 4px;
+                        padding-left: 62px;
+                      }
+                    }
+
+                    .desc-box {
+                      width: 100%;
+                      margin-top: 12px;
+                      padding-left: 62px;
+
+                      .description {
+                        color: var(--text-primary);
+                        font-family: $font;
+                        font-size: 13px;
+                        font-weight: 400;
+                        line-height: 1.6;
+                        margin: 0;
+                        word-wrap: break-word;
+                      }
+                    }
+                  }
+
+                  .pagination-box {
+                    display: flex;
+                    justify-content: center;
+                    margin-top: 20px;
+                    padding-top: 20px;
+                    border-top: 1px solid rgba(229, 9, 20, 0.1);
+                    width: 100%;
+
+                    .MuiButton-root {
+                      min-width: 36px;
+                      width: 36px;
+                      height: 36px;
+                      border-radius: 50%;
+                      padding: 0;
+                      font-size: 13px;
+                      color: var(--text-primary);
+                      border: 1px solid rgba(229, 9, 20, 0.2);
+                      background-color: transparent;
+
+                      &.MuiButton-contained {
+                        background-color: var(--accent);
+                        border: none;
+                        color: #fff;
+
+                        &:hover {
+                          background-color: #c20812;
+                        }
+                      }
+
+                      &.MuiButton-text:hover {
+                        background-color: rgba(229, 9, 20, 0.1);
+                        border: 1px solid var(--accent);
+                      }
+                    }
+                  }
+                }
+              }
+
+              // Leave Review Config
+              .leave-review-config {
+                border-radius: 12px;
+                border: 1px solid rgba(229, 9, 20, 0.2);
+                background: var(--bg-paper);
+                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+                padding: 20px 16px;
+
+                .main-title {
+                  color: var(--text-primary);
+                  font-family: $font;
+                  font-size: 16px;
+                  font-weight: 600;
+                  margin-bottom: 16px;
+                }
+
+                .review-title {
+                  margin-top: 16px;
+                  color: var(--text-primary);
+                  font-family: $font;
+                  font-size: 13px;
+                  font-weight: 600;
+                  margin-bottom: 8px;
+                }
+
+                textarea {
+                  width: 100%;
+                  height: 100px;
+                  padding: 12px;
+                  border-radius: 8px;
+                  border: 1px solid rgba(229, 9, 20, 0.2);
+                  background: var(--bg-paper);
+                  color: var(--text-primary);
+                  font-family: $font;
+                  font-size: 13px;
+                  line-height: 1.5;
+
+                  &::placeholder {
+                    color: var(--text-secondary);
+                  }
+
+                  &:focus {
+                    border: 1px solid var(--accent);
+                    outline: none;
+                  }
+                }
+
+                .character-counter {
+                  margin-top: 0.5rem;
+                  display: block;
+                  text-align: right;
+                  color: var(--text-secondary);
+                  font-size: 12px;
+                }
+
+                .submit-btn {
+                  width: 100%;
+                  display: flex;
+                  justify-content: center;
+                  margin-top: 20px;
+
+                  button:disabled {
+                    background: rgba(229, 9, 20, 0.3) !important;
+
+                    .title {
+                      color: var(--text-secondary) !important;
+                    }
+                  }
+
+                  .submit-review {
+                    display: flex;
+                    width: 100%;
+                    padding: 14px 24px;
+                    justify-content: center;
+                    align-items: center;
+                    gap: 8px;
+                    border-radius: 10px;
+                    border: none;
+                    background: linear-gradient(
+                      135deg,
+                      var(--accent) 0%,
+                      #c20812 100%
+                    );
+                    cursor: pointer;
+                    box-shadow: 0 4px 12px rgba(229, 9, 20, 0.3);
+
+                    &:active:not(:disabled) {
+                      transform: scale(0.98);
+                    }
+
+                    .title {
+                      color: #fff;
+                      font-family: $font;
+                      font-size: 14px;
+                      font-weight: 600;
+                    }
+
+                    svg {
+                      color: #fff;
+                    }
+                  }
+                }
+              }
+            }
+
+            // Right Config
+            .right-config {
+              width: 100%;
+              padding: 20px 16px;
+              gap: 20px;
+              border-radius: 12px;
+              border: 1px solid rgba(229, 9, 20, 0.2);
+              background: var(--bg-paper);
+              box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+
+              .info-box {
+                width: 100%;
+                display: flex;
+                flex-direction: column;
+                gap: 16px;
+
+                .main-title {
+                  color: var(--text-primary);
+                  font-family: $font;
+                  font-size: 16px;
+                  font-weight: 600;
+                  margin-bottom: 8px;
+                }
+
+                .image-info {
+                  width: 100%;
+                  display: flex;
+                  flex-direction: row;
+                  gap: 12px;
+
+                  img {
+                    width: 70px;
+                    height: 70px;
+                    border-radius: 50%;
+                    object-fit: cover;
+                    border: 2px solid rgba(229, 9, 20, 0.2);
+                  }
+
+                  .name-phone-listings {
+                    display: flex;
+                    flex-direction: column;
+                    gap: 6px;
+                    flex: 1;
+
+                    .name {
+                      color: var(--text-primary);
+                      font-family: $font;
+                      font-size: 14px;
+                      font-weight: 600;
+                    }
+
+                    .phone-number {
+                      display: flex;
+                      flex-direction: row;
+                      align-items: center;
+                      gap: 6px;
+
+                      .number {
+                        color: var(--text-primary);
+                        font-family: $font;
+                        font-size: 13px;
+                      }
+
+                      svg {
+                        color: var(--text-primary);
+                        width: 16px;
+                        height: 16px;
+                      }
+                    }
+
+                    .listings {
+                      color: var(--accent);
+                      font-family: $font;
+                      font-size: 13px;
+                      font-weight: 600;
+                      text-decoration-line: underline;
+                    }
+                  }
+                }
+
+                .sub-title {
+                  color: var(--text-primary);
+                  font-family: $font;
+                  font-size: 13px;
+                  font-weight: 600;
+                  margin-top: 8px;
+                }
+
+                input {
+                  width: 100%;
+                  height: 48px;
+                  padding: 12px;
+                  border-radius: 8px;
+                  border: 1px solid rgba(229, 9, 20, 0.2);
+                  background: var(--bg-paper);
+                  color: var(--text-primary);
+                  outline: none;
+                  font-size: 13px;
+
+                  &::placeholder {
+                    color: var(--text-secondary);
+                    font-family: $font;
+                    font-size: 13px;
+                  }
+
+                  &:focus {
+                    border: 1px solid var(--accent);
+                  }
+                }
+
+                textarea {
+                  width: 100%;
+                  height: 100px;
+                  padding: 12px;
+                  border-radius: 8px;
+                  border: 1px solid rgba(229, 9, 20, 0.2);
+                  background: var(--bg-paper);
+                  color: var(--text-primary);
+                  font-family: $font;
+                  font-size: 13px;
+                  line-height: 1.5;
+
+                  &::placeholder {
+                    color: var(--text-secondary);
+                    font-family: $font;
+                    font-size: 13px;
+                  }
+
+                  &:focus {
+                    border: 1px solid var(--accent);
+                    outline: none;
+                  }
+                }
+
+                .send-message {
+                  display: flex;
+                  width: 100%;
+                  padding: 14px 24px;
+                  justify-content: center;
+                  align-items: center;
+                  gap: 8px;
+                  border-radius: 10px;
+                  background: linear-gradient(
+                    135deg,
+                    var(--accent) 0%,
+                    #c20812 100%
+                  );
+                  border: none;
+                  cursor: pointer;
+                  box-shadow: 0 4px 12px rgba(229, 9, 20, 0.3);
+                  margin-top: 12px;
+
+                  &:active {
+                    transform: scale(0.98);
+                  }
+
+                  .title {
+                    color: #fff;
+                    font-family: $font;
+                    font-size: 14px;
+                    font-weight: 600;
+                  }
+                }
+              }
+
+              .highlights-section {
+                background: var(--bg-paper);
+                border-radius: 12px;
+                padding: 16px;
+                margin-top: 16px;
+
+                .title {
+                  color: var(--text-primary);
+                  font-family: $font;
+                  font-size: 16px;
+                  font-weight: 600;
+                  margin-bottom: 12px;
+                }
+
+                .popular-card-box {
+                  position: relative;
+                  width: 100%;
+                  display: flex;
+                  flex-direction: column;
+                  border-radius: 12px;
+                  overflow: hidden;
+                  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+
+                  .card-img {
+                    position: relative;
+                    width: 100%;
+                    height: auto;
+                    border-radius: 12px;
+                    overflow: hidden;
+                  }
+
+                  .car-foreground {
+                    position: absolute;
+                    top: 40px;
+
+                    transform: translateX(-50%);
+                    width: 90%;
+                    height: auto;
+                    object-fit: cover;
+                    z-index: 15;
+                    filter: drop-shadow(0 8px 20px rgba(0, 0, 0, 0.5));
+                  }
+
+                  .info {
+                    padding: 30px 16px 16px;
+                    background: transparent;
+                    border-radius: 12px;
+                    z-index: 10;
+                    min-height: 150px;
+
+                    .title-section {
+                      display: flex;
+                      flex-direction: column;
+                      gap: 4px;
+                      margin-bottom: 12px;
+
+                      .model-title {
+                        color: var(--text-primary);
+                        font-family: $font;
+                        font-size: 14px;
+                        font-weight: 700;
+                        line-height: 1.2;
+                      }
+
+                      .starting-text {
+                        color: var(--text-primary);
+                        font-family: $font;
+                        font-size: 11px;
+                        font-weight: 600;
+                      }
+
+                      .msrp-text {
+                        color: var(--text-secondary);
+                        font-family: $font;
+                        font-size: 10px;
+                        font-weight: 400;
+                      }
+                    }
+
+                    .options {
+                      display: flex;
+                      gap: 10px;
+                      flex-wrap: wrap;
+
+                      > div {
+                        display: flex;
+                        align-items: center;
+                        gap: 4px;
+
+                        img {
+                          width: 14px;
+                          height: 14px;
+                        }
+
+                        span {
+                          font-family: $font;
+                          font-size: 12px;
+                          color: var(--text-primary);
+                        }
+                      }
+                    }
+
+                    .bott {
+                      display: flex;
+                      justify-content: space-between;
+                      align-items: center;
+                      margin-top: 12px;
+
+                      p {
+                        font-family: $font;
+                        font-size: 12px;
+                        font-weight: 600;
+                        color: var(--text-primary);
+                        text-transform: uppercase;
+                        margin: 0;
+                      }
+
+                      .view-like-box {
+                        display: flex;
+                        align-items: center;
+                        gap: 8px;
+
+                        .view-cnt {
+                          font-family: $font;
+                          font-size: 12px;
+                          color: var(--text-primary);
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+
+          // Similar Cars Section
+          .similar-cars-config {
+            background: var(--bg-paper);
+            border-radius: 12px;
+            padding: 20px 16px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(229, 9, 20, 0.2);
+            margin: 0 16px;
+
+            .title-pagination-box {
+              display: flex;
+              flex-direction: column;
+              gap: 16px;
+              margin-bottom: 20px;
+              padding-bottom: 16px;
+              border-bottom: 2px solid rgba(229, 9, 20, 0.2);
+              position: relative;
+
+              &::after {
+                content: "";
+                position: absolute;
+                bottom: -2px;
+                left: 0;
+                width: 60px;
+                height: 2px;
+                background: linear-gradient(
+                  90deg,
+                  var(--accent) 0%,
+                  transparent 100%
+                );
+              }
+
+              .title-box {
+                display: flex;
+                flex-direction: column;
+                gap: 6px;
+
+                .main-title {
+                  font-family: $font;
+                  font-size: 20px;
+                  font-weight: 700;
+                  color: var(--text-primary);
+                  margin: 0;
+                  position: relative;
+                  padding-left: 12px;
+
+                  &::before {
+                    content: "";
+                    position: absolute;
+                    left: 0;
+                    top: 0;
+                    width: 4px;
+                    height: 100%;
+                    background: linear-gradient(
+                      180deg,
+                      var(--accent) 0%,
+                      #c20812 100%
+                    );
+                    border-radius: 2px;
+                  }
+                }
+
+                .sub-title {
+                  color: var(--text-secondary);
+                  font-family: $font;
+                  font-size: 13px;
+                  font-weight: 400;
+                  margin: 0;
+                  padding-left: 12px;
+                }
+              }
+
+              .pagination-box {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                background: rgba(229, 9, 20, 0.05);
+                padding: 10px 12px;
+                border-radius: 10px;
+                border: 1px solid rgba(229, 9, 20, 0.2);
+
+                .pagination-nav {
+                  display: flex;
+                  align-items: center;
+                  gap: 10px;
+
+                  .nav-button {
+                    width: 36px;
+                    height: 36px;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    border-radius: 8px;
+                    background: transparent;
+                    border: 1px solid rgba(229, 9, 20, 0.2);
+                    cursor: pointer;
+
+                    &:active:not(:disabled) {
+                      background: var(--accent);
+                      transform: scale(0.95);
+                    }
+
+                    &:disabled {
+                      opacity: 0.4;
+                      cursor: not-allowed;
+                    }
+
+                    svg {
+                      width: 18px;
+                      height: 18px;
+                      color: var(--text-secondary);
+                    }
+
+                    &:active:not(:disabled) svg {
+                      color: #fff;
+                    }
+                  }
+                }
+
+                .swiper-similar-pagination {
+                  display: flex;
+                  align-items: center;
+                  gap: 6px;
+
+                  .swiper-pagination-bullet {
+                    width: 8px;
+                    height: 8px;
+                    background: var(--text-secondary);
+                    opacity: 0.5;
+                    border-radius: 50%;
+
+                    &.swiper-pagination-bullet-active {
+                      background: var(--accent);
+                      opacity: 1;
+                      transform: scale(1.2);
+                    }
+                  }
+                }
+
+                .pagination-counter {
+                  color: var(--text-secondary);
+                  font-family: $font;
+                  font-size: 12px;
+                  font-weight: 500;
+
+                  .current {
+                    color: var(--accent);
+                    font-weight: 600;
+                  }
+                }
+              }
+            }
+
+            .cards-box {
+              .similar-homes-swiper {
+                .similar-homes-slide {
+                  width: auto;
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+// Dark theme for mobile car detail page
+@media (max-width: 768px) {
+  [data-theme="dark"],
+  [data-theme="elevatedDark"] {
+    #mobile-wrap {
+      #car-detail-page {
+        .car-info-config {
+          .info,
+          .images {
+            background: rgba(0, 0, 0, 0.6);
+            border-color: rgba(229, 9, 20, 0.3);
+          }
+        }
+
+        .car-desc-config {
+          .left-config {
+            .options-config .option .svg-box,
+            .prop-desc-config,
+            .interior-config,
+            .reviews-config,
+            .leave-review-config {
+              background: rgba(0, 0, 0, 0.6);
+              border-color: rgba(229, 9, 20, 0.3);
+            }
+          }
+
+          .right-config {
+            background: rgba(0, 0, 0, 0.6);
+            border-color: rgba(229, 9, 20, 0.3);
+
+            .highlights-section {
+              background: transparent;
+            }
+          }
+        }
+
+        .similar-cars-config {
+          background: rgba(0, 0, 0, 0.6);
+          border-color: rgba(229, 9, 20, 0.3);
+        }
+      }
+    }
+  }
+}
