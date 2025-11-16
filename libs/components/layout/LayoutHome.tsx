@@ -37,10 +37,7 @@ const withLayoutMain = (Component: any) => {
             <meta name={"title"} content={`UCAR`} />
           </Head>
           <Stack id="mobile-wrap">
-            <Stack id={"top"}>
-              <Top {...props} trendingCar={trendingCar} />
-            </Stack>
-
+            <InteractiveNavbar />
             <Stack id={"main"}>
               <Component {...props} setTrendingCar={setTrendingCar} />
             </Stack>
