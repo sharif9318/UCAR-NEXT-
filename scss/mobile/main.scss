@@ -1304,13 +1304,6 @@
           .auth-icon {
             font-size: 28px;
           }
-
-          .flag-img {
-            width: 28px;
-            height: 20px;
-            border-radius: 3px;
-            object-fit: cover;
-          }
         }
 
         .label {
@@ -1662,6 +1655,16 @@
           }
         }
       }
+    }
+
+    .btn-lang,
+    .flag,
+    .img-flag,
+    .flag-img {
+      width: 28px;
+      height: 20px;
+      border-radius: 3px;
+      object-fit: cover;
     }
   }
 
