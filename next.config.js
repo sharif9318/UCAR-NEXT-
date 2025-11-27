@@ -9,6 +9,23 @@ const nextConfig = {
     REACT_APP_API_GRAPHQL_URL: process.env.REACT_APP_API_GRAPHQL_URL,
     REACT_APP_API_WS: process.env.REACT_APP_API_WS,
   },
+  async headers() {
+    return [
+      {
+        source: "/:path*",
+        headers: [
+          {
+            key: "X-Frame-Options",
+            value: "ALLOWALL",
+          },
+          {
+            key: "Content-Security-Policy",
+            value: "frame-ancestors 'self' *",
+          },
+        ],
+      },
+    ];
+  },
   async redirects() {
     return [
       {
